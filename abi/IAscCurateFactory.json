@@ -1,0 +1,56 @@
+[
+  {
+    "type": "function",
+    "name": "launchCurate",
+    "inputs": [
+      {
+        "name": "ipId",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "expiredTime",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "fundReceiver",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "bioName",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "bioTokenName",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "bioTokenSymbol",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "minimalIpTokensForLaunch",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "ipToBioTokenRatio",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "curate",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  }
+]
