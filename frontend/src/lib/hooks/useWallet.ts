@@ -84,6 +84,7 @@ export function useWallet() {
         setWalletClient(walletClient);
         setIsConnected(true);
       } else {
+        alert("Please install MetaMask to continue");
         throw new Error("Please install MetaMask to continue");
       }
     } catch (error) {
