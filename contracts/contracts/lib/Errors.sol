@@ -54,9 +54,9 @@ library Errors {
     error AsclepiusIPVault__ZeroFundReceiverAddress();
 
     /**
-     * @notice Thrown when the USDC contract address is zero
+     * @notice Thrown when the IP token contract address is zero
      */
-    error AsclepiusIPVault__ZeroUsdcContractAddress();
+    error AsclepiusIPVault__ZeroIPTokenContractAddress();
 
     /**
      * @notice Thrown when the spg nft contract address is zero
@@ -76,9 +76,9 @@ library Errors {
     error AsclepiusIPVault__CallerNotAdmin(address caller, address admin);
 
     /**
-     * @notice Thrown when the USDC address is invalid
+    * @notice Thrown when the IP token address is invalid
      */
-    error AsclepiusIPVault__InvalidUSDCAddress();
+    error AsclepiusIPVault__InvalidIPTokenAddress();
 
     /**
      * @notice Thrown when the token is not supported

@@ -12,7 +12,7 @@ import { IAsclepiusIPDistributionContract } from "./IAsclepiusIPDistributionCont
 interface IAsclepiusIPVault {
     /**
      * @notice The state of the vault
-     * When the vault is Open, the anyone can deposit USDC to the vault, the admin can cancel or close the vault.
+     * When the vault is Open, the anyone can deposit IP token to the vault, the admin can cancel or close the vault.
      * When the vault is Closed, the admin can withdraw all funds to the fund receiver.
      * When the vault is Canceled, the depositor can claim their deposits.
      */
@@ -96,13 +96,13 @@ interface IAsclepiusIPVault {
     event VaultClosed();
 
     /**
-     * @notice Emitted when the USDC contract address is updated
-     * @param previousUsdcContractAddress The address of the previous USDC contract
-     * @param newUsdcContractAddress The address of the new USDC contract
+     * @notice Emitted when the IP token contract address is updated
+     * @param previousIpTokenContractAddress The address of the previous IP token contract
+     * @param newIpTokenContractAddress The address of the new IP token contract
      */
-    event UsdcContractAddressUpdated(
-        address indexed previousUsdcContractAddress,
-        address indexed newUsdcContractAddress
+    event IpTokenContractAddressUpdated(
+        address indexed previousIpTokenContractAddress,
+        address indexed newIpTokenContractAddress
     );
 
     /**
@@ -114,7 +114,7 @@ interface IAsclepiusIPVault {
      * @param fractionalTokenName_ The name of the fractional token
      * @param fractionalTokenSymbol_ The symbol of the fractional token
      * @param totalySupplyOfFractionalizedToken_ The total supply of the fractionalized token
-     * @param usdcContractAddress_ The address of the USDC contract
+     * @param ipTokenContractAddress_ The address of the IP token contract
      */
     function initialize(
         address admin_,
@@ -124,11 +124,11 @@ interface IAsclepiusIPVault {
         string memory fractionalTokenName_,
         string memory fractionalTokenSymbol_,
         uint256 totalySupplyOfFractionalizedToken_,
-        address usdcContractAddress_
+        address ipTokenContractAddress_
     ) external;
 
     /**
-     * @notice Deposits USDC to the vault, only when the vault is Open
+     * @notice Deposits IP token to the vault, only when the vault is Open
      * @param erc20 The address of the token to deposit
      * @param amount The amount of the token to deposit
      */
@@ -207,10 +207,10 @@ interface IAsclepiusIPVault {
     function transferAdminRole(address newAdmin) external;
 
     /**
-     * @notice Admin updates the USDC contract address
-     * @param newUsdcContractAddress The address of the new USDC contract
+     * @notice Admin updates the IP token contract address
+     * @param newIpTokenContractAddress The address of the new IP token contract
      */
-    function updateUsdcContractAddress(address newUsdcContractAddress) external;
+    function updateIpTokenContractAddress(address newIpTokenContractAddress) external;
 
     /**
      * @notice Admin updates the total supply of the fractional token
@@ -219,10 +219,10 @@ interface IAsclepiusIPVault {
     function updateFractionalTokenTotalSupply(uint256 newTotalSupply) external;
 
     /**
-     * @notice Returns the address of the USDC contract
-     * @return usdcContractAddress The address of the USDC contract
+     * @notice Returns the address of the IP token contract
+     * @return ipTokenContractAddress The address of the IP token contract
      */
-    function getUsdcContractAddress() external view returns (address);
+    function getIpTokenContractAddress() external view returns (address);
 
     /**
      * @notice Returns the state of the vault
