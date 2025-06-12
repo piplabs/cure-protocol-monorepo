@@ -26,8 +26,6 @@ import { IAsclepiusIPVault } from "./interfaces/IAsclepiusIPVault.sol";
 contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC721Holder {
     using EnumerableSet for EnumerableSet.AddressSet;
     using SafeERC20 for IERC20;
-
-    // TODO: add minimum amount
     /**
      * @dev Storage structure for the AsclepiusIPVault
      * @param admin The address of the vault admin
@@ -45,6 +43,7 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
      * @param totalDeposits The total deposits received for each token
      * @param deposits The deposit token address and amount information of the users
      * @param fractionalTokenClaimed The flag to check if the user has claimed the fractional token
+     * @param minimumTotalDeposits The minimum total deposits required to close the vault
      * @custom:storage-location erc7201:asclepius-protocol.AsclepiusIPVault
      */
     struct AsclepiusIPVaultStorage {
@@ -65,11 +64,12 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         mapping(address token => uint256 totalDeposited) totalDeposits;
         mapping(address user => mapping(address token => uint256 amount)) deposits;
         mapping(address user => bool claimed) fractionalTokenClaimed;
+        uint256 minimumTotalDeposits;
     }
 
     // keccak256(abi.encode(uint256(keccak256("asclepius-protocol.AsclepiusIPVault")) - 1)) & ~bytes32(uint256(0xff));
     bytes32 private constant AsclepiusIPVaultStorageLocation =
-        0x1bc014ad7571fb9e6b95f00b4ef66dfc0f491fcf98baea572bcbbaa6ab5c7300;
+        0x42c9c0f2c59028a46a97ff701442785a2340be4e9f5ccbf53eda76e17b81cb00;
 
     /**
      * @notice The address of the Story PoC Periphery's RoyaltyTokenDistributionWorkflows contract
@@ -124,8 +124,6 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         _disableInitializers();
     }
 
-
-    // TODO: edit the initialize function so that it takes an already registered IP as a parameter and transfers the royalty tokens to this address 
     /**
      * @dev Initializes the AsclepiusIPVault
      * @param admin_ The address of the vault admin
@@ -136,6 +134,7 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
      * @param fractionalTokenSymbol_ The symbol of the fractional token
      * @param fractionalTokenTotalSupply_ The total supply of the fractional token
      * @param ipTokenContractAddress_ The address of the IP token contract
+     * @param minimumTotalDeposits_ The minimum total deposits required to close the vault
      */
     function initialize(
         address admin_,
@@ -145,7 +144,8 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         string memory fractionalTokenName_,
         string memory fractionalTokenSymbol_,
         uint256 fractionalTokenTotalSupply_,
-        address ipTokenContractAddress_
+        address ipTokenContractAddress_,
+        uint256 minimumTotalDeposits_
     ) external initializer {
         if (admin_ == address(0)) revert Errors.AsclepiusIPVault__ZeroAdminAddress();
         if (expirationTime_ != 0 && expirationTime_ <= block.timestamp) {
@@ -164,7 +164,7 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         $.totalSupplyOfFractionalToken = fractionalTokenTotalSupply_;
         $.ipTokenContractAddress = ipTokenContractAddress_;
         $.state = State.Open;
-
+        $.minimumTotalDeposits = minimumTotalDeposits_;
         __ReentrancyGuard_init();
     }
 
@@ -234,8 +234,6 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         emit TokensWithdrawn({ receiver: $.fundReceiver, tokens: tokens, amounts: withdrawnAmounts });
     }
 
-
-    // TODO: this function should only fractionize the IP and not register it 
     /**
      * @notice Admin registers the IP and fractionalizes it, only when the vault is Closed
      * @param spgNftContract The address of the SPG NFT contract
@@ -335,7 +333,6 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         emit VaultCanceled();
     }
 
-    // TODO: check that collected amount >= minimum amount
     /**
      * @notice Admin closes the vault, only when the vault is Open
      */
@@ -343,6 +340,13 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         AsclepiusIPVaultStorage storage $ = _getAsclepiusIPVaultStorage();
         State state = $.state;
         if (state != State.Open) revert Errors.AsclepiusIPVault__VaultNotOpen(state);
+        uint256 totalDeposits = $.totalDeposits[$.ipTokenContractAddress];
+        uint256 minimumTotalDeposits = $.minimumTotalDeposits;
+        if (totalDeposits < minimumTotalDeposits)
+            revert Errors.AsclepiusIPVault__TotalDepositsLessThanMinimumTotalDeposits(
+                totalDeposits,
+                minimumTotalDeposits
+            );
         $.state = State.Closed;
 
         emit VaultClosed();

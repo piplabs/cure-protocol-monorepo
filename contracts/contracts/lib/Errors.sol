@@ -137,6 +137,13 @@ library Errors {
     error AsclepiusIPVault__ActiveDepositsExist(address token, uint256 totalDeposits);
 
     /**
+     * @notice Thrown when the total deposits is less than the minimum total deposits
+     * @param totalDeposits The total deposits
+     * @param minimumTotalDeposits The minimum total deposits
+     */
+    error AsclepiusIPVault__TotalDepositsLessThanMinimumTotalDeposits(uint256 totalDeposits, uint256 minimumTotalDeposits);
+
+    /**
      * @notice Thrown when the fractional token total supply is less than the total deposits
      * @param fractionalTokenTotalSupply The total supply of the fractional token
      * @param totalDeposits The total deposits
