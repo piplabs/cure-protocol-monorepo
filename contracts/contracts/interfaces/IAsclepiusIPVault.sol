@@ -25,26 +25,23 @@ interface IAsclepiusIPVault {
     /**
      * @notice Emitted when a deposit is received by the vault
      * @param depositor The address of the depositor
-     * @param token The address of the token received
-     * @param amount The amount of the token received
+     * @param amount The amount of the IP token received
      */
-    event DepositReceived(address indexed depositor, address indexed token, uint256 amount);
+    event DepositReceived(address indexed depositor, uint256 amount);
 
     /**
      * @notice Emitted when a refund is claimed by the depositor
      * @param claimer The address of the claimer
-     * @param token The address of the token claimed
-     * @param amount The amount of the token claimed
+     * @param amount The amount of the IP token claimed
      */
-    event RefundClaimed(address indexed claimer, address indexed token, uint256 amount);
+    event RefundClaimed(address indexed claimer, uint256 amount);
 
     /**
      * @notice Emitted when tokens are withdrawn from the vault by the fund receiver
      * @param receiver The address of the fund receiver
-     * @param tokens The addresses of the tokens withdrawn
-     * @param amounts The amounts of the tokens withdrawn
+     * @param amount The amount of the IP token withdrawn
      */
-    event TokensWithdrawn(address indexed receiver, address[] indexed tokens, uint256[] amounts);
+    event TokensWithdrawn(address indexed receiver, uint256 amount);
 
     /**
      * @notice Emitted when the admin role is transferred
@@ -94,60 +91,45 @@ interface IAsclepiusIPVault {
      * @notice Emitted when the vault is closed
      */
     event VaultClosed();
-
-    /**
-     * @notice Emitted when the IP token contract address is updated
-     * @param previousIpTokenContractAddress The address of the previous IP token contract
-     * @param newIpTokenContractAddress The address of the new IP token contract
-     */
-    event IpTokenContractAddressUpdated(
-        address indexed previousIpTokenContractAddress,
-        address indexed newIpTokenContractAddress
-    );
-
     /**
      * @notice Initializes the vault
      * @param admin_ The address of the admin
-     * @param expiredTime_ The expiration time
+     * @param expirationTime_ The expiration time
      * @param fundReceiver_ The address of the fund receiver
      * @param rwipName_ The name of the RWIP
      * @param fractionalTokenName_ The name of the fractional token
      * @param fractionalTokenSymbol_ The symbol of the fractional token
-     * @param totalySupplyOfFractionalizedToken_ The total supply of the fractionalized token
-     * @param ipTokenContractAddress_ The address of the IP token contract
+     * @param fractionalTokenTotalSupply_ The total supply of the fractional token
+     * @param minimumTotalDeposits_ The minimum total deposits required to close the vault
      */
     function initialize(
         address admin_,
-        uint256 expiredTime_,
+        uint256 expirationTime_,
         address fundReceiver_,
         string memory rwipName_,
         string memory fractionalTokenName_,
         string memory fractionalTokenSymbol_,
-        uint256 totalySupplyOfFractionalizedToken_,
-        address ipTokenContractAddress_
+        uint256 fractionalTokenTotalSupply_,
+        uint256 minimumTotalDeposits_
     ) external;
 
     /**
      * @notice Deposits IP token to the vault, only when the vault is Open
-     * @param erc20 The address of the token to deposit
-     * @param amount The amount of the token to deposit
      */
-    function deposit(address erc20, uint256 amount) external;
+    function deposit() external payable;
 
     /**
      * @notice Claims refund, only when the vault is Canceled
-     * @param erc20 The address of the token to claim refund
-     * @return amount The amount of the token claimed
+     * @return amount The amount of the IP token claimed
      */
-    function claimRefund(address erc20) external returns (uint256 amount);
+    function claimRefund() external returns (uint256 amount);
 
     /**
      * @notice Transfers all funds to the fund receiver, only when the vault is Closed
      * @dev Only the admin can withdraw funds
-     * @return tokens The addresses of the tokens withdrawn
-     * @return withdrawnAmounts The amounts of the tokens withdrawn
+     * @return withdrawnAmount The amount of the IP token withdrawn
      */
-    function withdraw() external returns (address[] memory tokens, uint256[] memory withdrawnAmounts);
+    function withdraw() external returns (uint256 withdrawnAmount);
 
     /**
      * @notice Registers the IP and fractionalizes the IP
@@ -207,22 +189,10 @@ interface IAsclepiusIPVault {
     function transferAdminRole(address newAdmin) external;
 
     /**
-     * @notice Admin updates the IP token contract address
-     * @param newIpTokenContractAddress The address of the new IP token contract
-     */
-    function updateIpTokenContractAddress(address newIpTokenContractAddress) external;
-
-    /**
      * @notice Admin updates the total supply of the fractional token
      * @param newTotalSupply The new total supply of the fractional token
      */
     function updateFractionalTokenTotalSupply(uint256 newTotalSupply) external;
-
-    /**
-     * @notice Returns the address of the IP token contract
-     * @return ipTokenContractAddress The address of the IP token contract
-     */
-    function getIpTokenContractAddress() external view returns (address);
 
     /**
      * @notice Returns the state of the vault
@@ -243,19 +213,17 @@ interface IAsclepiusIPVault {
     function getIpId() external view returns (address);
 
     /**
-     * @notice Returns the deposited amount of a user for a token
+     * @notice Returns the deposited amount of a user
      * @param user The address of the user
-     * @param token The address of the token
-     * @return amount The deposited amount of the user for the token
+     * @return amount The deposited amount of the user
      */
-    function getDepositedAmount(address user, address token) external view returns (uint256);
+    function getDepositedAmount(address user) external view returns (uint256);
 
     /**
-     * @notice Returns the total deposited amount of a token
-     * @param token The address of the token
-     * @return totalDeposited The total deposited amount of the token
+     * @notice Returns the total deposited amount
+     * @return totalDeposited The total deposited amount
      */
-    function getTotalDeposited(address token) external view returns (uint256);
+    function getTotalDeposited() external view returns (uint256);
 
     /**
      * @notice Returns the expiration time of the vault
