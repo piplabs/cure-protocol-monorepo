@@ -1,37 +1,71 @@
+import { useState } from "react";
 import { Project } from "@/lib/types";
 import { projectDetails } from "@/lib/data/projectDetails";
+import { useCuration } from "@/lib/hooks/useCuration";
+import { useWallet } from "@/lib/hooks/useWallet";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 interface CurationStageProps {
   project: Project;
 }
 
 export default function CurationStage({ project }: CurationStageProps) {
+  const { isConnected, connectWallet } = useWallet();
+  const {
+    loading,
+    curationData,
+    bioBalance,
+    statusMessage,
+    commitToCuration,
+    withdrawFromCuration,
+    claimRefund,
+  } = useCuration(project.id);
+
+  const [commitAmount, setCommitAmount] = useState("");
   const details = projectDetails[project.id]?.curationDetails;
 
   if (!details) return <div>Curation details not available</div>;
 
+  const handleCommit = async () => {
+    if (!commitAmount || parseFloat(commitAmount) <= 0) return;
+    await commitToCuration(commitAmount);
+    setCommitAmount("");
+  };
+
+  const canCommit =
+    isConnected &&
+    parseFloat(bioBalance) >= parseFloat(commitAmount || "0") &&
+    parseFloat(commitAmount || "0") > 0 &&
+    !loading.commit;
+
   return (
     <div className="space-y-8">
+      {/* Status Message */}
+      {statusMessage && (
+        <div className="bg-blue-900 border-blue-700 text-blue-100 border px-6 py-3 rounded-xl">
+          {statusMessage}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-green-400 font-medium">Live</span>
             </div>
             <h3 className="text-xl font-bold text-white mb-4">Curation</h3>
 
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
                 <div className="text-3xl font-bold text-green-400 mb-2">
-                  {details.bioCommitted}
+                  {curationData?.totalCommitted || details.bioCommitted}
                   <span className="text-lg text-gray-400 ml-2">BIO</span>
                 </div>
                 <div className="text-gray-400 text-sm">BIO committed</div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-white mb-2">
-                  {details.curationLimit}
+                  {curationData?.curationLimit || details.curationLimit}
                   <span className="text-lg text-gray-400 ml-2">BIO</span>
                 </div>
                 <div className="text-gray-400 text-sm">Curation Limit</div>
@@ -106,51 +140,106 @@ export default function CurationStage({ project }: CurationStageProps) {
               Commit / Withdraw
             </h3>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">1 BIO = </span>
-                <span className="text-white">22.22 vREFLEX</span>
+            {!isConnected ? (
+              <div className="text-center py-8">
+                <p className="text-gray-400 mb-4">
+                  Connect your wallet to participate in curation
+                </p>
+                <button
+                  onClick={connectWallet}
+                  className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-3 rounded-xl transition-colors"
+                >
+                  Connect Wallet
+                </button>
               </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">1 BIO = </span>
+                  <span className="text-white">22.22 vREFLEX</span>
+                </div>
 
-              <div className="space-y-2">
-                <label className="text-gray-400 text-sm">
-                  You've committed
-                </label>
-                <div className="text-right text-gray-400">0 BIO</div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-gray-400 text-sm">Commit</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="0.00"
-                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white text-right pr-16"
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white font-medium">
-                    BIO
+                <div className="space-y-2">
+                  <label className="text-gray-400 text-sm">
+                    You've committed
+                  </label>
+                  <div className="text-right text-gray-400">
+                    {curationData?.userCommitted || "0"} BIO
                   </div>
                 </div>
-                <div className="text-right text-xs text-gray-500">
-                  Base Balance: 0 BIO
+
+                <div className="space-y-2">
+                  <label className="text-gray-400 text-sm">Commit</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="0.00"
+                      value={commitAmount}
+                      onChange={(e) => setCommitAmount(e.target.value)}
+                      className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white text-right pr-16"
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white font-medium">
+                      BIO
+                    </div>
+                  </div>
+                  <div className="text-right text-xs text-gray-500">
+                    Balance: {parseFloat(bioBalance).toFixed(4)} BIO
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-xs">
+                  <input type="checkbox" className="rounded border-gray-600" />
+                  <span className="text-gray-400">
+                    I accept the terms and conditions of this curation
+                  </span>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleCommit}
+                    disabled={!canCommit}
+                    className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    {loading.commit && <LoadingSpinner size="sm" />}
+                    {loading.commit ? "Committing..." : "Commit"}
+                  </button>
+
+                  {curationData?.userCommitted &&
+                    parseFloat(curationData.userCommitted) > 0 && (
+                      <button
+                        onClick={withdrawFromCuration}
+                        disabled={loading.withdraw}
+                        className="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                      >
+                        {loading.withdraw && <LoadingSpinner size="sm" />}
+                        {loading.withdraw ? "Withdrawing..." : "Withdraw"}
+                      </button>
+                    )}
+                </div>
+
+                {curationData?.canClaim && (
+                  <button
+                    onClick={claimRefund}
+                    disabled={loading.claim}
+                    className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    {loading.claim && <LoadingSpinner size="sm" />}
+                    {loading.claim ? "Claiming..." : "Claim Refund"}
+                  </button>
+                )}
+
+                {!canCommit && commitAmount && parseFloat(commitAmount) > 0 && (
+                  <div className="text-xs text-red-400 p-3 bg-red-900/20 rounded-lg border border-red-700/50">
+                    Insufficient BIO balance. Required: {commitAmount} BIO
+                  </div>
+                )}
+
+                <div className="text-xs text-gray-500 p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                  A 5% fee applies if you withdraw before the curation phase
+                  ends.
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 text-xs">
-                <input type="checkbox" className="rounded border-gray-600" />
-                <span className="text-gray-400">
-                  I accept the terms and conditions of this curation
-                </span>
-              </div>
-
-              <button className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-3 rounded-xl transition-colors">
-                Connect
-              </button>
-
-              <div className="text-xs text-gray-500 p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
-                A 5% fee applies if you withdraw before the curation phase ends.
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

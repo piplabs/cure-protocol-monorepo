@@ -15,12 +15,12 @@ export const storyTestnet = defineChain({
     symbol: "IP",
   },
   rpcUrls: {
-    default: { http: ["https://testnet.storyrpc.io"] },
+    default: { http: ["https://aeneid.storyrpc.io"] },
   },
   blockExplorers: {
     default: {
       name: "Story Testnet Explorer",
-      url: "https://testnet.storyscan.xyz",
+      url: "https://aeneid.storyscan.io",
     },
   },
   testnet: true,
