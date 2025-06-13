@@ -35,7 +35,7 @@ interface IAsclepiusIPVaultFactory {
      * @param fractionalTokenName The name of the fractional token
      * @param fractionalTokenSymbol The symbol of the fractional token
      * @param totalSupplyOfFractionalToken The total supply of the fractional token
-     * @param usdcContractAddress The address of the USDC contract
+     * @param ipTokenAddress The address of the IP token
      */
     function deployIpVault(
         address vaultAdmin,
@@ -45,7 +45,7 @@ interface IAsclepiusIPVaultFactory {
         string memory fractionalTokenName,
         string memory fractionalTokenSymbol,
         uint256 totalSupplyOfFractionalToken,
-        address usdcContractAddress
+        address ipTokenAddress
     ) external returns (address ipVault);
 
     /**

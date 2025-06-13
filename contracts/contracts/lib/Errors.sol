@@ -54,11 +54,6 @@ library Errors {
     error AsclepiusIPVault__ZeroFundReceiverAddress();
 
     /**
-     * @notice Thrown when the USDC contract address is zero
-     */
-    error AsclepiusIPVault__ZeroUsdcContractAddress();
-
-    /**
      * @notice Thrown when the spg nft contract address is zero
      */
     error AsclepiusIPVault__ZeroSPGNftContractAddress();
@@ -74,11 +69,6 @@ library Errors {
      * @param admin The admin address
      */
     error AsclepiusIPVault__CallerNotAdmin(address caller, address admin);
-
-    /**
-     * @notice Thrown when the USDC address is invalid
-     */
-    error AsclepiusIPVault__InvalidUSDCAddress();
 
     /**
      * @notice Thrown when the token is not supported
@@ -100,9 +90,8 @@ library Errors {
     /**
      * @notice Thrown when there is no refundable deposit
      * @param claimer The address of the claimer
-     * @param token The address of the token that the claimer wants to claim
      */
-    error AsclepiusIPVault__NoRefundableDeposit(address claimer, address token);
+    error AsclepiusIPVault__NoRefundableDeposit(address claimer);
 
     /**
      * @notice Thrown when the vault is not closed
@@ -113,9 +102,8 @@ library Errors {
     /**
      * @notice Thrown when the deposit amount is zero
      * @param depositor The address of the depositor
-     * @param token The address of the token that the depositor wants to deposit
      */
-    error AsclepiusIPVault__ZeroDepositAmount(address depositor, address token);
+    error AsclepiusIPVault__ZeroDepositAmount(address depositor);
 
     /**
      * @notice Thrown when the claimer is not eligible to claim the fractionalized IP tokens
@@ -131,10 +119,16 @@ library Errors {
 
     /**
      * @notice Thrown when there are active deposits
-     * @param token The address of the token
      * @param totalDeposits The total deposits
      */
-    error AsclepiusIPVault__ActiveDepositsExist(address token, uint256 totalDeposits);
+    error AsclepiusIPVault__ActiveDepositsExist(uint256 totalDeposits);
+
+    /**
+     * @notice Thrown when the total deposits is less than the minimum total deposits
+     * @param totalDeposits The total deposits
+     * @param minimumTotalDeposits The minimum total deposits
+     */
+    error AsclepiusIPVault__TotalDepositsLessThanMinimumTotalDeposits(uint256 totalDeposits, uint256 minimumTotalDeposits);
 
     /**
      * @notice Thrown when the fractional token total supply is less than the total deposits
@@ -151,6 +145,19 @@ library Errors {
      * @param fractionalToken The address of the fractional token
      */
     error AsclepiusIPVault__FractionalTokenAlreadyDeployed(address fractionalToken);
+
+    /**
+     * @notice Thrown when the refund claim failed
+     * @param claimer The address of the claimer
+     * @param amount The amount of the refund
+     */
+    error AsclepiusIPVault__RefundClaimFailed(address claimer, uint256 amount);
+
+    /**
+     * @notice Thrown when the withdraw failed
+     * @param withdrawnAmount The amount of the IP token withdrawn
+     */
+    error AsclepiusIPVault__WithdrawFailed(uint256 withdrawnAmount);
 
     ////////////////////////////////////////////////////////////////////////////
     //                           AsclepiusIPVaultFactory Errors                    //

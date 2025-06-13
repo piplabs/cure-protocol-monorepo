@@ -21,12 +21,10 @@ import { IAsclepiusIPVault } from "./interfaces/IAsclepiusIPVault.sol";
 
 /**
  * @title AsclepiusIPVault
- * @notice This contract is used to manage the deposit and refund of USDC for the Asclepius IP Vault.
+ * @notice This contract is used to manage the deposit and refund of IP token for the Asclepius IP Vault.
  */
 contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC721Holder {
-    using EnumerableSet for EnumerableSet.AddressSet;
     using SafeERC20 for IERC20;
-
     /**
      * @dev Storage structure for the AsclepiusIPVault
      * @param admin The address of the vault admin
@@ -39,11 +37,10 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
      * @param fractionalTokenSymbol The symbol of the fractional token
      * @param totalSupplyOfFractionalToken The total supply of the fractional token
      * @param distributionContract The address of distribution contract for staking fractional token and distributing the IP revenue
-     * @param usdcContractAddress The address of the USDC contract
-     * @param tokensInVault The set of tokens in the vault
      * @param totalDeposits The total deposits received for each token
-     * @param deposits The deposit token address and amount information of the users
+     * @param deposits The deposit amount information of the users
      * @param fractionalTokenClaimed The flag to check if the user has claimed the fractional token
+     * @param minimumTotalDeposits The minimum total deposits required to close the vault
      * @custom:storage-location erc7201:asclepius-protocol.AsclepiusIPVault
      */
     struct AsclepiusIPVaultStorage {
@@ -59,16 +56,15 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         uint256 totalSupplyOfFractionalToken;
         address protocolTreasury;
         address distributionContract;
-        address usdcContractAddress;
-        EnumerableSet.AddressSet tokensInVault;
         mapping(address token => uint256 totalDeposited) totalDeposits;
-        mapping(address user => mapping(address token => uint256 amount)) deposits;
+        mapping(address user => uint256 amount) deposits;
         mapping(address user => bool claimed) fractionalTokenClaimed;
+        uint256 minimumTotalDeposits;
     }
 
     // keccak256(abi.encode(uint256(keccak256("asclepius-protocol.AsclepiusIPVault")) - 1)) & ~bytes32(uint256(0xff));
     bytes32 private constant AsclepiusIPVaultStorageLocation =
-        0x1bc014ad7571fb9e6b95f00b4ef66dfc0f491fcf98baea572bcbbaa6ab5c7300;
+        0x42c9c0f2c59028a46a97ff701442785a2340be4e9f5ccbf53eda76e17b81cb00;
 
     /**
      * @notice The address of the Story PoC Periphery's RoyaltyTokenDistributionWorkflows contract
@@ -132,7 +128,7 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
      * @param fractionalTokenName_ The name of the fractional token
      * @param fractionalTokenSymbol_ The symbol of the fractional token
      * @param fractionalTokenTotalSupply_ The total supply of the fractional token
-     * @param usdcContractAddress_ The address of the USDC contract
+     * @param minimumTotalDeposits_ The minimum total deposits required to close the vault
      */
     function initialize(
         address admin_,
@@ -142,14 +138,13 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         string memory fractionalTokenName_,
         string memory fractionalTokenSymbol_,
         uint256 fractionalTokenTotalSupply_,
-        address usdcContractAddress_
+        uint256 minimumTotalDeposits_
     ) external initializer {
         if (admin_ == address(0)) revert Errors.AsclepiusIPVault__ZeroAdminAddress();
         if (expirationTime_ != 0 && expirationTime_ <= block.timestamp) {
             revert Errors.AsclepiusIPVault__ExpirationTimeNotInFuture(expirationTime_, block.timestamp);
         }
         if (fundReceiver_ == address(0)) revert Errors.AsclepiusIPVault__ZeroFundReceiverAddress();
-        if (usdcContractAddress_ == address(0)) revert Errors.AsclepiusIPVault__ZeroUsdcContractAddress();
 
         AsclepiusIPVaultStorage storage $ = _getAsclepiusIPVaultStorage();
         $.admin = admin_;
@@ -159,76 +154,63 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         $.fractionalTokenName = fractionalTokenName_;
         $.fractionalTokenSymbol = fractionalTokenSymbol_;
         $.totalSupplyOfFractionalToken = fractionalTokenTotalSupply_;
-        $.usdcContractAddress = usdcContractAddress_;
         $.state = State.Open;
-
+        $.minimumTotalDeposits = minimumTotalDeposits_;
         __ReentrancyGuard_init();
     }
 
     /**
-     * @notice Deposits USDC to the vault, only when the vault is Open
-     * @param erc20 The address of the token to deposit
-     * @param amount The amount of the token to deposit
+     * @notice Deposits IP token to the vault, only when the vault is Open
      */
-    function deposit(address erc20, uint256 amount) external nonReentrant {
+    function deposit() external payable nonReentrant {
         _checkAndUpdateState();
-        if (amount == 0) revert Errors.AsclepiusIPVault__ZeroDepositAmount(msg.sender, erc20);
+        if (msg.value == 0) revert Errors.AsclepiusIPVault__ZeroDepositAmount(msg.sender);
         AsclepiusIPVaultStorage storage $ = _getAsclepiusIPVaultStorage();
-        if (erc20 != $.usdcContractAddress) revert Errors.AsclepiusIPVault__InvalidUSDCAddress();
         if ($.state != State.Open) revert Errors.AsclepiusIPVault__VaultNotOpen($.state);
 
-        $.tokensInVault.add(erc20);
-        $.deposits[msg.sender][erc20] += amount;
-        $.totalDeposits[erc20] += amount;
+        $.deposits[msg.sender] += msg.value;
+        $.totalDeposits += msg.value;
 
-        IERC20(erc20).safeTransferFrom(msg.sender, address(this), amount);
-
-        emit DepositReceived({ depositor: msg.sender, token: erc20, amount: amount });
+        emit DepositReceived({ depositor: msg.sender, amount: msg.value });
     }
 
     /**
      * @notice Depositor claims refund, only when the vault is Canceled
-     * @param erc20 The address of the token to claim refund
-     * @return amount The amount of tokens claimed
+     * @return amount The amount of IP token claimed
      */
-    function claimRefund(address erc20) external nonReentrant returns (uint256 amount) {
+    function claimRefund() external nonReentrant returns (uint256 amount) {
         AsclepiusIPVaultStorage storage $ = _getAsclepiusIPVaultStorage();
         State state = $.state;
         if (state != State.Canceled) revert Errors.AsclepiusIPVault__VaultNotCanceled(state);
-        if ($.deposits[msg.sender][erc20] == 0) revert Errors.AsclepiusIPVault__NoRefundableDeposit(msg.sender, erc20);
+        if ($.deposits[msg.sender] == 0) revert Errors.AsclepiusIPVault__NoRefundableDeposit(msg.sender);
 
-        amount = $.deposits[msg.sender][erc20];
-        $.deposits[msg.sender][erc20] = 0;
-        $.totalDeposits[erc20] -= amount;
+        amount = $.deposits[msg.sender];
+        $.deposits[msg.sender] = 0;
+        $.totalDeposits -= amount;
 
-        IERC20(erc20).safeTransfer(msg.sender, amount);
-
-        emit RefundClaimed({ claimer: msg.sender, token: erc20, amount: amount });
+        (bool success,) = msg.sender.call{value: amount}("");
+        if (!success) revert Errors.AsclepiusIPVault__RefundClaimFailed(msg.sender, amount);
+        
+        emit RefundClaimed({ claimer: msg.sender, amount: amount });
     }
 
     /**
      * @notice Admin withdraws all funds to the fund receiver, only when the vault is Closed
-     * @return tokens The addresses of the tokens withdrawn
-     * @return withdrawnAmounts The amounts of the tokens withdrawn
+     * @return withdrawnAmount The amount of IP token withdrawn
      */
-    function withdraw() external onlyAdmin returns (address[] memory tokens, uint256[] memory withdrawnAmounts) {
+    function withdraw() external onlyAdmin returns (uint256 withdrawnAmount) {
         _checkAndUpdateState();
         AsclepiusIPVaultStorage storage $ = _getAsclepiusIPVaultStorage();
         State state = $.state;
         if (state != State.Closed) revert Errors.AsclepiusIPVault__VaultNotClosed(state);
 
-        uint256 length = $.tokensInVault.length();
+        withdrawnAmount = $.totalDeposits;
+        $.totalDeposits = 0;
 
-        tokens = new address[](length);
-        withdrawnAmounts = new uint256[](length);
-        for (uint256 i = 0; i < length; i++) {
-            tokens[i] = $.tokensInVault.at(i);
-            withdrawnAmounts[i] = IERC20(tokens[i]).balanceOf(address(this));
-            $.tokensInVault.remove(tokens[i]);
-            IERC20(tokens[i]).safeTransfer($.fundReceiver, withdrawnAmounts[i]);
-        }
+        (bool success,) = $.fundReceiver.call{value: withdrawnAmount}("");
+        if (!success) revert Errors.AsclepiusIPVault__WithdrawFailed(withdrawnAmount);
 
-        emit TokensWithdrawn({ receiver: $.fundReceiver, tokens: tokens, amounts: withdrawnAmounts });
+        emit TokensWithdrawn({ receiver: $.fundReceiver, amount: withdrawnAmount });
     }
 
     /**
@@ -301,7 +283,7 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
     function claimFractionalTokens(address claimer) external returns (address fractionalToken, uint256 amountClaimed) {
         AsclepiusIPVaultStorage storage $ = _getAsclepiusIPVaultStorage();
         if ($.state != State.Closed) revert Errors.AsclepiusIPVault__VaultNotClosed($.state);
-        if ($.deposits[claimer][$.usdcContractAddress] == 0)
+        if ($.deposits[claimer] == 0)
             revert Errors.AsclepiusIPVault__ClaimerNotEligible(claimer);
         if ($.fractionalTokenClaimed[claimer]) revert Errors.AsclepiusIPVault__ClaimerAlreadyClaimed(claimer);
 
@@ -309,9 +291,8 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         if (fractionalToken == address(0)) revert Errors.AsclepiusIPVault__FractionalTokenNotSet();
         $.fractionalTokenClaimed[claimer] = true;
 
-        address usdcContractAddress = $.usdcContractAddress;
-        uint256 userDeposit = $.deposits[claimer][usdcContractAddress];
-        uint256 totalDeposit = $.totalDeposits[usdcContractAddress];
+        uint256 userDeposit = $.deposits[claimer];
+        uint256 totalDeposit = $.totalDeposits;
         amountClaimed = (userDeposit * $.totalSupplyOfFractionalToken) / totalDeposit;
 
         IOwnableERC20(fractionalToken).mint(claimer, amountClaimed);
@@ -337,6 +318,13 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         AsclepiusIPVaultStorage storage $ = _getAsclepiusIPVaultStorage();
         State state = $.state;
         if (state != State.Open) revert Errors.AsclepiusIPVault__VaultNotOpen(state);
+        uint256 totalDeposits = $.totalDeposits;
+        uint256 minimumTotalDeposits = $.minimumTotalDeposits;
+        if (totalDeposits < minimumTotalDeposits)
+            revert Errors.AsclepiusIPVault__TotalDepositsLessThanMinimumTotalDeposits(
+                totalDeposits,
+                minimumTotalDeposits
+            );
         $.state = State.Closed;
 
         emit VaultClosed();
@@ -354,34 +342,12 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         emit AdminRoleTransferred({ previousAdmin: msg.sender, newAdmin: newAdmin });
     }
 
-    /**
-     * @notice Admin updates the USDC contract address
-     * @param newUsdcContractAddress The address of the new USDC contract
-     */
-    function updateUsdcContractAddress(address newUsdcContractAddress) external onlyAdmin {
-        if (newUsdcContractAddress == address(0)) revert Errors.AsclepiusIPVault__ZeroUsdcContractAddress();
-        AsclepiusIPVaultStorage storage $ = _getAsclepiusIPVaultStorage();
-        if ($.state != State.Open) revert Errors.AsclepiusIPVault__VaultNotOpen($.state);
-        if ($.totalDeposits[$.usdcContractAddress] > 0)
-            revert Errors.AsclepiusIPVault__ActiveDepositsExist(
-                $.usdcContractAddress,
-                $.totalDeposits[$.usdcContractAddress]
-            );
-
-        $.usdcContractAddress = newUsdcContractAddress;
-
-        emit UsdcContractAddressUpdated({
-            previousUsdcContractAddress: $.usdcContractAddress,
-            newUsdcContractAddress: newUsdcContractAddress
-        });
-    }
-
     function updateFractionalTokenTotalSupply(uint256 newTotalSupply) external onlyAdmin {
         AsclepiusIPVaultStorage storage $ = _getAsclepiusIPVaultStorage();
-        if (newTotalSupply < $.totalDeposits[$.usdcContractAddress])
+        if (newTotalSupply < $.totalDeposits)
             revert Errors.AsclepiusIPVault__FractionalTokenSupplyLessThanTotalDeposits(
                 newTotalSupply,
-                $.totalDeposits[$.usdcContractAddress]
+                $.totalDeposits
             );
         if ($.fractionalToken != address(0)) {
             revert Errors.AsclepiusIPVault__FractionalTokenAlreadyDeployed($.fractionalToken);
@@ -393,14 +359,6 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
             previousTotalSupply: $.totalSupplyOfFractionalToken,
             newTotalSupply: newTotalSupply
         });
-    }
-
-    /**
-     * @notice Returns the address of the USDC contract
-     * @return usdcContractAddress The address of the USDC contract
-     */
-    function getUsdcContractAddress() external view returns (address) {
-        return _getAsclepiusIPVaultStorage().usdcContractAddress;
     }
 
     /**
@@ -433,8 +391,8 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
      * @param token The address of the token
      * @return amount The deposited amount of the user for the token
      */
-    function getDepositedAmount(address user, address token) external view returns (uint256) {
-        return _getAsclepiusIPVaultStorage().deposits[user][token];
+    function getDepositedAmount(address user) external view returns (uint256) {
+        return _getAsclepiusIPVaultStorage().deposits[user];
     }
 
     /**
@@ -442,8 +400,8 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
      * @param token The address of the token
      * @return totalDeposited The total deposited amount of the token
      */
-    function getTotalDeposited(address token) external view returns (uint256) {
-        return _getAsclepiusIPVaultStorage().totalDeposits[token];
+    function getTotalDeposited() external view returns (uint256) {
+        return _getAsclepiusIPVaultStorage().totalDeposits;
     }
 
     /**
@@ -564,10 +522,10 @@ contract AsclepiusIPVault is IAsclepiusIPVault, ReentrancyGuardUpgradeable, ERC7
         address fractionalTokenTemplate
     ) internal returns (address fractionalToken) {
         AsclepiusIPVaultStorage storage $ = _getAsclepiusIPVaultStorage();
-        if ($.totalSupplyOfFractionalToken < $.totalDeposits[$.usdcContractAddress])
+        if ($.totalSupplyOfFractionalToken < $.totalDeposits)
             revert Errors.AsclepiusIPVault__FractionalTokenSupplyLessThanTotalDeposits(
                 $.totalSupplyOfFractionalToken,
-                $.totalDeposits[$.usdcContractAddress]
+                $.totalDeposits
             );
         if ($.fractionalToken != address(0))
             revert Errors.AsclepiusIPVault__FractionalTokenAlreadyDeployed($.fractionalToken);
