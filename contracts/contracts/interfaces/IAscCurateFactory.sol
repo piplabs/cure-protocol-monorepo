@@ -2,15 +2,15 @@
 pragma solidity 0.8.26;
 
 /**
- * @title IAsclepiusIPVaultFactory
- * @notice Interface for the AsclepiusIPVaultFactory contract
+ * @title IAscCurateFactory
+ * @notice Interface for the IAscCurateFactory contract
  */
-interface IAsclepiusIPVaultFactory {
+interface IAscCurateFactory {
     /**
-     * @notice Emitted when a new IP vault is deployed
-     * @param ipVault The address of the new IP vault
+     * @notice Emitted when a new curate is deployed
+     * @param curate The address of the new curate
      */
-    event IpVaultDeployed(address indexed ipVault);
+    event CurateDeployed(address indexed curate);
 
     /**
      * @notice Emitted when the vault template is updated
@@ -27,26 +27,26 @@ interface IAsclepiusIPVaultFactory {
     function initialize(address admin_, address vaultTemplate_) external;
 
     /**
-     * @notice Deploys a new IP vault
-     * @param vaultAdmin The address of the admin
+     * @notice Launches a new curate instance
+     * @param admin The address of the admin
+     * @param ipId The IP ID address
      * @param expiredTime The expiration time
      * @param fundReceiver The address of the fund receiver
-     * @param rwipName The name of the RWIP
-     * @param fractionalTokenName The name of the fractional token
-     * @param fractionalTokenSymbol The symbol of the fractional token
-     * @param totalSupplyOfFractionalToken The total supply of the fractional token
-     * @param ipTokenAddress The address of the IP token
+     * @param bioName The name of the bio project
+     * @param bioTokenName The name of the bio token
+     * @param bioTokenSymbol The symbol of the bio token
+     * @param minimalIpTokenForLaunch The minimal IP token amount required for launch
      */
-    function deployIpVault(
-        address vaultAdmin,
+    function launchCurate(
+        address admin,
+        address ipId,
         uint256 expiredTime,
         address fundReceiver,
-        string memory rwipName,
-        string memory fractionalTokenName,
-        string memory fractionalTokenSymbol,
-        uint256 totalSupplyOfFractionalToken,
-        address ipTokenAddress
-    ) external returns (address ipVault);
+        string memory bioName,
+        string memory bioTokenName,
+        string memory bioTokenSymbol,
+        uint256 minimalIpTokenForLaunch
+    ) external returns (address curate);
 
     /**
      * @notice Sets the vault template

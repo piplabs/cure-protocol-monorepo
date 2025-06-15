@@ -1,247 +1,261 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
 
-/**
- * @title IAsclepiusIPDistributionContract
- * @notice Interface for the AsclepiusIPDistributionContract contract
- */
-interface IAsclepiusIPDistributionContract {
+import { IAscStaking } from "./IAscStaking.sol";
+
+interface IAscCurate {
     /**
-     * @dev Data structure for initializing the AsclepiusIPDistributionContract
-     * @param admin The address of the admin
-     * @param ipId The address of the IP
-     * @param protocolTreasury The address of the protocol treasury to receive the protocol tax fees
-     * @param protocolTaxRate The protocol tax rate
-     * @param rewardDistributionPeriod The number of blocks during which the all rewards are distributed
-     * @param rewardToken The address of the reward token
-     * @param fractionalTokenAllocPoints The allocation points for the fractional token staking pool
+     * @notice The state of the vault
+     * When the vault is Open, the anyone can deposit $IP to the vault, the admin can cancel or close the vault.
+     * When the vault is Closed, the admin can withdraw all funds to the fund receiver.
+     * When the vault is Canceled, the depositor can claim their deposits.
      */
-    struct InitData {
-        address admin;
-        address ipId;
-        address protocolTreasury;
-        uint32 protocolTaxRate;
-        uint256 rewardDistributionPeriod;
-        address rewardToken;
-        uint256 fractionalTokenAllocPoints;
+    enum State {
+        Open,
+        Closed,
+        Canceled
     }
 
     /**
-     * @notice Emitted when a user deposits staking tokens
-     * @param staker The address of the staker
-     * @param stakingToken The address of the staking token
-     * @param depositedAmount The amount of the staking token deposited
+     * @dev The initialization data for the AscCurate
+     * @param admin The address of the vault admin
+     * @param ipId The ID of the IP
+     * @param ipNft The address of the ERC 6551 NFT contract bound to the IP
+     * @param ipNftTokenId The token ID of the ERC 6551 NFT contract bound to the IP
+     * @param expirationTime The expiration time of the vault (0 if no expiration)
+     * @param fundReceiver The address of the fund receiver (a safe/multisig address)
+     * @param bioName The name of the bio project
+     * @param bioTokenName The name of the bio token
+     * @param bioTokenSymbol The symbol of the bio token
+     * @param minimalIpTokenForLaunch The minimal IP token amount required for launch
+     * @param rewardToken The address of the reward token
      */
-    event Deposited(address indexed staker, address indexed stakingToken, uint256 depositedAmount);
+    struct CurateInitData {
+        address admin;
+        address ipId;
+        address ipNft;
+        uint256 ipNftTokenId;
+        uint256 expirationTime;
+        address fundReceiver;
+        string bioName;
+        string bioTokenName;
+        string bioTokenSymbol;
+        uint256 minimalIpTokenForLaunch;
+        address rewardToken;
+    }
 
     /**
-     * @notice Emitted when a user withdraws staking tokens
-     * @param staker The address of the staker
-     * @param stakingToken The address of the staking token
-     * @param withdrawnAmount The amount of the staking token withdrawn
+     * @notice Emitted when a deposit is received by the vault
+     * @param depositor The address of the depositor
+     * @param amount The amount of the token received
      */
-    event Withdrawn(address indexed staker, address indexed stakingToken, uint256 withdrawnAmount);
+    event DepositReceived(address indexed depositor, uint256 amount);
 
     /**
-     * @notice Emitted when a user claims all their rewards
-     * @param staker The address of the staker
-     * @param protocolTaxPaid The amount of protocol tax fee
-     * @param netRewardsClaimed The total amount of rewards claimed after protocol tax fee
+     * @notice Emitted when a refund is claimed by the depositor
+     * @param claimer The address of the claimer
+     * @param amount The amount of the token claimed
      */
-    event RewardsClaimed(address indexed staker, uint256 protocolTaxPaid, uint256 netRewardsClaimed);
+    event RefundClaimed(address indexed claimer, uint256 amount);
 
     /**
-     * @notice Emitted when royalties are collected and distributed
-     * @param ipId The address of the IP
-     * @param totalRoyaltiesCollected The total amount of royalties collected
-     * @param distributionEndBlock The end block of the current distribution period
+     * @notice Emitted when tokens are withdrawn from the vault by the fund receiver
+     * @param receiver The address of the fund receiver
+     * @param amount The amount of the token withdrawn
      */
-    event RoyaltiesCollected(address indexed ipId, uint256 totalRoyaltiesCollected, uint256 distributionEndBlock);
+    event TokensWithdrawn(address indexed receiver, uint256 amount);
 
     /**
-     * @notice Emitted when a new staking pool is added
-     * @param stakingToken The address of the staking token for which the staking pool is added
-     * @param allocPoints The allocation points for the staking pool
+     * @notice Emitted when the bio token is claimed
+     * @param claimer The address of the claimer
+     * @param amountClaimed The amount of the bio token claimed
      */
-    event StakingPoolAdded(address indexed stakingToken, uint256 allocPoints);
+    event BioTokenClaimed(address indexed claimer, uint256 amountClaimed);
 
     /**
-     * @notice Emitted when allocation points for a staking pool are updated
-     * @param stakingToken The address of the staking token for which the allocation points are updated
-     * @param oldAllocPoints The old allocation points for the staking pool
-     * @param newAllocPoints The new allocation points for the staking pool
+     * @notice Emitted when the admin role is transferred
+     * @param previousAdmin The address of the previous admin
+     * @param newAdmin The address of the new admin
      */
-    event PoolAllocPointsUpdated(address indexed stakingToken, uint256 oldAllocPoints, uint256 newAllocPoints);
+    event AdminRoleTransferred(address indexed previousAdmin, address indexed newAdmin);
 
     /**
-     * @notice Emitted when the protocol treasury is updated
-     * @param oldProtocolTreasury The old protocol treasury
-     * @param newProtocolTreasury The new protocol treasury
+     * @notice Emitted when the vault is canceled
      */
-    event ProtocolTreasuryUpdated(address oldProtocolTreasury, address newProtocolTreasury);
+    event VaultCanceled();
 
     /**
-     * @notice Emitted when the reward distribution period is updated
-     * @param oldPeriod The old reward distribution period
-     * @param newPeriod The new reward distribution period
+     * @notice Emitted when the vault is closed
      */
-    event RewardDistributionPeriodUpdated(uint256 oldPeriod, uint256 newPeriod);
+    event VaultClosed();
 
     /**
-     * @notice Emitted when the protocol tax rate is updated
-     * @param oldTaxRate The old protocol tax rate
-     * @param newTaxRate The new protocol tax rate
+     * @notice Emitted when the project is launched
+     * @param ipId The IP ID
+     * @param bioToken The address of the bio token
+     * @param stakingContract The address of the staking contract
      */
-    event ProtocolTaxRateUpdated(uint32 oldTaxRate, uint32 newTaxRate);
+    event ProjectLaunched(address indexed ipId, address indexed bioToken, address indexed stakingContract);
 
     /**
-     * @dev Initializes the AsclepiusIPDistributionContract
-     * @param fractionalToken The address of the fractionalized IP token
-     * @param initData The initialization data {see IAsclepiusIPDistributionContract.InitData}
+     * @notice Emitted when the IP is withdrawn
+     * @param recipient The address of the recipient
      */
-    function initialize(address fractionalToken, InitData memory initData) external;
+    event IpWithdrawn(address indexed recipient);
 
     /**
-     * @dev Deposits a staking token into the distribution contract
-     * @param stakingToken The address of the staking token
-     * @param amount The amount of the staking token to deposit
+     * @notice Initializes the AscCurate
+     * @param initData The initialization data for the AscCurate {see IAscCurate.CurateInitData}
      */
-    function deposit(address stakingToken, uint256 amount) external;
+    function initialize(CurateInitData memory initData) external;
 
     /**
-     * @dev Withdraws a staking token from the distribution contract
-     * @param stakingToken The address of the staking token
-     * @param amount The amount of the staking token to withdraw
+     * @notice Deposits $IP token to the curate, only when the vault is Open
+     * @param amount The amount of the IP token to deposit
      */
-    function withdraw(address stakingToken, uint256 amount) external;
+    function deposit(uint256 amount) external payable;
 
     /**
-     * @dev Claims all rewards for a staker
-     * @param claimer The address of the staker
+     * @notice Claims refund, only when the curate is canceled
+     * @return amount The amount of the token claimed
      */
-    function claimAllRewards(address claimer) external;
+    function claimRefund() external returns (uint256 amount);
 
     /**
-     * @dev Collects royalties from the royalty vault and distributes them to each staking pools
-     * If the current distribution period is over, it will finalize the old period and start a new one.
-     * If not over, collected royalties will be emitted in the remaining distribution period.
+     * @notice Admin withdraws all funds to the fund receiver, only when the vault is Closed
+     * @return withdrawnAmount The amount of IP token withdrawn
      */
-    function collectRoyalties() external;
+    function withdraw() external returns (uint256 withdrawnAmount);
 
     /**
-     * @dev Adds a staking pool to the distribution contract
-     * @param stakingToken The address of the staking token
-     * @param allocPoints The allocation points for the staking pool
+     * @notice User claims the bio tokens, only when the vault is Closed
+     * @param claimer The address of the claimer
+     * @return bioToken The address of the bio token
+     * @return amountClaimed The amount of the bio token claimed
      */
-    function addStakingPool(address stakingToken, uint256 allocPoints) external;
+    function claimBioTokens(address claimer) external returns (address bioToken, uint256 amountClaimed);
 
     /**
-     * @dev Sets the allocation points for a staking pool
-     * @param stakingToken The address of the staking token
-     * @param allocPoints The allocation points for the staking pool
+     * @notice Admin launches the bio project
+     * @param bioTokenTemplate The template of the bio token
+     * @param stakingContractTemplate The template of the staking contract
+     * @param initData The initialization data for the staking contract
+     * @return bioToken The address of the bio token
+     * @return stakingContract The address of the staking contract
      */
-    function setPoolAllocPoints(address stakingToken, uint256 allocPoints) external;
+    function launchProject(
+        address bioTokenTemplate,
+        address stakingContractTemplate,
+        IAscStaking.InitData memory initData
+    ) external returns (address bioToken, address stakingContract);
 
     /**
-     * @dev Sets the reward distribution period
-     * @param numberOfBlocks The number of blocks during which the all rewards are distributed
+     * @notice Cancels the vault, only when the vault is Open
+     * @dev Only the admin can cancel the vault
      */
-    function setRewardDistributionPeriod(uint256 numberOfBlocks) external;
+    function cancel() external;
 
     /**
-     * @dev Sets the protocol tax rate
-     * @param protocolTaxRate_ The protocol tax rate
+     * @notice Closes the vault, only when the vault is Open
+     * @dev Only the admin can close the vault
      */
-    function setProtocolTaxRate(uint32 protocolTaxRate_) external;
+    function close() external;
 
     /**
-     * @dev Returns the address of the admin
-     * @return admin The address of the admin
+     * @notice Transfers the admin role
+     * @dev Only the admin can transfer the admin role
+     * @param newAdmin The address of the new admin
      */
-    function getAdmin() external view returns (address);
+    function transferAdminRole(address newAdmin) external;
 
     /**
-     * @dev Returns the address of the IP
-     * @return ipId The address of the IP
+     * @notice Admin withdraws the IP NFT to the recipient, only when the vault is Canceled
+     * @param recipient The address of the recipient
      */
-    function getIpId() external view returns (address);
+    function withdrawIp(address recipient) external;
 
     /**
-     * @dev Returns the address of the protocol treasury
-     * @return protocolTreasury The address of the protocol treasury
+     * @notice Returns the state of the vault
+     * @return state The state of the vault
      */
-    function getProtocolTreasury() external view returns (address);
+    function getState() external view returns (State state);
 
     /**
-     * @dev Returns the protocol tax rate
-     * @return protocolTaxRate The protocol tax rate
+     * @notice Returns the address of the vault admin
+     * @return admin The address of the vault admin
      */
-    function getProtocolTaxRate() external view returns (uint32);
+    function getAdmin() external view returns (address admin);
 
     /**
-     * @dev Returns the reward distribution period
-     * @return rewardDistributionPeriod The reward distribution period
+     * @notice Returns the ID of the IP
+     * @return ipId The ID of the IP
      */
-    function getRewardDistributionPeriod() external view returns (uint256);
+    function getIpId() external view returns (address ipId);
 
     /**
-     * @dev Returns the current distribution end block
-     * @return currentDistributionEndBlock The current distribution end block
+     * @notice Returns the deposited amount of a user
+     * @param user The address of the user
+     * @return amount The deposited amount of the user
      */
-    function getCurrentDistributionEndBlock() external view returns (uint256);
+    function getDepositedAmount(address user) external view returns (uint256 amount);
 
     /**
-     * @dev Returns the current reward per block for a staking pool
-     * @param stakingToken The address of the staking token
-     * @return rewardPerBlock The current reward per block
+     * @notice Returns the total deposited amount
+     * @return totalDeposited The total deposited amount
      */
-    function getRewardPerBlock(address stakingToken) external view returns (uint256);
+    function getTotalDeposited() external view returns (uint256 totalDeposited);
 
     /**
-     * @dev Returns the address of the reward token
-     * @return rewardToken The address of the reward token
+     * @notice Returns the expiration time of the vault
+     * @return expirationTime The expiration time of the vault
      */
-    function getRewardToken() external view returns (address);
+    function getExpirationTime() external view returns (uint256 expirationTime);
 
     /**
-     * @dev Returns the total allocation points across all staking pools
-     * @return totalAllocPoints The total allocation points
+     * @notice Returns the address of the fund receiver
+     * @return fundReceiver The address of the fund receiver
      */
-    function getTotalAllocPoints() external view returns (uint256);
+    function getFundReceiver() external view returns (address fundReceiver);
 
     /**
-     * @dev Returns the allocation points for a staking pool
-     * @param stakingToken The address of the staking token
-     * @return allocPoints The allocation points for the staking pool
+     * @notice Returns the name of the bio project
+     * @return bioName The name of the bio project
      */
-    function getPoolAllocPoints(address stakingToken) external view returns (uint256);
+    function getBioName() external view returns (string memory bioName);
 
     /**
-     * @dev Returns the staked balance for a user in a staking pool
-     * @param stakingToken The address of the staking token
-     * @param staker The address of the staker
-     * @return stakedBalance The staked balance for the staker
+     * @notice Returns the address of the bio token
+     * @return bioToken The address of the bio token
      */
-    function getUserStakedBalance(address stakingToken, address staker) external view returns (uint256);
+    function getBioToken() external view returns (address bioToken);
 
     /**
-     * @dev Returns the total staked balance for a staking pool
-     * @param stakingToken The address of the staking token
-     * @return totalStakedBalance The total staked balance for the staking pool
+     * @notice Returns the name of the bio token
+     * @return bioTokenName The name of the bio token
      */
-    function getPoolTotalStakedBalance(address stakingToken) external view returns (uint256);
+    function getBioTokenName() external view returns (string memory bioTokenName);
 
     /**
-     * @dev Returns the pending rewards for a staker in a staking pool
-     * @param stakingToken The address of the staking token
-     * @param staker The address of the staker
-     * @return pendingRewards The pending rewards for the staker
+     * @notice Returns the symbol of the bio token
+     * @return bioTokenSymbol The symbol of the bio token
      */
-    function getPendingRewardsForStaker(address stakingToken, address staker) external view returns (uint256);
+    function getBioTokenSymbol() external view returns (string memory bioTokenSymbol);
 
     /**
-     * @dev Gets the upgradeable beacon address
+     * @notice Returns the total supply of the bio token
+     * @return totalSupplyOfBioToken The total supply of the bio token
+     */
+    function getTotalSupplyOfBioToken() external view returns (uint256 totalSupplyOfBioToken);
+
+    /**
+     * @notice Returns the address of the staking contract
+     * @return stakingContract The address of the staking contract
+     */
+    function getStakingContract() external view returns (address stakingContract);
+
+    /**
+     * @notice Returns the address of the upgradeable beacon
      * @return upgradeableBeacon The address of the upgradeable beacon
      */
-    function getUpgradeableBeacon() external view returns (address);
+    function getUpgradeableBeacon() external view returns (address upgradeableBeacon);
 }
