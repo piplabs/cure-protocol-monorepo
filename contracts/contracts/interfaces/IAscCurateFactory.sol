@@ -30,22 +30,28 @@ interface IAscCurateFactory {
      * @notice Launches a new curate instance
      * @param admin The address of the admin
      * @param ipId The IP ID address
+     * @param ipNft The address of the IP NFT
+     * @param ipNftTokenId The token ID of the IP NFT
      * @param expiredTime The expiration time
      * @param fundReceiver The address of the fund receiver
      * @param bioName The name of the bio project
      * @param bioTokenName The name of the bio token
      * @param bioTokenSymbol The symbol of the bio token
      * @param minimalIpTokenForLaunch The minimal IP token amount required for launch
+     * @param rewardToken The address of the reward token
      */
     function launchCurate(
         address admin,
         address ipId,
+        address ipNft,
+        uint256 ipNftTokenId,
         uint256 expiredTime,
         address fundReceiver,
         string memory bioName,
         string memory bioTokenName,
         string memory bioTokenSymbol,
-        uint256 minimalIpTokenForLaunch
+        uint256 minimalIpTokenForLaunch,
+        address rewardToken
     ) external returns (address curate);
 
     /**

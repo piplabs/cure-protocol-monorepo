@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.26;
 
+import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { BeaconProxy } from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
@@ -67,12 +68,15 @@ contract AscCurateFactory is IAscCurateFactory, UUPSUpgradeable {
     function launchCurate(
         address admin,
         address ipId,
+        address ipNft,
+        uint256 ipNftTokenId,
         uint256 expiredTime,
         address fundReceiver,
         string memory bioName,
         string memory bioTokenName,
         string memory bioTokenSymbol,
-        uint256 minimalIpTokenForLaunch
+        uint256 minimalIpTokenForLaunch,
+        address rewardToken
     ) external returns (address curate) {
         // skip zero address checks since they are checked in the AscCurate initializer
         curate = address(
@@ -82,18 +86,20 @@ contract AscCurateFactory is IAscCurateFactory, UUPSUpgradeable {
                     IAscCurate.initialize.selector,
                     admin, // admin
                     ipId,
-                    address(0), // ipNft - will be set later
-                    0, // ipNftTokenId - will be set later
+                    ipNft,
+                    ipNftTokenId,
                     expiredTime,
                     fundReceiver,
                     bioName,
                     bioTokenName,
                     bioTokenSymbol,
                     minimalIpTokenForLaunch,
-                    address(0) // rewardToken - will be set later
+                    rewardToken
                 )
             )
         );
+
+        IERC721(ipNft).safeTransferFrom(msg.sender, curate, ipNftTokenId);
 
         emit CurateDeployed(curate);
     }
