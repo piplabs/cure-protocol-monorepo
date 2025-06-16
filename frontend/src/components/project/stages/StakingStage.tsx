@@ -1,4 +1,3 @@
-// /app/components/project/stages/StakingStage.tsx
 "use client";
 
 import { useState } from "react";

@@ -163,7 +163,7 @@ export default function CurationStage({ project }: CurationStageProps) {
 
                 <div className="space-y-2">
                   <label className="text-gray-400 text-sm">
-                    You've committed
+                    You&apos;ve committed
                   </label>
                   <div className="text-right text-gray-400">
                     {curationData?.userCommitted || "0"} $IP

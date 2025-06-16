@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight, Globe, MessageSquare, Users, Brain } from "lucide-react";
-import Link from "next/link";
 import ProjectHeader from "@/components/project/ProjectHeader";
 import StageNavigation from "@/components/project/StageNavigation";
 import MarketHypothesis from "@/components/project/MarketHypothesis";

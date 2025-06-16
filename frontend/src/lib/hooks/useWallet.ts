@@ -5,7 +5,6 @@ import {
   custom,
   http,
   formatEther,
-  parseEther,
 } from "viem";
 import { storyTestnet } from "../../contracts/constants";
 
