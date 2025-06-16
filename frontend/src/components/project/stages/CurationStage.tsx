@@ -1,9 +1,10 @@
+"use client";
+
 import { useState } from "react";
 import { Project } from "@/lib/types";
 import { projectDetails } from "@/lib/data/projectDetails";
 import { useCuration } from "@/lib/hooks/useCuration";
 import { useWallet } from "@/lib/hooks/useWallet";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 interface CurationStageProps {
   project: Project;
@@ -14,7 +15,7 @@ export default function CurationStage({ project }: CurationStageProps) {
   const {
     loading,
     curationData,
-    bioBalance,
+    ipBalance,
     statusMessage,
     commitToCuration,
     withdrawFromCuration,
@@ -34,7 +35,7 @@ export default function CurationStage({ project }: CurationStageProps) {
 
   const canCommit =
     isConnected &&
-    parseFloat(bioBalance) >= parseFloat(commitAmount || "0") &&
+    parseFloat(ipBalance) >= parseFloat(commitAmount || "0") &&
     parseFloat(commitAmount || "0") > 0 &&
     !loading.commit;
 
@@ -52,6 +53,7 @@ export default function CurationStage({ project }: CurationStageProps) {
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-green-400 font-medium">Live</span>
             </div>
             <h3 className="text-xl font-bold text-white mb-4">Curation</h3>
 
@@ -59,14 +61,14 @@ export default function CurationStage({ project }: CurationStageProps) {
               <div>
                 <div className="text-3xl font-bold text-green-400 mb-2">
                   {curationData?.totalCommitted || details.bioCommitted}
-                  <span className="text-lg text-gray-400 ml-2">BIO</span>
+                  <span className="text-lg text-gray-400 ml-2">$IP</span>
                 </div>
-                <div className="text-gray-400 text-sm">BIO committed</div>
+                <div className="text-gray-400 text-sm">$IP committed</div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-white mb-2">
                   {curationData?.curationLimit || details.curationLimit}
-                  <span className="text-lg text-gray-400 ml-2">BIO</span>
+                  <span className="text-lg text-gray-400 ml-2">$IP</span>
                 </div>
                 <div className="text-gray-400 text-sm">Curation Limit</div>
               </div>
@@ -105,7 +107,7 @@ export default function CurationStage({ project }: CurationStageProps) {
               Curation Details
             </h3>
             <p className="text-gray-300 mb-6">
-              Signal support for a BioDAO by committing BIO tokens in exchange
+              Signal support for a BioDAO by committing $IP tokens in exchange
               for BioDAO tokens if the DAO raises successfully. This curation
               stage filters which projects advance to launch via the BIO
               launchpad, rewarding participants with vesting BioDAO tokens.
@@ -155,7 +157,7 @@ export default function CurationStage({ project }: CurationStageProps) {
             ) : (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">1 BIO = </span>
+                  <span className="text-gray-400">1 $IP = </span>
                   <span className="text-white">22.22 vREFLEX</span>
                 </div>
 
@@ -164,7 +166,7 @@ export default function CurationStage({ project }: CurationStageProps) {
                     You've committed
                   </label>
                   <div className="text-right text-gray-400">
-                    {curationData?.userCommitted || "0"} BIO
+                    {curationData?.userCommitted || "0"} $IP
                   </div>
                 </div>
 
@@ -179,11 +181,11 @@ export default function CurationStage({ project }: CurationStageProps) {
                       className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white text-right pr-16"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white font-medium">
-                      BIO
+                      $IP
                     </div>
                   </div>
                   <div className="text-right text-xs text-gray-500">
-                    Balance: {parseFloat(bioBalance).toFixed(4)} BIO
+                    Balance: {parseFloat(ipBalance).toFixed(4)} $IP
                   </div>
                 </div>
 
@@ -200,7 +202,9 @@ export default function CurationStage({ project }: CurationStageProps) {
                     disabled={!canCommit}
                     className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
-                    {loading.commit && <LoadingSpinner size="sm" />}
+                    {loading.commit && (
+                      <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />
+                    )}
                     {loading.commit ? "Committing..." : "Commit"}
                   </button>
 
@@ -211,7 +215,9 @@ export default function CurationStage({ project }: CurationStageProps) {
                         disabled={loading.withdraw}
                         className="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                       >
-                        {loading.withdraw && <LoadingSpinner size="sm" />}
+                        {loading.withdraw && (
+                          <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
+                        )}
                         {loading.withdraw ? "Withdrawing..." : "Withdraw"}
                       </button>
                     )}
@@ -223,14 +229,16 @@ export default function CurationStage({ project }: CurationStageProps) {
                     disabled={loading.claim}
                     className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
-                    {loading.claim && <LoadingSpinner size="sm" />}
+                    {loading.claim && (
+                      <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
+                    )}
                     {loading.claim ? "Claiming..." : "Claim Refund"}
                   </button>
                 )}
 
                 {!canCommit && commitAmount && parseFloat(commitAmount) > 0 && (
                   <div className="text-xs text-red-400 p-3 bg-red-900/20 rounded-lg border border-red-700/50">
-                    Insufficient BIO balance. Required: {commitAmount} BIO
+                    Insufficient $IP balance. Required: {commitAmount} $IP
                   </div>
                 )}
 

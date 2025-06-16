@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { formatEther, parseEther } from "viem";
 import { useWallet } from "./useWallet";
-import { CONTRACTS, CURATE_ABI, ERC20_ABI } from "../../contracts/index";
-import type { LoadingStates, CurationData } from "../types/index";
+import { CONTRACTS, CURATE_ABI } from "@/contracts";
+import type { LoadingStates, CurationData } from "@/lib/types/index";
 
 export function useCuration(projectId: string) {
   const { account, isConnected, publicClient, walletClient } = useWallet();
   const [loading, setLoading] = useState<LoadingStates>({});
   const [curationData, setCurationData] = useState<CurationData | null>(null);
-  const [bioBalance, setBioBalance] = useState<string>("0");
+  const [ipBalance, setIpBalance] = useState<string>("0");
   const [statusMessage, setStatusMessage] = useState<string>("");
 
   const showStatus = (message: string) => {
@@ -23,24 +23,21 @@ export function useCuration(projectId: string) {
   useEffect(() => {
     if (isConnected && account && publicClient) {
       loadCurationData();
-      loadBioBalance();
+      loadIpBalance();
     }
   }, [isConnected, account, publicClient, projectId]);
 
-  const loadBioBalance = async () => {
-    if (!publicClient || !account || !CONTRACTS.BioToken) return;
+  const loadIpBalance = async () => {
+    if (!publicClient || !account) return;
 
     try {
-      const balance = await publicClient.readContract({
-        address: CONTRACTS.BioToken,
-        abi: ERC20_ABI,
-        functionName: "balanceOf",
-        args: [account],
+      // Get native $IP token balance
+      const balance = await publicClient.getBalance({
+        address: account,
       });
-
-      setBioBalance(formatEther(balance));
+      setIpBalance(formatEther(balance));
     } catch (error) {
-      console.error("Failed to load BIO balance:", error);
+      console.error("Failed to load $IP balance:", error);
     }
   };
 
@@ -48,8 +45,7 @@ export function useCuration(projectId: string) {
     if (!publicClient || !account) return;
 
     try {
-      // Load curation data specific to the project
-      // TODO: implement contract calls based on  actual contract structure
+      // TODO: load real curation data from the contract
 
       setCurationData({
         totalCommitted: "663.88K",
@@ -70,33 +66,21 @@ export function useCuration(projectId: string) {
     try {
       const amountWei = parseEther(amount);
 
-      // First approve BIO tokens if needed
-      if (CONTRACTS.BioToken !== "0x0000000000000000000000000000000000000000") {
-        await walletClient.writeContract({
-          account,
-          address: CONTRACTS.BioToken,
-          abi: ERC20_ABI,
-          functionName: "approve",
-          args: [CONTRACTS.AscCurate, amountWei],
-        });
-
-        showStatus("Token approval successful, committing to curation...");
-      }
-
-      // Commit to curation
+      // Since we're using native $IP token, we send it as value in the transaction
       const hash = await walletClient.writeContract({
         account,
         address: CONTRACTS.AscCurate,
         abi: CURATE_ABI,
         functionName: "deposit",
         args: [amountWei],
+        value: amountWei, // Send $IP as native token value
       });
 
       console.log("Curation commitment hash:", hash);
       showStatus("Successfully committed to curation! Updating data...");
 
       // Refresh data
-      await Promise.all([loadCurationData(), loadBioBalance()]);
+      await Promise.all([loadCurationData(), loadIpBalance()]);
       showStatus("Curation commitment successful!");
     } catch (error: any) {
       console.error("Failed to commit to curation:", error);
@@ -123,7 +107,7 @@ export function useCuration(projectId: string) {
       showStatus("Withdrawal successful! Updating data...");
 
       // Refresh data
-      await Promise.all([loadCurationData(), loadBioBalance()]);
+      await Promise.all([loadCurationData(), loadIpBalance()]);
       showStatus("Withdrawal completed!");
     } catch (error: any) {
       console.error("Failed to withdraw:", error);
@@ -150,7 +134,7 @@ export function useCuration(projectId: string) {
       showStatus("Refund claimed successfully! Updating data...");
 
       // Refresh data
-      await Promise.all([loadCurationData(), loadBioBalance()]);
+      await Promise.all([loadCurationData(), loadIpBalance()]);
       showStatus("Refund claimed!");
     } catch (error: any) {
       console.error("Failed to claim refund:", error);
@@ -160,56 +144,19 @@ export function useCuration(projectId: string) {
     }
   };
 
-  const launchProject = async (initData: any) => {
-    if (!walletClient || !account) return;
-
-    setLoadingState("launch", true);
-    try {
-      const hash = await walletClient.writeContract({
-        account,
-        address: CONTRACTS.AscCurate,
-        abi: CURATE_ABI,
-        functionName: "launchProject",
-        args: [
-          initData.fractionalTokenTemplate,
-          initData.distributionContractTemplate,
-          {
-            admin: initData.admin || account,
-            rewardToken: initData.rewardToken || CONTRACTS.BioToken,
-          },
-        ],
-      });
-
-      console.log("Project launch hash:", hash);
-      showStatus("Project launched successfully!");
-
-      // Refresh data
-      await loadCurationData();
-      showStatus("Project launch completed!");
-    } catch (error: any) {
-      console.error("Failed to launch project:", error);
-      showStatus(
-        `Failed to launch project: ${error.message || "Unknown error"}`
-      );
-    } finally {
-      setLoadingState("launch", false);
-    }
-  };
-
   return {
     // State
     loading,
     curationData,
-    bioBalance,
+    ipBalance,
     statusMessage,
 
     // Actions
     commitToCuration,
     withdrawFromCuration,
     claimRefund,
-    launchProject,
     loadCurationData,
-    loadBioBalance,
+    loadIpBalance,
     showStatus,
   };
 }

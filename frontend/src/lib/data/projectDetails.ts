@@ -1,3 +1,4 @@
+// src/lib/data/projectDetails.ts
 import { ProjectDetails } from "../types";
 
 export const projectDetails: Record<string, ProjectDetails> = {
@@ -51,6 +52,20 @@ export const projectDetails: Record<string, ProjectDetails> = {
         },
       ],
     },
+    // Add staking contract info for ReflexDAO
+    stakingContract: {
+      address: "0x1234567890123456789012345678901234567890", // Replace with actual contract address
+      stakingToken: {
+        address: "0x1111111111111111111111111111111111111111", // Replace with actual REFLEX token address
+        symbol: "REFLEX",
+        decimals: 18,
+      },
+      rewardToken: {
+        address: "0x1111111111111111111111111111111111111111", // Could be same as staking token
+        symbol: "REFLEX",
+        decimals: 18,
+      },
+    },
   },
   cerebrumdao: {
     fullDescription:
@@ -68,9 +83,107 @@ export const projectDetails: Record<string, ProjectDetails> = {
       userStaked: "0.00",
       rewards: "0.000",
     },
+    // Add staking contract info for CerebrumDAO
+    stakingContract: {
+      address: "0x2345678901234567890123456789012345678901", // Replace with actual contract address
+      stakingToken: {
+        address: "0x2222222222222222222222222222222222222222", // Replace with actual NEURON token address
+        symbol: "NEURON",
+        decimals: 18,
+      },
+      rewardToken: {
+        address: "0x2222222222222222222222222222222222222222", // Could be same as staking token
+        symbol: "NEURON",
+        decimals: 18,
+      },
+    },
   },
   curetopia: {
     fullDescription:
       "Curing the 10,000 rare genetic diseases. We are uniting patient groups and populations to tackle the $1T rare disease market. We're going directly to patients, turning them into research scientists, and making them the center of focus.",
+    // Add staking contract info for Curetopia
+    stakingContract: {
+      address: "0x3456789012345678901234567890123456789012", // Replace with actual contract address
+      stakingToken: {
+        address: "0x3333333333333333333333333333333333333333", // Replace with actual CURES token address
+        symbol: "CURES",
+        decimals: 18,
+      },
+      rewardToken: {
+        address: "0x3333333333333333333333333333333333333333", // Could be same as staking token
+        symbol: "CURES",
+        decimals: 18,
+      },
+    },
+  },
+  // Add entries for remaining projects from mockProjects
+  sleepdao: {
+    fullDescription:
+      "Improving sleep health through research and innovation. SleepDAO focuses on understanding sleep patterns, disorders, and developing innovative solutions for better sleep quality.",
+    stakingContract: {
+      address: "0x4567890123456789012345678901234567890123", // Replace with actual contract address
+      stakingToken: {
+        address: "0x4444444444444444444444444444444444444444", // Replace with actual SLEEP token address
+        symbol: "SLEEP",
+        decimals: 18,
+      },
+      rewardToken: {
+        address: "0x4444444444444444444444444444444444444444",
+        symbol: "SLEEP",
+        decimals: 18,
+      },
+    },
+    staking: {
+      apr: "3.75%",
+      totalStaked: "0",
+      userStaked: "0.00",
+      rewards: "0.000",
+    },
+  },
+  kidneydao: {
+    fullDescription:
+      "Advancing kidney disease research and treatment through decentralized science. KidneyDAO focuses on chronic kidney disease prevention, treatment innovations, and patient care improvements.",
+    stakingContract: {
+      address: "0x5678901234567890123456789012345678901234", // Replace with actual contract address
+      stakingToken: {
+        address: "0x5555555555555555555555555555555555555555", // Replace with actual KIDNEY token address
+        symbol: "KIDNEY",
+        decimals: 18,
+      },
+      rewardToken: {
+        address: "0x5555555555555555555555555555555555555555",
+        symbol: "KIDNEY",
+        decimals: 18,
+      },
+    },
+    staking: {
+      apr: "4.25%",
+      totalStaked: "0",
+      userStaked: "0.00",
+      rewards: "0.000",
+    },
+  },
+  microbiome: {
+    fullDescription:
+      "Microbiome research for better health outcomes. MicrobiomeDAO investigates the role of gut microbiota in human health, developing personalized microbiome therapies and treatments.",
+    stakingContract: {
+      address: "0x6789012345678901234567890123456789012345", // Replace with actual contract address
+      stakingToken: {
+        address: "0x6666666666666666666666666666666666666666", // Replace with actual MICRO token address
+        symbol: "MICRO",
+        decimals: 18,
+      },
+      rewardToken: {
+        address: "0x6666666666666666666666666666666666666666",
+        symbol: "MICRO",
+        decimals: 18,
+      },
+    },
+    staking: {
+      apr: "5.00%",
+      totalStaked: "0",
+      userStaked: "0.00",
+      rewards: "0.000",
+    },
   },
 };

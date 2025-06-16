@@ -10,7 +10,6 @@ export interface Project {
   image: string;
   tags: string[];
 }
-
 export interface ProjectDetails {
   fullDescription?: string;
   curationDetails?: {
@@ -47,6 +46,20 @@ export interface ProjectDetails {
     totalStaked: string;
     userStaked: string;
     rewards: string;
+  };
+  // Add this new property:
+  stakingContract?: {
+    address: string;
+    stakingToken: {
+      address: string;
+      symbol: string;
+      decimals: number;
+    };
+    rewardToken?: {
+      address: string;
+      symbol: string;
+      decimals: number;
+    };
   };
 }
 
