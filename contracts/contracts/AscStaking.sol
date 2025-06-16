@@ -10,13 +10,13 @@ import { IRoyaltyModule } from "@storyprotocol/core/interfaces/modules/royalty/I
 import { IIpRoyaltyVault } from "@storyprotocol/core/interfaces/modules/royalty/policies/IIpRoyaltyVault.sol";
 
 import { Errors } from "./lib/Errors.sol";
-import { IAsclepiusIPDistributionContract } from "./interfaces/IAsclepiusIPDistributionContract.sol";
+import { IAscStaking } from "./interfaces/IAscStaking.sol";
 
 /**
- * @title AsclepiusIPDistributionContract
+ * @title AscStaking
  * @notice This contract is used for distributing a IP's revenue to the fractionalized token (and its LP tokens) stakers
  */
-contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, ReentrancyGuardUpgradeable {
+contract AscStaking is IAscStaking, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -47,24 +47,20 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
     }
 
     /**
-     * @dev Storage structure for the AsclepiusIPDistributionContract
+     * @dev Storage structure for the AscStaking
      * @param admin The address of the admin of the contract
      * @param ipId The address of the IP that this contract is distributing the revenue for
-     * @param protocolTreasury The address of the protocol treasury to receive the protocol tax fees
-     * @param protocolTaxRate The protocol tax rate charged on the rewards
      * @param rewardDistributionPeriod The number of blocks during which the all rewards are distributed
      * @param currentDistributionEndBlock The block number at which the current distribution period ends
      * @param rewardToken The address of the reward token
      * @param totalAllocPoints The total allocation points across all staking pools
      * @param stakingTokens The set of staking tokens (each staking token has a staking pool)
      * @param poolInfo The pool information of each staking pool
-     * @custom:storage-location erc7201:asclepius-protocol.AsclepiusIPDistributionContract
+     * @custom:storage-location erc7201:asclepius-protocol.AscStaking
      */
-    struct AsclepiusIPDistributionContractStorage {
+    struct AscStakingStorage {
         address admin;
         address ipId;
-        address protocolTreasury;
-        uint32 protocolTaxRate;
         uint256 rewardDistributionPeriod;
         uint256 currentDistributionEndBlock;
         address rewardToken;
@@ -73,9 +69,9 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
         mapping(address => PoolInfo) poolInfo;
     }
 
-    // keccak256(abi.encode(uint256(keccak256("asclepius-protocol.AsclepiusIPDistributionContract")) - 1)) & ~bytes32(uint256(0xff));
-    bytes32 private constant AsclepiusIPDistributionContractStorageLocation =
-        0xeadb3b4833a68aa09dff99a8ad8749496b2cf037a2bffb5328867bb038470e00;
+    // keccak256(abi.encode(uint256(keccak256("asclepius-protocol.AscStaking")) - 1)) & ~bytes32(uint256(0xff));
+    bytes32 private constant AscStakingStorageLocation =
+        0x683918d8f10fbe935e448053a6b3d4f73db83ad193a0ffbad8aba748c1eee100;
 
     /**
      * @notice The maximum percentage value
@@ -103,18 +99,17 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
 
     /// @notice Modifier to check if the caller is the admin
     modifier onlyAdmin() {
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         if (msg.sender != $.admin) {
-            revert Errors.AsclepiusIPDistributionContract__CallerNotAdmin(msg.sender, $.admin);
+            revert Errors.AscStaking__CallerNotAdmin(msg.sender, $.admin);
         }
         _;
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address royaltyModule_, address upgradeableBeacon_) {
-        if (royaltyModule_ == address(0)) revert Errors.AsclepiusIPDistributionContract__ZeroRoyaltyModuleAddress();
-        if (upgradeableBeacon_ == address(0))
-            revert Errors.AsclepiusIPDistributionContract__ZeroUpgradeableBeaconAddress();
+        if (royaltyModule_ == address(0)) revert Errors.AscStaking__ZeroRoyaltyModuleAddress();
+        if (upgradeableBeacon_ == address(0)) revert Errors.AscStaking__ZeroUpgradeableBeaconAddress();
 
         ROYALTY_MODULE = IRoyaltyModule(royaltyModule_);
         UPGRADEABLE_BEACON = upgradeableBeacon_;
@@ -127,27 +122,22 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @param initData The initialization data {see IAsclepiusIPDistributionContract.InitData}
      */
     function initialize(address fractionalToken, InitData memory initData) external initializer {
-        if (fractionalToken == address(0)) revert Errors.AsclepiusIPDistributionContract__ZeroFractionalTokenAddress();
-        if (initData.admin == address(0)) revert Errors.AsclepiusIPDistributionContract__ZeroAdminAddress();
-        if (initData.ipId == address(0)) revert Errors.AsclepiusIPDistributionContract__ZeroIpIdAddress();
-        if (initData.protocolTreasury == address(0))
-            revert Errors.AsclepiusIPDistributionContract__ZeroProtocolTreasuryAddress();
-        if (initData.rewardToken == address(0)) revert Errors.AsclepiusIPDistributionContract__ZeroRewardTokenAddress();
-        if (initData.fractionalTokenAllocPoints == 0)
-            revert Errors.AsclepiusIPDistributionContract__ZeroFractionalTokenAllocPoints();
+        if (fractionalToken == address(0)) revert Errors.AscStaking__ZeroFractionalTokenAddress();
+        if (initData.admin == address(0)) revert Errors.AscStaking__ZeroAdminAddress();
+        if (initData.ipId == address(0)) revert Errors.AscStaking__ZeroIpIdAddress();
+        if (initData.rewardToken == address(0)) revert Errors.AscStaking__ZeroRewardTokenAddress();
+        if (initData.bioTokenAllocPoints == 0) revert Errors.AscStaking__ZeroBioTokenAllocPoints();
 
         __ReentrancyGuard_init();
 
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         $.admin = initData.admin;
         $.ipId = initData.ipId;
-        $.protocolTreasury = initData.protocolTreasury;
-        $.protocolTaxRate = initData.protocolTaxRate;
         $.rewardDistributionPeriod = initData.rewardDistributionPeriod;
         $.rewardToken = initData.rewardToken;
         $.stakingTokens.add(fractionalToken);
-        $.poolInfo[fractionalToken].allocPoints = initData.fractionalTokenAllocPoints;
-        $.totalAllocPoints += initData.fractionalTokenAllocPoints;
+        $.poolInfo[fractionalToken].allocPoints = initData.bioTokenAllocPoints;
+        $.totalAllocPoints += initData.bioTokenAllocPoints;
     }
 
     /**
@@ -156,11 +146,11 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @param amount The amount of staking tokens to deposit
      */
     function deposit(address stakingToken, uint256 amount) external nonReentrant {
-        if (stakingToken == address(0)) revert Errors.AsclepiusIPDistributionContract__ZeroStakingTokenAddress();
-        if (amount == 0) revert Errors.AsclepiusIPDistributionContract__ZeroDepositAmount();
+        if (stakingToken == address(0)) revert Errors.AscStaking__ZeroStakingTokenAddress();
+        if (amount == 0) revert Errors.AscStaking__ZeroDepositAmount();
 
         _updateStakerRewardInPool(stakingToken, msg.sender);
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         PoolInfo storage poolInfo = $.poolInfo[stakingToken];
 
         poolInfo.totalStakedBalance += amount;
@@ -177,15 +167,15 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @param amount The amount of staking tokens to withdraw
      */
     function withdraw(address stakingToken, uint256 amount) external nonReentrant {
-        if (stakingToken == address(0)) revert Errors.AsclepiusIPDistributionContract__ZeroStakingTokenAddress();
-        if (amount == 0) revert Errors.AsclepiusIPDistributionContract__ZeroWithdrawAmount();
+        if (stakingToken == address(0)) revert Errors.AscStaking__ZeroStakingTokenAddress();
+        if (amount == 0) revert Errors.AscStaking__ZeroWithdrawAmount();
 
         _updateStakerRewardInPool(stakingToken, msg.sender);
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         PoolInfo storage poolInfo = $.poolInfo[stakingToken];
 
         if (poolInfo.stakingBalance[msg.sender] < amount) {
-            revert Errors.AsclepiusIPDistributionContract__InsufficientStakedBalance(
+            revert Errors.AscStaking__InsufficientStakedBalance(
                 msg.sender,
                 stakingToken,
                 poolInfo.stakingBalance[msg.sender],
@@ -206,7 +196,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @param claimer The address of the staker
      */
     function claimAllRewards(address claimer) external nonReentrant {
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         uint256 length = $.stakingTokens.length();
         uint256 totalRewards;
         for (uint256 i = 0; i < length; i++) {
@@ -219,10 +209,8 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
 
         if (totalRewards > 0) {
             address rewardToken = $.rewardToken;
-            uint256 protocolTaxFee = (totalRewards * $.protocolTaxRate) / MAX_PERCENTAGE;
-            IERC20(rewardToken).safeTransfer($.protocolTreasury, protocolTaxFee);
-            IERC20(rewardToken).safeTransfer(claimer, totalRewards - protocolTaxFee);
-            emit RewardsClaimed(claimer, protocolTaxFee, totalRewards - protocolTaxFee);
+            IERC20(rewardToken).safeTransfer(claimer, totalRewards);
+            emit RewardsClaimed(claimer, totalRewards);
         }
     }
 
@@ -241,11 +229,11 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @param allocPoints The allocation points of the staking pool
      */
     function addStakingPool(address stakingToken, uint256 allocPoints) external onlyAdmin {
-        if (stakingToken == address(0)) revert Errors.AsclepiusIPDistributionContract__ZeroStakingTokenAddress();
+        if (stakingToken == address(0)) revert Errors.AscStaking__ZeroStakingTokenAddress();
 
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         if (!$.stakingTokens.add(stakingToken)) {
-            revert Errors.AsclepiusIPDistributionContract__StakingPoolAlreadyExists(stakingToken);
+            revert Errors.AscStaking__StakingPoolAlreadyExists(stakingToken);
         }
         $.poolInfo[stakingToken].allocPoints = allocPoints;
         $.totalAllocPoints += allocPoints;
@@ -258,8 +246,8 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @param allocPoints The allocation points of the staking pool
      */
     function setPoolAllocPoints(address stakingToken, uint256 allocPoints) external onlyAdmin {
-        if (stakingToken == address(0)) revert Errors.AsclepiusIPDistributionContract__ZeroStakingTokenAddress();
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        if (stakingToken == address(0)) revert Errors.AscStaking__ZeroStakingTokenAddress();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         uint256 oldAllocPoints = $.poolInfo[stakingToken].allocPoints;
         $.poolInfo[stakingToken].allocPoints = allocPoints;
         $.totalAllocPoints = $.totalAllocPoints - oldAllocPoints + allocPoints;
@@ -271,31 +259,11 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @param numberOfBlocks The number of blocks during which the all rewards are distributed
      */
     function setRewardDistributionPeriod(uint256 numberOfBlocks) external onlyAdmin {
-        if (numberOfBlocks == 0) revert Errors.AsclepiusIPDistributionContract__ZeroRewardDistributionPeriod();
+        if (numberOfBlocks == 0) revert Errors.AscStaking__ZeroRewardDistributionPeriod();
         // will be applied to the next distribution period
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         $.rewardDistributionPeriod = numberOfBlocks;
         emit RewardDistributionPeriodUpdated($.rewardDistributionPeriod, numberOfBlocks);
-    }
-
-    /**
-     * @dev Sets the protocol treasury
-     * @param protocolTreasury The address of the protocol treasury
-     */
-    function setProtocolTreasury(address protocolTreasury) external onlyAdmin {
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
-        $.protocolTreasury = protocolTreasury;
-        emit ProtocolTreasuryUpdated($.protocolTreasury, protocolTreasury);
-    }
-
-    /**
-     * @dev Sets the protocol tax rate
-     * @param protocolTaxRate_ The protocol tax rate charged on the rewards
-     */
-    function setProtocolTaxRate(uint32 protocolTaxRate_) external onlyAdmin {
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
-        $.protocolTaxRate = protocolTaxRate_;
-        emit ProtocolTaxRateUpdated($.protocolTaxRate, protocolTaxRate_);
     }
 
     /**
@@ -303,7 +271,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return totalRewards The total available rewards
      */
     function getAvailableRewards() external view returns (uint256 totalRewards) {
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         for (uint256 i = 0; i < $.stakingTokens.length(); i++) {
             PoolInfo storage poolInfo = $.poolInfo[$.stakingTokens.at(i)];
             totalRewards += poolInfo.remainingRewardAmount;
@@ -315,7 +283,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return admin The address of the admin
      */
     function getAdmin() external view returns (address) {
-        return _getAsclepiusIPDistributionContractStorage().admin;
+        return _getAscStakingStorage().admin;
     }
 
     /**
@@ -323,23 +291,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return ipId The address of the IP
      */
     function getIpId() external view returns (address) {
-        return _getAsclepiusIPDistributionContractStorage().ipId;
-    }
-
-    /**
-     * @dev Gets the protocol treasury of the contract
-     * @return protocolTreasury The address of the protocol treasury
-     */
-    function getProtocolTreasury() external view returns (address) {
-        return _getAsclepiusIPDistributionContractStorage().protocolTreasury;
-    }
-
-    /**
-     * @dev Gets the protocol tax rate
-     * @return protocolTaxRate The protocol tax rate
-     */
-    function getProtocolTaxRate() external view returns (uint32) {
-        return _getAsclepiusIPDistributionContractStorage().protocolTaxRate;
+        return _getAscStakingStorage().ipId;
     }
 
     /**
@@ -347,7 +299,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return rewardDistributionPeriod The number of blocks during which the all rewards are distributed
      */
     function getRewardDistributionPeriod() external view returns (uint256) {
-        return _getAsclepiusIPDistributionContractStorage().rewardDistributionPeriod;
+        return _getAscStakingStorage().rewardDistributionPeriod;
     }
 
     /**
@@ -355,7 +307,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return currentDistributionEndBlock The block number at which the current distribution period ends
      */
     function getCurrentDistributionEndBlock() external view returns (uint256) {
-        return _getAsclepiusIPDistributionContractStorage().currentDistributionEndBlock;
+        return _getAscStakingStorage().currentDistributionEndBlock;
     }
 
     /**
@@ -364,7 +316,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return rewardPerBlock The reward per block
      */
     function getRewardPerBlock(address stakingToken) external view returns (uint256) {
-        return _getAsclepiusIPDistributionContractStorage().poolInfo[stakingToken].rewardPerBlock;
+        return _getAscStakingStorage().poolInfo[stakingToken].rewardPerBlock;
     }
 
     /**
@@ -372,7 +324,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return rewardToken The address of the reward token
      */
     function getRewardToken() external view returns (address) {
-        return _getAsclepiusIPDistributionContractStorage().rewardToken;
+        return _getAscStakingStorage().rewardToken;
     }
 
     /**
@@ -380,7 +332,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return totalAllocPoints The total allocation points
      */
     function getTotalAllocPoints() external view returns (uint256) {
-        return _getAsclepiusIPDistributionContractStorage().totalAllocPoints;
+        return _getAscStakingStorage().totalAllocPoints;
     }
 
     /**
@@ -389,7 +341,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return allocPoints The allocation points of the staking pool
      */
     function getPoolAllocPoints(address stakingToken) external view returns (uint256) {
-        return _getAsclepiusIPDistributionContractStorage().poolInfo[stakingToken].allocPoints;
+        return _getAscStakingStorage().poolInfo[stakingToken].allocPoints;
     }
 
     /**
@@ -399,7 +351,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return stakedBalance The staked balance of the staker
      */
     function getUserStakedBalance(address stakingToken, address staker) external view returns (uint256) {
-        return _getAsclepiusIPDistributionContractStorage().poolInfo[stakingToken].stakingBalance[staker];
+        return _getAscStakingStorage().poolInfo[stakingToken].stakingBalance[staker];
     }
 
     /**
@@ -408,7 +360,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return totalStakedBalance The total staked balance of the staking pool
      */
     function getPoolTotalStakedBalance(address stakingToken) external view returns (uint256) {
-        return _getAsclepiusIPDistributionContractStorage().poolInfo[stakingToken].totalStakedBalance;
+        return _getAscStakingStorage().poolInfo[stakingToken].totalStakedBalance;
     }
 
     /**
@@ -418,7 +370,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @return pendingRewards The pending rewards of the staker
      */
     function getPendingRewardsForStaker(address stakingToken, address staker) external view returns (uint256) {
-        return _getAsclepiusIPDistributionContractStorage().poolInfo[stakingToken].pendingRewards[staker];
+        return _getAscStakingStorage().poolInfo[stakingToken].pendingRewards[staker];
     }
 
     /**
@@ -435,7 +387,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * @param staker The address of the staker
      */
     function _updateStakerRewardInPool(address stakingToken, address staker) private {
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         PoolInfo storage poolInfo = $.poolInfo[stakingToken];
 
         uint256 endBlock = block.number > $.currentDistributionEndBlock ? $.currentDistributionEndBlock : block.number;
@@ -476,10 +428,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
         pool.remainingRewardAmount -= blockRewards;
         pool.lastRewardUpdateBlock = endBlock;
 
-        if (
-            endBlock == _getAsclepiusIPDistributionContractStorage().currentDistributionEndBlock ||
-            pool.remainingRewardAmount == 0
-        ) {
+        if (endBlock == _getAscStakingStorage().currentDistributionEndBlock || pool.remainingRewardAmount == 0) {
             pool.rewardPerBlock = 0;
         }
     }
@@ -490,11 +439,10 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
      * If not over, collected royalties will be emitted in the remaining distribution period.
      */
     function _collectRoyalties() private {
-        AsclepiusIPDistributionContractStorage storage $ = _getAsclepiusIPDistributionContractStorage();
+        AscStakingStorage storage $ = _getAscStakingStorage();
         address ipId = $.ipId;
         IIpRoyaltyVault vault = IIpRoyaltyVault(ROYALTY_MODULE.ipRoyaltyVaults(ipId));
-        if (address(vault) == address(0))
-            revert Errors.AsclepiusIPDistributionContract__IpRoyaltyVaultNotDeployed(ipId);
+        if (address(vault) == address(0)) revert Errors.AscStaking__IpRoyaltyVaultNotDeployed(ipId);
 
         uint256 amount = vault.claimRevenueOnBehalf(address(this), $.rewardToken);
         uint256 length = $.stakingTokens.length();
@@ -502,7 +450,7 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
         uint256 endBlock = $.currentDistributionEndBlock;
 
         if ($.currentDistributionEndBlock == 0 && $.rewardDistributionPeriod == 0) {
-            revert Errors.AsclepiusIPDistributionContract__ZeroRewardDistributionPeriod();
+            revert Errors.AscStaking__ZeroRewardDistributionPeriod();
         }
 
         for (uint256 i = 0; i < length; i++) {
@@ -534,14 +482,10 @@ contract AsclepiusIPDistributionContract is IAsclepiusIPDistributionContract, Re
         emit RoyaltiesCollected(ipId, amount, endBlock);
     }
 
-    /// @dev Returns the storage struct of AsclepiusIPDistributionContract.
-    function _getAsclepiusIPDistributionContractStorage()
-        private
-        pure
-        returns (AsclepiusIPDistributionContractStorage storage $)
-    {
+    /// @dev Returns the storage struct of AscStaking.
+    function _getAscStakingStorage() private pure returns (AscStakingStorage storage $) {
         assembly {
-            $.slot := AsclepiusIPDistributionContractStorageLocation
+            $.slot := AscStakingStorageLocation
         }
     }
 }
