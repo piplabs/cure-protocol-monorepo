@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.26;
 
+import { IAscCurate } from "./IAscCurate.sol";
+
 /**
  * @title IAscCurateFactory
  * @notice Interface for the IAscCurateFactory contract
@@ -13,52 +15,30 @@ interface IAscCurateFactory {
     event CurateDeployed(address indexed curate);
 
     /**
-     * @notice Emitted when the vault template is updated
-     * @param oldVault The address of the old vault template
-     * @param newVault The address of the new vault template
+     * @notice Emitted when the curate template is updated
+     * @param oldCurateTemplate The address of the old curate template
+     * @param newCurateTemplate The address of the new curate template
      */
-    event VaultTemplateUpdated(address indexed oldVault, address indexed newVault);
+    event CurateTemplateUpdated(address indexed oldCurateTemplate, address indexed newCurateTemplate);
 
     /**
      * @notice Initializes the factory
      * @param admin_ The address of the admin
-     * @param vaultTemplate_ The address of the vault template
+     * @param curateTemplate_ The address of the curate template
      */
-    function initialize(address admin_, address vaultTemplate_) external;
+    function initialize(address admin_, address curateTemplate_) external;
 
     /**
      * @notice Launches a new curate instance
-     * @param admin The address of the admin
-     * @param ipId The IP ID address
-     * @param ipNft The address of the IP NFT
-     * @param ipNftTokenId The token ID of the IP NFT
-     * @param expiredTime The expiration time
-     * @param fundReceiver The address of the fund receiver
-     * @param bioName The name of the bio project
-     * @param bioTokenName The name of the bio token
-     * @param bioTokenSymbol The symbol of the bio token
-     * @param minimalIpTokenForLaunch The minimal IP token amount required for launch
-     * @param rewardToken The address of the reward token
+     * @param initData The initialization data for the AscCurate {see IAscCurate.CurateInitData}
      */
-    function launchCurate(
-        address admin,
-        address ipId,
-        address ipNft,
-        uint256 ipNftTokenId,
-        uint256 expiredTime,
-        address fundReceiver,
-        string memory bioName,
-        string memory bioTokenName,
-        string memory bioTokenSymbol,
-        uint256 minimalIpTokenForLaunch,
-        address rewardToken
-    ) external returns (address curate);
+    function launchCurate(IAscCurate.CurateInitData memory initData) external returns (address curate);
 
     /**
-     * @notice Sets the vault template
-     * @param newVault The address of the new vault template
+     * @notice Sets the curate template
+     * @param newCurateTemplate The address of the new curate template
      */
-    function setVaultTemplate(address newVault) external;
+    function setCurateTemplate(address newCurateTemplate) external;
 
     /**
      * @notice Returns the address of the admin
@@ -67,8 +47,8 @@ interface IAscCurateFactory {
     function getAdmin() external view returns (address);
 
     /**
-     * @notice Returns the address of the vault template
-     * @return vaultTemplate The address of the vault template
+     * @notice Returns the address of the curate template
+     * @return curateTemplate The address of the curate template
      */
-    function getVaultTemplate() external view returns (address);
+    function getCurateTemplate() external view returns (address);
 }

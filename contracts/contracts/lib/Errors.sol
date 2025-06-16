@@ -92,16 +92,16 @@ library Errors {
     error AscCurate__CallerNotAdmin(address caller, address admin);
 
     /**
-     * @notice Thrown when the vault is not open
-     * @param currentState The current state of the vault
+     * @notice Thrown when the curate is not open
+     * @param currentState The current state of the curate
      */
-    error AscCurate__VaultNotOpen(IAscCurate.State currentState);
+    error AscCurate__CurateNotOpen(IAscCurate.State currentState);
 
     /**
-     * @notice Thrown when the vault is not canceled
-     * @param currentState The current state of the vault
+     * @notice Thrown when the curate is not canceled
+     * @param currentState The current state of the curate
      */
-    error AscCurate__VaultNotCanceled(IAscCurate.State currentState);
+    error AscCurate__CurateNotCanceled(IAscCurate.State currentState);
 
     /**
      * @notice Thrown when there is no refundable deposit
@@ -110,10 +110,10 @@ library Errors {
     error AscCurate__NoRefundableDeposit(address claimer);
 
     /**
-     * @notice Thrown when the vault is not closed
-     * @param currentState The current state of the vault
+     * @notice Thrown when the curate is not closed
+     * @param currentState The current state of the curate
      */
-    error AscCurate__VaultNotClosed(IAscCurate.State currentState);
+    error AscCurate__CurateNotClosed(IAscCurate.State currentState);
 
     /**
      * @notice Thrown when the deposit amount doesn't match the ETH sent
@@ -190,9 +190,9 @@ library Errors {
     error AscCurateFactory__ZeroAdminAddress();
 
     /**
-     * @notice Thrown when the vault template address is zero
+     * @notice Thrown when the curate template address is zero
      */
-    error AscCurateFactory__ZeroVaultTemplateAddress();
+    error AscCurateFactory__ZeroCurateTemplateAddress();
 
     ////////////////////////////////////////////////////////////////////////////
     //                           AscStaking Errors                         //

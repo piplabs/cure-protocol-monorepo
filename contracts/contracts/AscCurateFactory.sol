@@ -41,88 +41,56 @@ contract AscCurateFactory is IAscCurateFactory, UUPSUpgradeable {
     /**
      * @notice Initializes the factory
      * @param admin_ The address of the admin
-     * @param vaultTemplate_ The address of the vault template
+     * @param curateTemplate_ The address of the curate template
      */
-    function initialize(address admin_, address vaultTemplate_) external initializer {
+    function initialize(address admin_, address curateTemplate_) external initializer {
         if (admin_ == address(0)) revert Errors.AscCurateFactory__ZeroAdminAddress();
-        if (vaultTemplate_ == address(0)) revert Errors.AscCurateFactory__ZeroVaultTemplateAddress();
+        if (curateTemplate_ == address(0)) revert Errors.AscCurateFactory__ZeroCurateTemplateAddress();
 
         __UUPSUpgradeable_init();
 
         AscCurateFactoryStorage storage $ = _getAscCurateFactoryStorage();
         $.admin = admin_;
-        $.curateTemplate = vaultTemplate_;
+        $.curateTemplate = curateTemplate_;
     }
 
     /**
      * @notice Launches a new curate instance
-     * @param admin The address of the admin
-     * @param ipId The IP ID address
-     * @param expiredTime The expiration time
-     * @param fundReceiver The address of the fund receiver
-     * @param bioName The name of the bio project
-     * @param bioTokenName The name of the bio token
-     * @param bioTokenSymbol The symbol of the bio token
-     * @param minimalIpTokenForLaunch The minimal IP token amount required for launch
+     * @param initData The initialization data for the AscCurate {see IAscCurate.CurateInitData}
      */
-    function launchCurate(
-        address admin,
-        address ipId,
-        address ipNft,
-        uint256 ipNftTokenId,
-        uint256 expiredTime,
-        address fundReceiver,
-        string memory bioName,
-        string memory bioTokenName,
-        string memory bioTokenSymbol,
-        uint256 minimalIpTokenForLaunch,
-        address rewardToken
-    ) external returns (address curate) {
+    function launchCurate(IAscCurate.CurateInitData memory initData) external returns (address curate) {
         // skip zero address checks since they are checked in the AscCurate initializer
         curate = address(
             new BeaconProxy(
-                _getAscCurateFactoryStorage().curateTemplate,
-                abi.encodeWithSelector(
-                    IAscCurate.initialize.selector,
-                    admin, // admin
-                    ipId,
-                    ipNft,
-                    ipNftTokenId,
-                    expiredTime,
-                    fundReceiver,
-                    bioName,
-                    bioTokenName,
-                    bioTokenSymbol,
-                    minimalIpTokenForLaunch,
-                    rewardToken
-                )
+                (IAscCurate(_getAscCurateFactoryStorage().curateTemplate)).getUpgradeableBeacon(),
+                abi.encodeWithSelector(IAscCurate.initialize.selector, initData)
             )
         );
 
-        IERC721(ipNft).safeTransferFrom(msg.sender, curate, ipNftTokenId);
+        IERC721(initData.ipNft).safeTransferFrom(msg.sender, curate, initData.ipNftTokenId);
 
         emit CurateDeployed(curate);
     }
 
     /**
-     * @notice Sets the vault template
-     * @param newVault The address of the new vault template
+     * @notice Sets the curate template
+     * @param newCurateTemplate The address of the new curate template
      */
-    function setVaultTemplate(address newVault) external onlyAdmin {
-        if (newVault == address(0)) revert Errors.AscCurateFactory__ZeroVaultTemplateAddress();
+    function setCurateTemplate(address newCurateTemplate) external onlyAdmin {
+        if (newCurateTemplate == address(0)) revert Errors.AscCurateFactory__ZeroCurateTemplateAddress();
 
         AscCurateFactoryStorage storage $ = _getAscCurateFactoryStorage();
-        address oldVault = $.curateTemplate;
-        $.curateTemplate = newVault;
+        address oldCurateTemplate = $.curateTemplate;
+        $.curateTemplate = newCurateTemplate;
 
-        emit VaultTemplateUpdated(oldVault, newVault);
+        emit CurateTemplateUpdated(oldCurateTemplate, newCurateTemplate);
     }
 
     /**
-     * @notice Returns the address of the vault template
-     * @return vaultTemplate The address of the vault template
+     * @notice Returns the address of the curate template
+     * @return curateTemplate The address of the curate template
      */
-    function getVaultTemplate() external view returns (address) {
+    function getCurateTemplate() external view returns (address) {
         return _getAscCurateFactoryStorage().curateTemplate;
     }
 

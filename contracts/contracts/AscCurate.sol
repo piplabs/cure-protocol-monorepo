@@ -158,14 +158,14 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
     }
 
     /**
-     * @notice Deposits $IP to the vault, only when the vault is Open
+     * @notice Deposits $IP to the curate, only when the curate is Open
      * @param amount The amount of the token to deposit
      */
     function deposit(uint256 amount) external payable nonReentrant {
         _checkAndUpdateState();
         if (amount != msg.value) revert Errors.AscCurate__DepositAmountMismatch(msg.sender, amount, msg.value);
         AscCurateStorage storage $ = _getAscCurateStorage();
-        if ($.state != State.Open) revert Errors.AscCurate__VaultNotOpen($.state);
+        if ($.state != State.Open) revert Errors.AscCurate__CurateNotOpen($.state);
 
         $.deposits[msg.sender] += amount;
         $.totalDeposits += amount;
@@ -174,13 +174,13 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
     }
 
     /**
-     * @notice Depositor claims refund, only when the vault is Canceled
+     * @notice Depositor claims refund, only when the curate is Canceled
      * @return amount The amount of IP token claimed
      */
     function claimRefund() external nonReentrant returns (uint256 amount) {
         AscCurateStorage storage $ = _getAscCurateStorage();
         State state = $.state;
-        if (state != State.Canceled) revert Errors.AscCurate__VaultNotCanceled(state);
+        if (state != State.Canceled) revert Errors.AscCurate__CurateNotCanceled(state);
         if ($.deposits[msg.sender] == 0) revert Errors.AscCurate__NoRefundableDeposit(msg.sender);
 
         amount = $.deposits[msg.sender];
@@ -194,14 +194,14 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
     }
 
     /**
-     * @notice Admin withdraws all funds to the fund receiver, only when the vault is Closed
+     * @notice Admin withdraws all funds to the fund receiver, only when the curate is Closed
      * @return withdrawnAmount The amount of IP token withdrawn
      */
     function withdraw() external onlyAdmin returns (uint256 withdrawnAmount) {
         _checkAndUpdateState();
         AscCurateStorage storage $ = _getAscCurateStorage();
         State state = $.state;
-        if (state != State.Closed) revert Errors.AscCurate__VaultNotClosed(state);
+        if (state != State.Closed) revert Errors.AscCurate__CurateNotClosed(state);
 
         withdrawnAmount = $.totalDeposits;
         $.totalDeposits = 0;
@@ -213,14 +213,14 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
     }
 
     /**
-     * @notice User claims the bio tokens, only when the vault is Closed
+     * @notice User claims the bio tokens, only when the curate is Closed
      * @param claimer The address of the claimer
      * @return bioToken The address of the bio token
      * @return amountClaimed The amount of the bio token claimed
      */
     function claimBioTokens(address claimer) external returns (address bioToken, uint256 amountClaimed) {
         AscCurateStorage storage $ = _getAscCurateStorage();
-        if ($.state != State.Closed) revert Errors.AscCurate__VaultNotClosed($.state);
+        if ($.state != State.Closed) revert Errors.AscCurate__CurateNotClosed($.state);
         if ($.deposits[claimer] == 0) revert Errors.AscCurate__ClaimerNotEligible(claimer);
         if ($.bioTokenClaimed[claimer]) revert Errors.AscCurate__ClaimerAlreadyClaimed(claimer);
 
@@ -238,30 +238,30 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
     }
 
     /**
-     * @notice Admin cancels the vault, only when the vault is Open
+     * @notice Admin cancels the curate, only when the curate is Open
      */
     function cancel() external onlyAdmin {
         AscCurateStorage storage $ = _getAscCurateStorage();
-        if ($.state != State.Open) revert Errors.AscCurate__VaultNotOpen($.state);
+        if ($.state != State.Open) revert Errors.AscCurate__CurateNotOpen($.state);
         $.state = State.Canceled;
 
-        emit VaultCanceled();
+        emit CurateCanceled();
     }
 
     /**
-     * @notice Admin closes the vault, only when the vault is Open
+     * @notice Admin closes the curate
      */
     function close() external onlyAdmin {
         AscCurateStorage storage $ = _getAscCurateStorage();
         State state = $.state;
-        if (state != State.Open) revert Errors.AscCurate__VaultNotOpen(state);
+        if (state != State.Open) revert Errors.AscCurate__CurateNotOpen(state);
         uint256 totalDeposits = $.totalDeposits;
         uint256 minimalIpTokenForLaunch = $.minimalIpTokenForLaunch;
         if (totalDeposits < minimalIpTokenForLaunch)
             revert Errors.AscCurate__TotalDepositsLessThanMinimumTotalDeposits(totalDeposits, minimalIpTokenForLaunch);
         $.state = State.Closed;
 
-        emit VaultClosed();
+        emit CurateClosed();
     }
 
     /**
@@ -292,7 +292,7 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         _checkAndUpdateState();
         AscCurateStorage storage $ = _getAscCurateStorage();
         State state = $.state;
-        if (state != State.Closed) revert Errors.AscCurate__VaultNotClosed(state);
+        if (state != State.Closed) revert Errors.AscCurate__CurateNotClosed(state);
 
         bioToken = _deployBioToken($.ipId, bioTokenTemplate);
         stakingContract = _deployStakingContract(stakingContractTemplate, bioToken, initData);
@@ -310,13 +310,13 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
     }
 
     /**
-     * @notice Admin withdraws the IP NFT to the recipient, only when the vault is Canceled
+     * @notice Admin withdraws the IP NFT to the recipient, only when the curate is Canceled
      * @param recipient The address of the recipient
      */
     function withdrawIp(address recipient) external onlyAdmin {
         AscCurateStorage storage $ = _getAscCurateStorage();
         State state = $.state;
-        if (state != State.Canceled) revert Errors.AscCurate__VaultNotCanceled(state);
+        if (state != State.Canceled) revert Errors.AscCurate__CurateNotCanceled(state);
 
         IERC721($.ipNft).safeTransferFrom(address(this), recipient, $.ipNftTokenId);
 
@@ -324,16 +324,16 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
     }
 
     /**
-     * @notice Returns the state of the vault
-     * @return state The state of the vault
+     * @notice Returns the state of the curate
+     * @return state The state of the curate
      */
     function getState() external view returns (State) {
         return _getAscCurateStorage().state;
     }
 
     /**
-     * @notice Returns the address of the vault admin
-     * @return admin The address of the vault admin
+     * @notice Returns the address of the curate admin
+     * @return admin The address of the curate admin
      */
     function getAdmin() external view returns (address) {
         return _getAscCurateStorage().admin;
@@ -365,8 +365,8 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
     }
 
     /**
-     * @notice Returns the expiration time of the vault
-     * @return expirationTime The expiration time of the vault
+     * @notice Returns the expiration time of the curate
+     * @return expirationTime The expiration time of the curate
      */
     function getExpirationTime() external view returns (uint256) {
         return _getAscCurateStorage().expirationTime;
@@ -495,10 +495,10 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         if ($.state == State.Open && $.expirationTime != 0 && block.timestamp >= $.expirationTime) {
             if ($.totalDeposits < $.minimalIpTokenForLaunch) {
                 $.state = State.Canceled;
-                emit VaultCanceled();
+                emit CurateCanceled();
             } else {
                 $.state = State.Closed;
-                emit VaultClosed();
+                emit CurateClosed();
             }
         }
     }

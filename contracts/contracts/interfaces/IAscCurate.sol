@@ -80,14 +80,14 @@ interface IAscCurate {
     event AdminRoleTransferred(address indexed previousAdmin, address indexed newAdmin);
 
     /**
-     * @notice Emitted when the vault is canceled
+     * @notice Emitted when the curate is canceled
      */
-    event VaultCanceled();
+    event CurateCanceled();
 
     /**
-     * @notice Emitted when the vault is closed
+     * @notice Emitted when the curate is closed
      */
-    event VaultClosed();
+    event CurateClosed();
 
     /**
      * @notice Emitted when the project is launched
