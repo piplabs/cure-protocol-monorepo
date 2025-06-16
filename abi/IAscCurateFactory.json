@@ -1,47 +1,113 @@
 [
   {
     "type": "function",
+    "name": "getAdmin",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getCurateTemplate",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "inputs": [
+      {
+        "name": "admin_",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "curateTemplate_",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "launchCurate",
     "inputs": [
       {
-        "name": "ipId",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "expiredTime",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "fundReceiver",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "bioName",
-        "type": "string",
-        "internalType": "string"
-      },
-      {
-        "name": "bioTokenName",
-        "type": "string",
-        "internalType": "string"
-      },
-      {
-        "name": "bioTokenSymbol",
-        "type": "string",
-        "internalType": "string"
-      },
-      {
-        "name": "minimalIpTokensForLaunch",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "ipToBioTokenRatio",
-        "type": "uint256",
-        "internalType": "uint256"
+        "name": "initData",
+        "type": "tuple",
+        "internalType": "struct IAscCurate.CurateInitData",
+        "components": [
+          {
+            "name": "admin",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "ipId",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "ipNft",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "ipNftTokenId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "expirationTime",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "fundReceiver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "bioName",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "bioTokenName",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "bioTokenSymbol",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "minimalIpTokenForLaunch",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "rewardToken",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
       }
     ],
     "outputs": [
@@ -52,5 +118,50 @@
       }
     ],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setCurateTemplate",
+    "inputs": [
+      {
+        "name": "newCurateTemplate",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "CurateDeployed",
+    "inputs": [
+      {
+        "name": "curate",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CurateTemplateUpdated",
+    "inputs": [
+      {
+        "name": "oldCurateTemplate",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "newCurateTemplate",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
   }
 ]
