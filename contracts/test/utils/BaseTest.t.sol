@@ -1,223 +1,206 @@
-// // SPDX-License-Identifier: UNLICENSED
-// pragma solidity 0.8.26;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.8.26;
 
-// import { Test } from "forge-std/Test.sol";
-// import { IERC20 } from "@openzeppelin/contracts/interfaces/IERC20.sol";
-// import { BeaconProxy } from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-// import { UpgradeableBeacon } from "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
-// import { BaseTest as PeripheryBaseTest } from "@storyprotocol/periphery/test/utils/BaseTest.t.sol";
-// import { TestProxyHelper } from "@storyprotocol/test/utils/TestProxyHelper.sol";
-// import { WorkflowStructs } from "@storyprotocol/periphery/contracts/lib/WorkflowStructs.sol";
-// import { PILFlavors } from "@storyprotocol/core/lib/PILFlavors.sol";
-// import { Licensing } from "@storyprotocol/core/lib/Licensing.sol";
-// import { MockERC20 } from "@storyprotocol/periphery/test/mocks/MockERC20.sol";
+import { Test } from "forge-std/Test.sol";
+import { IERC20 } from "@openzeppelin/contracts/interfaces/IERC20.sol";
+import { BeaconProxy } from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import { UpgradeableBeacon } from "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
+import { BaseTest as PeripheryBaseTest } from "@storyprotocol/periphery/test/utils/BaseTest.t.sol";
+import { TestProxyHelper } from "@storyprotocol/test/utils/TestProxyHelper.sol";
+import { WorkflowStructs } from "@storyprotocol/periphery/contracts/lib/WorkflowStructs.sol";
+import { PILFlavors } from "@storyprotocol/core/lib/PILFlavors.sol";
+import { Licensing } from "@storyprotocol/core/lib/Licensing.sol";
+import { MockERC20 } from "@storyprotocol/periphery/test/mocks/MockERC20.sol";
+import { OwnableERC20 } from "@storyprotocol/periphery/contracts/modules/tokenizer/OwnableERC20.sol";
 
-// import { AsclepiusIPVault } from "../../contracts/AsclepiusIPVault.sol";
-// import { AsclepiusIPVaultFactory } from "../../contracts/AsclepiusIPVaultFactory.sol";
-// import { AsclepiusIPDistributionContract } from "../../contracts/AsclepiusIPDistributionContract.sol";
-// import { IAsclepiusIPDistributionContract } from "../../contracts/interfaces/IAsclepiusIPDistributionContract.sol";
+import { AscCurate } from "../../contracts/AscCurate.sol";
+import { AscCurateFactory } from "../../contracts/AscCurateFactory.sol";
+import { AscStaking } from "../../contracts/AscStaking.sol";
+import { IAscCurate } from "../../contracts/interfaces/IAscCurate.sol";
+import { IAscStaking } from "../../contracts/interfaces/IAscStaking.sol";
 
-// contract BaseTest is Test, PeripheryBaseTest {
-//     UpgradeableBeacon internal asclepiusIPVaultBeacon;
-//     AsclepiusIPVaultFactory internal asclepiusIPVaultFactory;
-//     AsclepiusIPVault internal asclepiusIPVaultTemplate;
-//     AsclepiusIPVault internal asclepiusIPVaultInstance;
-//     UpgradeableBeacon internal asclepiusIPDistributionBeacon;
-//     AsclepiusIPDistributionContract internal asclepiusIPDistributionContractTemplate;
-//     AsclepiusIPDistributionContract internal asclepiusIPDistributionContract;
+contract BaseTest is Test, PeripheryBaseTest {
+    UpgradeableBeacon internal ascCurateBeacon;
+    AscCurateFactory internal ascCurateFactory;
+    AscCurate internal ascCurateTemplate;
+    UpgradeableBeacon internal ascStakingBeacon;
+    AscStaking internal ascStakingTemplate;
+    
+    // Bio token template
+    OwnableERC20 internal bioTokenTemplate;
 
-//     /// @dev Distribution contract test params
-//     address internal testIpId;
-//     MockERC20 internal rewardToken;
-//     MockERC20 internal stakingTokenA;
-//     MockERC20 internal stakingTokenB;
-//     address[] internal stakingTokens;
-//     uint256 internal allocPointsA;
-//     uint256 internal allocPointsB;
-//     uint256[] internal allocPoints;
-//     address internal testProtocolTreasury;
-//     uint32 internal testProtocolTaxRate;
-//     uint256 internal testRewardDistributionPeriod;
+    /// @dev Staking contract test params
+    address internal testIpId;
+    uint256 internal testIpNftTokenId;
+    MockERC20 internal rewardToken;
+    uint256 internal testRewardDistributionPeriod;
+    uint256 internal testBioTokenAllocPoints;
 
-//     /// @dev AsclepiusIPVault test params
-//     uint256 internal testExpiredTime;
-//     address internal testFundReceiver;
-//     string internal testRwipName;
-//     string internal testFractionalTokenName;
-//     string internal testFractionalTokenSymbol;
-//     uint256 internal testTotalSupplyOfFractionalToken;
-//     MockERC20 internal mockUsdc;
-//     WorkflowStructs.LicenseTermsData[] internal licenseTerms;
+    /// @dev AscCurate test params
+    uint256 internal testExpirationTime;
+    address internal testFundReceiver;
+    string internal testBioName;
+    string internal testBioTokenName;
+    string internal testBioTokenSymbol;
+    uint256 internal testMinimalIpTokenForLaunch;
+    uint256 internal testTotalBioTokenSupply;
+    WorkflowStructs.LicenseTermsData[] internal licenseTerms;
 
-//     function setUp() public virtual override {
-//         super.setUp();
-//         _setUpTestParams();
-//         _deployAsclepiusContracts();
-//         _createAsclepiusIPVaultInstance();
-//     }
+    function setUp() public virtual override {
+        super.setUp();
+        _setUpTestParams();
+        _deployAsclepiusContracts();
+    }
 
-//     function _setUpTestParams() internal virtual {
-//         stakingTokenA = new MockERC20("StakingTokenA", "STAKINGA");
-//         stakingTokenB = new MockERC20("StakingTokenB", "STAKINGB");
-//         rewardToken = mockToken;
-//         allocPointsA = 80;
-//         allocPointsB = 20;
-//         testProtocolTreasury = address(0x1234567890);
-//         testProtocolTaxRate = 2_000_000; // 2%
-//         testRewardDistributionPeriod = 1_000_000; // 1 million blocks
+    function _setUpTestParams() internal virtual {
+        rewardToken = mockToken;
+        testRewardDistributionPeriod = 1_000_000; // 1 million blocks
+        testBioTokenAllocPoints = 100;
 
-//         licenseTerms.push(
-//             WorkflowStructs.LicenseTermsData({
-//                 terms: PILFlavors.commercialRemix({
-//                     mintingFee: 100 * 10 ** MockERC20(rewardToken).decimals(), // 100 reward tokens
-//                     commercialRevShare: 10_000_000, // 10%
-//                     royaltyPolicy: royaltyPolicyLAPAddr,
-//                     currencyToken: address(rewardToken)
-//                 }),
-//                 licensingConfig: Licensing.LicensingConfig({
-//                     isSet: false,
-//                     mintingFee: 0,
-//                     licensingHook: address(0),
-//                     hookData: "",
-//                     commercialRevShare: 0,
-//                     disabled: false,
-//                     expectMinimumGroupRewardShare: 0,
-//                     expectGroupRewardPool: address(0)
-//                 })
-//             })
-//         );
+        licenseTerms.push(
+            WorkflowStructs.LicenseTermsData({
+                terms: PILFlavors.commercialRemix({
+                    mintingFee: 100 * 10 ** MockERC20(rewardToken).decimals(), // 100 reward tokens
+                    commercialRevShare: 10_000_000, // 10%
+                    royaltyPolicy: royaltyPolicyLAPAddr,
+                    currencyToken: address(rewardToken)
+                }),
+                licensingConfig: Licensing.LicensingConfig({
+                    isSet: false,
+                    mintingFee: 0,
+                    licensingHook: address(0),
+                    hookData: "",
+                    commercialRevShare: 0,
+                    disabled: false,
+                    expectMinimumGroupRewardShare: 0,
+                    expectGroupRewardPool: address(0)
+                })
+            })
+        );
 
-//         WorkflowStructs.RoyaltyShare[] memory royaltyShares = new WorkflowStructs.RoyaltyShare[](1);
-//         royaltyShares[0] = WorkflowStructs.RoyaltyShare({
-//             recipient: u.admin,
-//             percentage: 100_000_000 // 100%
-//         });
+        WorkflowStructs.RoyaltyShare[] memory royaltyShares = new WorkflowStructs.RoyaltyShare[](1);
+        royaltyShares[0] = WorkflowStructs.RoyaltyShare({
+            recipient: u.admin,
+            percentage: 100_000_000 // 100%
+        });
 
-//         vm.startPrank(u.admin);
-//         mockToken.mint(u.admin, 1 * 10 ** mockToken.decimals());
-//         mockToken.approve(address(spgNftPublic), 1 * 10 ** mockToken.decimals());
-//         (testIpId, , ) = royaltyTokenDistributionWorkflows
-//             .mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens({
-//                 spgNftContract: address(spgNftPublic),
-//                 recipient: u.admin,
-//                 ipMetadata: ipMetadataDefault,
-//                 licenseTermsData: licenseTerms,
-//                 royaltyShares: royaltyShares,
-//                 allowDuplicates: true
-//             });
-//         vm.stopPrank();
+        vm.startPrank(u.admin);
+        mockToken.mint(u.admin, 1 * 10 ** mockToken.decimals());
+        mockToken.approve(address(spgNftPublic), 1 * 10 ** mockToken.decimals());
+        (testIpId, testIpNftTokenId, ) = royaltyTokenDistributionWorkflows
+            .mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens({
+                spgNftContract: address(spgNftPublic),
+                recipient: u.admin,
+                ipMetadata: ipMetadataDefault,
+                licenseTermsData: licenseTerms,
+                royaltyShares: royaltyShares,
+                allowDuplicates: true
+            });
+        vm.stopPrank();
 
-//         vm.label(testIpId, "IpId");
-//         vm.label(address(stakingTokenA), "StakingTokenA");
-//         vm.label(address(stakingTokenB), "StakingTokenB");
-//         vm.label(address(rewardToken), "RewardToken");
-//         vm.label(testProtocolTreasury, "ProtocolTreasury");
+        vm.label(testIpId, "IpId");
+        vm.label(address(rewardToken), "RewardToken");
 
-//         testExpiredTime = block.timestamp + 30 days;
-//         testFundReceiver = u.dan;
-//         testRwipName = "TEST RWIP";
-//         testFractionalTokenName = "TEST FRACTIONAL TOKEN";
-//         testFractionalTokenSymbol = "TFT";
-//         testTotalSupplyOfFractionalToken = 1_000_000_000 * 10 ** 18; // 1 billion
-//         mockUsdc = new MockERC20("MockUSDC", "USDC");
-//         vm.label(address(mockUsdc), "MockUSDC");
-//     }
+        testExpirationTime = block.timestamp + 30 days;
+        testFundReceiver = u.dan;
+        testBioName = "Test Bio Project";
+        testBioTokenName = "Test Bio Token";
+        testBioTokenSymbol = "TBT";
+        testMinimalIpTokenForLaunch = 1 ether; // 1 ETH minimum
+        testTotalBioTokenSupply = 1_000_000_000 * 10 ** 18; // 1 billion tokens
+    }
 
-//     function _deployAsclepiusContracts() internal virtual {
-//         address impl;
+    function _deployAsclepiusContracts() internal virtual {
+        // Deploy bio token implementation
+        OwnableERC20 bioTokenImpl = new OwnableERC20(address(0));
+        vm.label(address(bioTokenImpl), "BioTokenImpl");
+        
+        // Deploy bio token beacon
+        UpgradeableBeacon bioTokenBeacon = new UpgradeableBeacon(address(bioTokenImpl), address(this));
+        vm.label(address(bioTokenBeacon), "BioTokenBeacon");
+        
+        // Deploy bio token template (which is now a beacon proxy template)
+        bioTokenTemplate = new OwnableERC20(address(bioTokenBeacon));
+        vm.label(address(bioTokenTemplate), "BioTokenTemplate");
+        
+        // Whitelist the bio token template in the tokenizer module
+        vm.prank(u.admin);
+        tokenizerModule.whitelistTokenTemplate(address(bioTokenTemplate), true);
 
-//         asclepiusIPVaultTemplate = new AsclepiusIPVault(
-//             address(royaltyTokenDistributionWorkflows),
-//             address(royaltyModule),
-//             address(tokenizerModule),
-//             _getDeployedAddress("AsclepiusIPVaultBeacon")
-//         );
-//         vm.label(address(asclepiusIPVaultTemplate), "AsclepiusIPVaultTemplate");
+        // Deploy AscStaking template and beacon
+        // First deploy a placeholder beacon to get the address
+        ascStakingBeacon = new UpgradeableBeacon(address(this), address(this));
+        
+        // Now deploy the template with the correct beacon address
+        ascStakingTemplate = new AscStaking(
+            address(royaltyModule),
+            address(ascStakingBeacon)
+        );
+        vm.label(address(ascStakingTemplate), "AscStakingTemplate");
 
-//         asclepiusIPVaultBeacon = new UpgradeableBeacon(
-//             create3Deployer.deployDeterministic(
-//                 abi.encodePacked(type(UpgradeableBeacon).creationCode, abi.encode(asclepiusIPVaultTemplate, u.admin)),
-//                 _getSalt("AsclepiusIPVaultBeacon")
-//             ),
-//             address(this)
-//         );
-//         vm.label(address(asclepiusIPVaultBeacon), "AsclepiusIPVaultBeacon");
+        // Update the beacon to point to the actual template
+        ascStakingBeacon.upgradeTo(address(ascStakingTemplate));
+        vm.label(address(ascStakingBeacon), "AscStakingBeacon");
 
-//         impl = address(new AsclepiusIPVaultFactory());
-//         asclepiusIPVaultFactory = AsclepiusIPVaultFactory(
-//             TestProxyHelper.deployUUPSProxy(
-//                 create3Deployer,
-//                 _getSalt("AsclepiusIPVaultFactory"),
-//                 impl,
-//                 abi.encodeCall(AsclepiusIPVaultFactory.initialize, (u.admin, address(asclepiusIPVaultTemplate)))
-//             )
-//         );
-//         vm.label(address(asclepiusIPVaultFactory), "AsclepiusIPVaultFactory");
+        // Deploy AscCurate template and beacon
+        // First deploy a placeholder beacon to get the address
+        ascCurateBeacon = new UpgradeableBeacon(address(this), address(this));
+        
+        // Now deploy the template with the correct beacon address
+        ascCurateTemplate = new AscCurate(
+            address(royaltyModule),
+            address(tokenizerModule),
+            address(ascCurateBeacon),
+            address(ipAssetRegistry)
+        );
+        vm.label(address(ascCurateTemplate), "AscCurateTemplate");
 
-//         stakingTokens = new address[](2);
-//         stakingTokens[0] = address(stakingTokenA);
-//         stakingTokens[1] = address(stakingTokenB);
+        // Update the beacon to point to the actual template
+        ascCurateBeacon.upgradeTo(address(ascCurateTemplate));
+        vm.label(address(ascCurateBeacon), "AscCurateBeacon");
 
-//         allocPoints = new uint256[](2);
-//         allocPoints[0] = allocPointsA;
-//         allocPoints[1] = allocPointsB;
+        // Deploy AscCurateFactory
+        address factoryImpl = address(new AscCurateFactory());
+        ascCurateFactory = AscCurateFactory(
+            TestProxyHelper.deployUUPSProxy(
+                create3Deployer,
+                _getSalt("AscCurateFactory"),
+                factoryImpl,
+                abi.encodeCall(AscCurateFactory.initialize, (u.admin, address(ascCurateTemplate)))
+            )
+        );
+        vm.label(address(ascCurateFactory), "AscCurateFactory");
+    }
 
-//         asclepiusIPDistributionContractTemplate = new AsclepiusIPDistributionContract(
-//             address(royaltyModule),
-//             _getDeployedAddress("AsclepiusIPDistributionBeacon")
-//         );
-//         vm.label(address(asclepiusIPDistributionContractTemplate), "AsclepiusIPDistributionContractTemplate");
+    /// @dev Helper function to create AscStaking InitData
+    function _createStakingInitData(address ipId) internal view returns (IAscStaking.InitData memory) {
+        return IAscStaking.InitData({
+            admin: u.admin,
+            ipId: ipId,
+            rewardDistributionPeriod: testRewardDistributionPeriod,
+            rewardToken: address(rewardToken),
+            bioTokenAllocPoints: testBioTokenAllocPoints
+        });
+    }
 
-//         asclepiusIPDistributionBeacon = new UpgradeableBeacon(
-//             create3Deployer.deployDeterministic(
-//                 abi.encodePacked(
-//                     type(UpgradeableBeacon).creationCode,
-//                     abi.encode(asclepiusIPDistributionContractTemplate, u.admin)
-//                 ),
-//                 _getSalt("AsclepiusIPDistributionBeacon")
-//             ),
-//             address(this)
-//         );
-//         vm.label(address(asclepiusIPDistributionBeacon), "AsclepiusIPDistributionBeacon");
-
-//         IAsclepiusIPDistributionContract.InitData memory initData = IAsclepiusIPDistributionContract.InitData({
-//             admin: u.admin,
-//             ipId: testIpId,
-//             protocolTreasury: testProtocolTreasury,
-//             protocolTaxRate: testProtocolTaxRate,
-//             rewardDistributionPeriod: testRewardDistributionPeriod,
-//             rewardToken: address(rewardToken),
-//             fractionalTokenAllocPoints: allocPointsA
-//         });
-
-//         asclepiusIPDistributionContract = AsclepiusIPDistributionContract(
-//             address(
-//                 new BeaconProxy(
-//                     asclepiusIPDistributionContractTemplate.getUpgradeableBeacon(),
-//                     abi.encodeCall(AsclepiusIPDistributionContract.initialize, (address(stakingTokenA), initData))
-//                 )
-//             )
-//         );
-//         vm.label(address(asclepiusIPDistributionContract), "AsclepiusIPDistributionContract");
-
-//         vm.startPrank(u.admin);
-//         IERC20(royaltyModule.ipRoyaltyVaults(testIpId)).transfer(address(asclepiusIPDistributionContract), 100_000_000);
-//         asclepiusIPDistributionContract.addStakingPool(address(stakingTokenB), allocPointsB);
-//         vm.stopPrank();
-//     }
-
-//     function _createAsclepiusIPVaultInstance() internal virtual {
-//         asclepiusIPVaultInstance = AsclepiusIPVault(
-//             asclepiusIPVaultFactory.deployIpVault({
-//                 vaultAdmin: u.admin,
-//                 expiredTime: testExpiredTime,
-//                 fundReceiver: testFundReceiver,
-//                 rwipName: testRwipName,
-//                 fractionalTokenName: testFractionalTokenName,
-//                 fractionalTokenSymbol: testFractionalTokenSymbol,
-//                 totalSupplyOfFractionalToken: testTotalSupplyOfFractionalToken,
-//                 usdcContractAddress: address(mockUsdc)
-//             })
-//         );
-//     }
-// }
+    /// @dev Helper function to create AscCurate InitData
+    function _createCurateInitData(
+        address ipId,
+        address ipNft,
+        uint256 ipNftTokenId
+    ) internal view returns (IAscCurate.CurateInitData memory) {
+        return IAscCurate.CurateInitData({
+            admin: u.admin,
+            ipId: ipId,
+            ipNft: ipNft,
+            ipNftTokenId: ipNftTokenId,
+            expirationTime: testExpirationTime,
+            fundReceiver: testFundReceiver,
+            bioName: testBioName,
+            bioTokenName: testBioTokenName,
+            bioTokenSymbol: testBioTokenSymbol,
+            minimalIpTokenForLaunch: testMinimalIpTokenForLaunch,
+            rewardToken: address(rewardToken)
+        });
+    }
+}
