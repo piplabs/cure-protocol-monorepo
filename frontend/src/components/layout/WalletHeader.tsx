@@ -52,16 +52,10 @@ export default function WalletHeader() {
                 Launchpad
               </Link>
               <Link
-                href="/"
+                href="/data"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                Portfolio
-              </Link>
-              <Link
-                href="/"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Bridge
+                Data
               </Link>
             </div>
           </div>
