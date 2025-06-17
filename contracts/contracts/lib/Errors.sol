@@ -177,10 +177,10 @@ library Errors {
     /**
      * @notice Thrown when the allowance is insufficient
      * @param spender The address of the spender
-     * @param token The address of the token
-     * @param amount The amount of the token
+     * @param allowance The allowance of the spender
+     * @param expectedAllowance The expected allowance
      */
-    error AscCurate__InsufficientAllowance(address spender, address token, uint256 amount);
+    error AscCurate__InsufficientRoyaltyVaultAllowance(address spender, uint256 allowance, uint256 expectedAllowance);
 
     ////////////////////////////////////////////////////////////////////////////
     //                           AscCurateFactory Errors                    //

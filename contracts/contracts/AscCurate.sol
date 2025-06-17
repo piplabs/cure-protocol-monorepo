@@ -301,8 +301,9 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         address ipRoyaltyVault = ROYALTY_MODULE.ipRoyaltyVaults($.ipId);
         if (ipRoyaltyVault == address(0)) revert Errors.AscCurate__IpRoyaltyVaultNotDeployed($.ipId);
 
-        if (IERC20(ipRoyaltyVault).allowance($.admin, address(this)) < ROYALTY_MODULE.maxPercent())
-            revert Errors.AscCurate__InsufficientAllowance($.admin, ipRoyaltyVault, ROYALTY_MODULE.maxPercent());
+        uint256 allowance = IERC20(ipRoyaltyVault).allowance($.admin, address(this));
+        if (allowance < ROYALTY_MODULE.maxPercent())
+            revert Errors.AscCurate__InsufficientRoyaltyVaultAllowance($.admin, allowance, ROYALTY_MODULE.maxPercent());
         IERC20(ipRoyaltyVault).transferFrom($.admin, stakingContract, ROYALTY_MODULE.maxPercent());
 
         emit ProjectLaunched({ ipId: $.ipId, bioToken: bioToken, stakingContract: stakingContract });
