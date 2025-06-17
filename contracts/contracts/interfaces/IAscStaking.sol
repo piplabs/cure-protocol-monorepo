@@ -2,28 +2,24 @@
 pragma solidity 0.8.26;
 
 /**
- * @title IAsclepiusIPDistributionContract
- * @notice Interface for the AsclepiusIPDistributionContract contract
+ * @title IAscStaking
+ * @notice Interface for the IAscStaking contract
  */
-interface IAsclepiusIPDistributionContract {
+interface IAscStaking {
     /**
-     * @dev Data structure for initializing the AsclepiusIPDistributionContract
+     * @dev Data structure for initializing the IAscStaking
      * @param admin The address of the admin
      * @param ipId The address of the IP
-     * @param protocolTreasury The address of the protocol treasury to receive the protocol tax fees
-     * @param protocolTaxRate The protocol tax rate
      * @param rewardDistributionPeriod The number of blocks during which the all rewards are distributed
      * @param rewardToken The address of the reward token
-     * @param fractionalTokenAllocPoints The allocation points for the fractional token staking pool
+     * @param bioTokenAllocPoints The allocation points for the bio token staking pool
      */
     struct InitData {
         address admin;
         address ipId;
-        address protocolTreasury;
-        uint32 protocolTaxRate;
         uint256 rewardDistributionPeriod;
         address rewardToken;
-        uint256 fractionalTokenAllocPoints;
+        uint256 bioTokenAllocPoints;
     }
 
     /**
@@ -45,10 +41,9 @@ interface IAsclepiusIPDistributionContract {
     /**
      * @notice Emitted when a user claims all their rewards
      * @param staker The address of the staker
-     * @param protocolTaxPaid The amount of protocol tax fee
-     * @param netRewardsClaimed The total amount of rewards claimed after protocol tax fee
+     * @param totalRewards The total amount of rewards claimed
      */
-    event RewardsClaimed(address indexed staker, uint256 protocolTaxPaid, uint256 netRewardsClaimed);
+    event RewardsClaimed(address indexed staker, uint256 totalRewards);
 
     /**
      * @notice Emitted when royalties are collected and distributed
@@ -74,13 +69,6 @@ interface IAsclepiusIPDistributionContract {
     event PoolAllocPointsUpdated(address indexed stakingToken, uint256 oldAllocPoints, uint256 newAllocPoints);
 
     /**
-     * @notice Emitted when the protocol treasury is updated
-     * @param oldProtocolTreasury The old protocol treasury
-     * @param newProtocolTreasury The new protocol treasury
-     */
-    event ProtocolTreasuryUpdated(address oldProtocolTreasury, address newProtocolTreasury);
-
-    /**
      * @notice Emitted when the reward distribution period is updated
      * @param oldPeriod The old reward distribution period
      * @param newPeriod The new reward distribution period
@@ -88,18 +76,11 @@ interface IAsclepiusIPDistributionContract {
     event RewardDistributionPeriodUpdated(uint256 oldPeriod, uint256 newPeriod);
 
     /**
-     * @notice Emitted when the protocol tax rate is updated
-     * @param oldTaxRate The old protocol tax rate
-     * @param newTaxRate The new protocol tax rate
+     * @dev Initializes the IAscStaking
+     * @param bioToken The address of the bio token
+     * @param initData The initialization data {see IAscStaking.InitData}
      */
-    event ProtocolTaxRateUpdated(uint32 oldTaxRate, uint32 newTaxRate);
-
-    /**
-     * @dev Initializes the AsclepiusIPDistributionContract
-     * @param fractionalToken The address of the fractionalized IP token
-     * @param initData The initialization data {see IAsclepiusIPDistributionContract.InitData}
-     */
-    function initialize(address fractionalToken, InitData memory initData) external;
+    function initialize(address bioToken, InitData memory initData) external;
 
     /**
      * @dev Deposits a staking token into the distribution contract
@@ -149,12 +130,6 @@ interface IAsclepiusIPDistributionContract {
     function setRewardDistributionPeriod(uint256 numberOfBlocks) external;
 
     /**
-     * @dev Sets the protocol tax rate
-     * @param protocolTaxRate_ The protocol tax rate
-     */
-    function setProtocolTaxRate(uint32 protocolTaxRate_) external;
-
-    /**
      * @dev Returns the address of the admin
      * @return admin The address of the admin
      */
@@ -165,18 +140,6 @@ interface IAsclepiusIPDistributionContract {
      * @return ipId The address of the IP
      */
     function getIpId() external view returns (address);
-
-    /**
-     * @dev Returns the address of the protocol treasury
-     * @return protocolTreasury The address of the protocol treasury
-     */
-    function getProtocolTreasury() external view returns (address);
-
-    /**
-     * @dev Returns the protocol tax rate
-     * @return protocolTaxRate The protocol tax rate
-     */
-    function getProtocolTaxRate() external view returns (uint32);
 
     /**
      * @dev Returns the reward distribution period

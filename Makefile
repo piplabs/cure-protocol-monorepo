@@ -50,10 +50,10 @@ coverage:
 abi:
 	rm -rf abi
 	mkdir -p abi
-	@$(call generate_abi,"IAscCurate","./interfaces")
-	@$(call generate_abi,"IAscCurateFactory","./interfaces")
-	@$(call generate_abi,"IAscFundRaising","./interfaces")
-	@$(call generate_abi,"IAscStaking","./interfaces")
+	@$(call generate_abi,"IAscCurate","./contracts/interfaces")
+	@$(call generate_abi,"IAscCurateFactory","./contracts/interfaces")
+	@$(call generate_abi,"IAscFundRaising","./contracts/interfaces")
+	@$(call generate_abi,"IAscStaking","./contracts/interfaces")
 
 
 typechain :; npx hardhat typechain

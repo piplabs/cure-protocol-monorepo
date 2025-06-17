@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.26;
 
-import { IAsclepiusIPVault } from "../interfaces/IAsclepiusIPVault.sol";
+import { IAscCurate } from "../interfaces/IAscCurate.sol";
 
 /**
  * @title Errors Library
@@ -9,253 +9,281 @@ import { IAsclepiusIPVault } from "../interfaces/IAsclepiusIPVault.sol";
  */
 library Errors {
     ////////////////////////////////////////////////////////////////////////////
-    //                           AsclepiusIPVault Errors                          //
+    //                           AscCurate Errors                          //
     ////////////////////////////////////////////////////////////////////////////
     /**
      * @notice Thrown when the upgradeable beacon address is zero
      */
-    error AsclepiusIPVault__ZeroUpgradeableBeaconAddress();
-
-    /**
-     * @notice Thrown when the royalty token distribution workflows address is zero
-     */
-    error AsclepiusIPVault__ZeroRoyaltyTokenDistributionWorkflowsAddress();
+    error AscCurate__ZeroUpgradeableBeaconAddress();
 
     /**
      * @notice Thrown when the royalty module address is zero
      */
-    error AsclepiusIPVault__ZeroRoyaltyModuleAddress();
+    error AscCurate__ZeroRoyaltyModuleAddress();
 
     /**
      * @notice Thrown when the tokenizer module address is zero
      */
-    error AsclepiusIPVault__ZeroTokenizerModuleAddress();
+    error AscCurate__ZeroTokenizerModuleAddress();
 
     /**
-     * @notice Thrown when the fractional token template address is zero
+     * @notice Thrown when the IP asset registry address is zero
      */
-    error AsclepiusIPVault__ZeroFractionalTokenTemplateAddress();
+    error AscCurate__ZeroIpAssetRegistryAddress();
 
     /**
      * @notice Thrown when the admin address is zero
      */
-    error AsclepiusIPVault__ZeroAdminAddress();
+    error AscCurate__ZeroAdminAddress();
+
+    /**
+     * @notice Thrown when the IP ID address is zero
+     */
+    error AscCurate__ZeroIpIdAddress();
+
+    /**
+     * @notice Thrown when the IP NFT address is zero
+     */
+    error AscCurate__ZeroIpNftAddress();
+
+    /**
+     * @notice Thrown when the IP NFT token ID is zero
+     */
+    error AscCurate__ZeroIpNftTokenId();
 
     /**
      * @notice Thrown when the expiration time is not in the future
      * @param expirationTime The provided expiration time
      * @param currentTime The current time
      */
-    error AsclepiusIPVault__ExpirationTimeNotInFuture(uint256 expirationTime, uint256 currentTime);
+    error AscCurate__ExpirationTimeNotInFuture(uint256 expirationTime, uint256 currentTime);
 
     /**
      * @notice Thrown when the fund receiver address is zero
      */
-    error AsclepiusIPVault__ZeroFundReceiverAddress();
+    error AscCurate__ZeroFundReceiverAddress();
 
     /**
-     * @notice Thrown when the USDC contract address is zero
+     * @notice Thrown when the IP is not registered
+     * @param ipNft The IP NFT address
+     * @param ipNftTokenId The IP NFT token ID
+     * @param ipId The IP ID
      */
-    error AsclepiusIPVault__ZeroUsdcContractAddress();
+    error AscCurate__IpNotRegistered(address ipNft, uint256 ipNftTokenId, address ipId);
 
     /**
-     * @notice Thrown when the spg nft contract address is zero
+     * @notice Thrown when the IP is not transferred to curate
+     * @param ipId The IP ID
+     * @param ipNft The IP NFT address
+     * @param ipNftTokenId The IP NFT token ID
      */
-    error AsclepiusIPVault__ZeroSPGNftContractAddress();
+    error AscCurate__IpNotTransferredToCurate(address ipId, address ipNft, uint256 ipNftTokenId);
 
     /**
-     * @notice Thrown when the fractional token is not set
+     * @notice Thrown when the bio token is not set
      */
-    error AsclepiusIPVault__FractionalTokenNotSet();
+    error AscCurate__BioTokenNotSet();
 
     /**
      * @notice Thrown when the caller is not the admin
      * @param caller The function caller address
      * @param admin The admin address
      */
-    error AsclepiusIPVault__CallerNotAdmin(address caller, address admin);
+    error AscCurate__CallerNotAdmin(address caller, address admin);
 
     /**
-     * @notice Thrown when the USDC address is invalid
+     * @notice Thrown when the curate is not open
+     * @param currentState The current state of the curate
      */
-    error AsclepiusIPVault__InvalidUSDCAddress();
+    error AscCurate__CurateNotOpen(IAscCurate.State currentState);
 
     /**
-     * @notice Thrown when the token is not supported
+     * @notice Thrown when the curate is not canceled
+     * @param currentState The current state of the curate
      */
-    error AsclepiusIPVault__UnsupportedIERC20();
-
-    /**
-     * @notice Thrown when the vault is not open
-     * @param currentState The current state of the vault
-     */
-    error AsclepiusIPVault__VaultNotOpen(IAsclepiusIPVault.State currentState);
-
-    /**
-     * @notice Thrown when the vault is not canceled
-     * @param currentState The current state of the vault
-     */
-    error AsclepiusIPVault__VaultNotCanceled(IAsclepiusIPVault.State currentState);
+    error AscCurate__CurateNotCanceled(IAscCurate.State currentState);
 
     /**
      * @notice Thrown when there is no refundable deposit
      * @param claimer The address of the claimer
-     * @param token The address of the token that the claimer wants to claim
      */
-    error AsclepiusIPVault__NoRefundableDeposit(address claimer, address token);
+    error AscCurate__NoRefundableDeposit(address claimer);
 
     /**
-     * @notice Thrown when the vault is not closed
-     * @param currentState The current state of the vault
+     * @notice Thrown when the curate is not closed
+     * @param currentState The current state of the curate
      */
-    error AsclepiusIPVault__VaultNotClosed(IAsclepiusIPVault.State currentState);
+    error AscCurate__CurateNotClosed(IAscCurate.State currentState);
 
     /**
-     * @notice Thrown when the deposit amount is zero
+     * @notice Thrown when the deposit amount doesn't match the ETH sent
      * @param depositor The address of the depositor
-     * @param token The address of the token that the depositor wants to deposit
+     * @param providedAmount The amount parameter provided
+     * @param actualAmount The actual ETH amount sent (msg.value)
      */
-    error AsclepiusIPVault__ZeroDepositAmount(address depositor, address token);
+    error AscCurate__DepositAmountMismatch(address depositor, uint256 providedAmount, uint256 actualAmount);
 
     /**
-     * @notice Thrown when the claimer is not eligible to claim the fractionalized IP tokens
+     * @notice Thrown when the claimer is not eligible to claim the bio tokens
      * @param claimer The address of the claimer
      */
-    error AsclepiusIPVault__ClaimerNotEligible(address claimer);
+    error AscCurate__ClaimerNotEligible(address claimer);
 
     /**
-     * @notice Thrown when the claimer has already claimed the fractionalized IP tokens
+     * @notice Thrown when the claimer has already claimed the bio tokens
      * @param claimer The address of the claimer
      */
-    error AsclepiusIPVault__ClaimerAlreadyClaimed(address claimer);
+    error AscCurate__ClaimerAlreadyClaimed(address claimer);
 
     /**
-     * @notice Thrown when there are active deposits
-     * @param token The address of the token
+     * @notice Thrown when the total deposits is less than the minimum total deposits
+     * @param totalDeposits The total deposits
+     * @param minimumTotalDeposits The minimum total deposits
+     */
+    error AscCurate__TotalDepositsLessThanMinimumTotalDeposits(uint256 totalDeposits, uint256 minimumTotalDeposits);
+
+    /**
+     * @notice Thrown when the bio token total supply is less than the total deposits
+     * @param bioTokenTotalSupply The total supply of the bio token
      * @param totalDeposits The total deposits
      */
-    error AsclepiusIPVault__ActiveDepositsExist(address token, uint256 totalDeposits);
+    error AscCurate__BioTokenSupplyLessThanTotalDeposits(uint256 bioTokenTotalSupply, uint256 totalDeposits);
 
     /**
-     * @notice Thrown when the fractional token total supply is less than the total deposits
-     * @param fractionalTokenTotalSupply The total supply of the fractional token
-     * @param totalDeposits The total deposits
+     * @notice Thrown when the bio token is already deployed
+     * @param bioToken The address of the bio token
      */
-    error AsclepiusIPVault__FractionalTokenSupplyLessThanTotalDeposits(
-        uint256 fractionalTokenTotalSupply,
-        uint256 totalDeposits
-    );
+    error AscCurate__BioTokenAlreadyDeployed(address bioToken);
 
     /**
-     * @notice Thrown when the fractional token is already deployed
-     * @param fractionalToken The address of the fractional token
+     * @notice Thrown when the refund claim failed
+     * @param claimer The address of the claimer
+     * @param amount The amount of the refund
      */
-    error AsclepiusIPVault__FractionalTokenAlreadyDeployed(address fractionalToken);
+    error AscCurate__RefundClaimFailed(address claimer, uint256 amount);
+
+    /**
+     * @notice Thrown when the withdraw failed
+     * @param withdrawnAmount The amount of the IP token withdrawn
+     */
+    error AscCurate__WithdrawFailed(uint256 withdrawnAmount);
+
+    /**
+     * @notice Thrown when the IP royalty vault is not deployed
+     * @param ipId The IP ID
+     */
+    error AscCurate__IpRoyaltyVaultNotDeployed(address ipId);
 
     ////////////////////////////////////////////////////////////////////////////
-    //                           AsclepiusIPVaultFactory Errors                    //
+    //                           AscCurateFactory Errors                    //
     ////////////////////////////////////////////////////////////////////////////
     /**
      * @notice Thrown when the caller is not the factory admin
      * @param caller The function caller address
      * @param admin The admin address
      */
-    error AsclepiusIPVaultFactory__CallerNotAdmin(address caller, address admin);
+    error AscCurateFactory__CallerNotAdmin(address caller, address admin);
 
     /**
      * @notice Thrown when the admin address is zero
      */
-    error AsclepiusIPVaultFactory__ZeroAdminAddress();
+    error AscCurateFactory__ZeroAdminAddress();
 
     /**
-     * @notice Thrown when the vault template address is zero
+     * @notice Thrown when the curate template address is zero
      */
-    error AsclepiusIPVaultFactory__ZeroVaultTemplateAddress();
+    error AscCurateFactory__ZeroCurateTemplateAddress();
 
     ////////////////////////////////////////////////////////////////////////////
-    //                       AsclepiusIPDistributionContract Errors              //
+    //                           AscStaking Errors                         //
     ////////////////////////////////////////////////////////////////////////////
     /**
      * @notice Thrown when the caller is not the admin
      * @param caller The function caller address
      * @param admin The admin address
      */
-    error AsclepiusIPDistributionContract__CallerNotAdmin(address caller, address admin);
-
-    /**
-     * @notice Thrown when the royalty module address is zero
-     */
-    error AsclepiusIPDistributionContract__ZeroRoyaltyModuleAddress();
+    error AscStaking__CallerNotAdmin(address caller, address admin);
 
     /**
      * @notice Thrown when the upgradeable beacon address is zero
      */
-    error AsclepiusIPDistributionContract__ZeroUpgradeableBeaconAddress();
+    error AscStaking__ZeroUpgradeableBeaconAddress();
+
+    /**
+     * @notice Thrown when the royalty module address is zero
+     */
+    error AscStaking__ZeroRoyaltyModuleAddress();
 
     /**
      * @notice Thrown when the fractional token address is zero
      */
-    error AsclepiusIPDistributionContract__ZeroFractionalTokenAddress();
+    error AscStaking__ZeroFractionalTokenAddress();
+
+    /**
+     * @notice Thrown when the bio token address is zero
+     */
+    error AscStaking__ZeroBioTokenAddress();
 
     /**
      * @notice Thrown when the admin address is zero
      */
-    error AsclepiusIPDistributionContract__ZeroAdminAddress();
+    error AscStaking__ZeroAdminAddress();
 
     /**
      * @notice Thrown when the IP ID address is zero
      */
-    error AsclepiusIPDistributionContract__ZeroIpIdAddress();
-
-    /**
-     * @notice Thrown when the protocol treasury address is zero
-     */
-    error AsclepiusIPDistributionContract__ZeroProtocolTreasuryAddress();
+    error AscStaking__ZeroIpIdAddress();
 
     /**
      * @notice Thrown when the reward token address is zero
      */
-    error AsclepiusIPDistributionContract__ZeroRewardTokenAddress();
-
-    /**
-     * @notice Thrown when the fractional token alloc points is zero
-     */
-    error AsclepiusIPDistributionContract__ZeroFractionalTokenAllocPoints();
-
-    /**
-     * @notice Thrown when the staking token address is zero
-     */
-    error AsclepiusIPDistributionContract__ZeroStakingTokenAddress();
+    error AscStaking__ZeroRewardTokenAddress();
 
     /**
      * @notice Thrown when the deposit amount is zero
      */
-    error AsclepiusIPDistributionContract__ZeroDepositAmount();
+    error AscStaking__ZeroDepositAmount();
 
     /**
      * @notice Thrown when the withdraw amount is zero
      */
-    error AsclepiusIPDistributionContract__ZeroWithdrawAmount();
+    error AscStaking__ZeroWithdrawAmount();
+
+    /**
+     * @notice Thrown when the staking token address is zero
+     */
+    error AscStaking__ZeroStakingTokenAddress();
+
+    /**
+     * @notice Thrown when the bio token alloc points is zero
+     */
+    error AscStaking__ZeroBioTokenAllocPoints();
 
     /**
      * @notice Thrown when the reward distribution period is zero
      */
-    error AsclepiusIPDistributionContract__ZeroRewardDistributionPeriod();
+    error AscStaking__ZeroRewardDistributionPeriod();
 
     /**
-     * @notice Thrown when attempting to add a staking pool that already exists
+     * @notice Thrown when the staking pool already exists
      * @param stakingToken The address of the staking token
      */
-    error AsclepiusIPDistributionContract__StakingPoolAlreadyExists(address stakingToken);
+    error AscStaking__StakingPoolAlreadyExists(address stakingToken);
+
+    /**
+     * @notice Thrown when the IP royalty vault is not deployed
+     * @param ipId The IP ID
+     */
+    error AscStaking__IpRoyaltyVaultNotDeployed(address ipId);
 
     /**
      * @notice Thrown when the staker's staked balance is insufficient
      * @param staker The address of the staker
      * @param stakingToken The address of the staking token
      * @param stakedBalance The staker's staked balance
-     * @param withdrawAmount The amount of staking tokens to withdraw
+     * @param withdrawAmount The amount of bio tokens to withdraw
      */
-    error AsclepiusIPDistributionContract__InsufficientStakedBalance(
+    error AscStaking__InsufficientStakedBalance(
         address staker,
         address stakingToken,
         uint256 stakedBalance,
@@ -266,11 +294,5 @@ library Errors {
      * @notice Thrown when there are no rewards to claim
      * @param claimer The address of the claimer
      */
-    error AsclepiusIPDistributionContract__NoRewardsToClaim(address claimer);
-
-    /**
-     * @notice Thrown when the IP royalty vault is not deployed
-     * @param ipId The IP ID
-     */
-    error AsclepiusIPDistributionContract__IpRoyaltyVaultNotDeployed(address ipId);
+    error AscStaking__NoRewardsToClaim(address claimer);
 }
