@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import ProjectCard from "./ProjectCard";
 import SearchFilters from "./SearchFilters";
 import { mockProjects } from "@/lib/data/projects";
-import { searchProjects, getProjectsByCategory } from "@/lib/data/projects";
+import { searchProjects } from "@/lib/data/projects";
 
 export default function ProjectsGrid() {
   const [searchTerm, setSearchTerm] = useState("");

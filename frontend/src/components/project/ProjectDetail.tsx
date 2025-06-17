@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight, Globe, MessageSquare, Users, Brain } from "lucide-react";
-import Link from "next/link";
 import ProjectHeader from "@/components/project/ProjectHeader";
 import StageNavigation from "@/components/project/StageNavigation";
 import MarketHypothesis from "@/components/project/MarketHypothesis";
@@ -38,29 +36,6 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      {/* Header */}
-      {/* <div className="border-b border-gray-800/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-            >
-              <ChevronRight className="w-4 h-4 rotate-180" />
-              Back to Launchpad
-            </Link>
-
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-gray-400" />
-                <MessageSquare className="w-4 h-4 text-gray-400" />
-                <Users className="w-4 h-4 text-gray-400" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
       <div className="max-w-7xl mx-auto px-6 py-8">
         <ProjectHeader project={project} />
         <StageNavigation

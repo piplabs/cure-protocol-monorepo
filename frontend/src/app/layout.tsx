@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-// import Header from "@/components/layout/Header";
 import WalletHeader from "@/components/layout/WalletHeader";
 import Footer from "@/components/layout/Footer";
 import { WalletProvider } from "@/components/providers/WalletProvider";
@@ -32,7 +31,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <WalletProvider>
-          {/* <Header /> */}
           <WalletHeader />
           <main>{children}</main>
           <Footer />

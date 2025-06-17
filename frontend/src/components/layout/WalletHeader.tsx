@@ -52,16 +52,10 @@ export default function WalletHeader() {
                 Launchpad
               </Link>
               <Link
-                href="/"
+                href="/data"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                Portfolio
-              </Link>
-              <Link
-                href="/"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Bridge
+                Data
               </Link>
             </div>
           </div>
@@ -80,7 +74,7 @@ export default function WalletHeader() {
           ) : (
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <div className="text-gray-400">$IP Balance</div>
+                <div className="text-sm text-gray-400">$IP Balance</div>
                 <div className="">{parseFloat(balance).toFixed(4)}</div>
               </div>
 
@@ -89,8 +83,8 @@ export default function WalletHeader() {
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="text-right hover:bg-gray-800 px-3 py-2 rounded transition-colors"
                 >
-                  <div className="text-gray-400">Address</div>
-                  <div className="">
+                  <div className="text-sm text-gray-400">Address</div>
+                  <div className="text-sm">
                     {account.slice(0, 6)}...{account.slice(-4)}
                   </div>
                 </button>

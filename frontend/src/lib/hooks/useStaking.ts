@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { formatEther, parseEther } from "viem";
 import { useWallet } from "./useWallet";
-import { CONTRACTS, STAKING_ABI, ERC20_ABI } from "../../contracts/index";
-import type { LoadingStates, StakingData } from "../types/index";
+import { CONTRACTS, STAKING_ABI, ERC20_ABI } from "@/contracts";
+import type { LoadingStates, StakingData } from "@/lib/types/index";
 
 export function useStaking(stakingContractAddress?: string) {
   const { account, isConnected, publicClient, walletClient } = useWallet();
@@ -25,7 +25,13 @@ export function useStaking(stakingContractAddress?: string) {
   };
 
   useEffect(() => {
-    if (isConnected && account && publicClient && contractAddress) {
+    if (
+      isConnected &&
+      account &&
+      publicClient &&
+      contractAddress &&
+      contractAddress !== "0x0000000000000000000000000000000000000000"
+    ) {
       loadStakingData();
       loadTokenBalances();
     }
@@ -35,37 +41,50 @@ export function useStaking(stakingContractAddress?: string) {
     if (!publicClient || !account) return;
 
     try {
-      // Load various token balances (BIO, FRAX, etc.)
-      const bioBalance = await publicClient.readContract({
-        address: CONTRACTS.BioToken,
-        abi: ERC20_ABI,
-        functionName: "balanceOf",
-        args: [account],
-      });
+      const balances: { [key: string]: string } = {};
 
-      setTokenBalances({
-        BIO: formatEther(bioBalance),
-        // Add other tokens as needed
-      });
+      // Load BIO balance if contract exists
+      if (
+        CONTRACTS.StakingToken !== "0x0000000000000000000000000000000000000000"
+      ) {
+        const bioBalance = await publicClient.readContract({
+          address: CONTRACTS.StakingToken,
+          abi: ERC20_ABI,
+          functionName: "balanceOf",
+          args: [account],
+        });
+        balances.BIO = formatEther(bioBalance);
+      }
+
+      // Add more token balances as needed
+      // Example: FRAX, USDC, etc.
+
+      setTokenBalances(balances);
     } catch (error) {
       console.error("Failed to load token balances:", error);
     }
   };
 
   const loadStakingData = async () => {
-    if (!publicClient || !account || !contractAddress) return;
+    if (
+      !publicClient ||
+      !account ||
+      !contractAddress ||
+      contractAddress === "0x0000000000000000000000000000000000000000"
+    )
+      return;
 
     try {
       // Load staking data
-      // Note: These calls depend on your actual staking contract structure
-      // This is a placeholder implementation
+      // Note: You'll need to add getter functions to your staking contract
+      // or implement view functions to get user staking info, total staked, etc.
 
       setStakingData({
         userStaked: "0",
         totalStaked: "60,846,596",
         pendingRewards: "0",
-        stakingToken: CONTRACTS.BioToken,
-        rewardToken: CONTRACTS.BioToken,
+        stakingToken: CONTRACTS.StakingToken,
+        rewardToken: CONTRACTS.StakingToken,
         apr: "4.50%",
       });
     } catch (error) {
@@ -74,7 +93,13 @@ export function useStaking(stakingContractAddress?: string) {
   };
 
   const stakeTokens = async (tokenAddress: string, amount: string) => {
-    if (!walletClient || !account || !contractAddress) return;
+    if (
+      !walletClient ||
+      !account ||
+      !contractAddress ||
+      contractAddress === "0x0000000000000000000000000000000000000000"
+    )
+      return;
 
     setLoadingState("stake", true);
     try {
@@ -91,7 +116,7 @@ export function useStaking(stakingContractAddress?: string) {
 
       showStatus("Token approval successful, staking tokens...");
 
-      // Stake tokens
+      // Stake tokens using the updated ABI
       const hash = await walletClient.writeContract({
         account,
         address: contractAddress,
@@ -115,7 +140,13 @@ export function useStaking(stakingContractAddress?: string) {
   };
 
   const unstakeTokens = async (tokenAddress: string, amount: string) => {
-    if (!walletClient || !account || !contractAddress) return;
+    if (
+      !walletClient ||
+      !account ||
+      !contractAddress ||
+      contractAddress === "0x0000000000000000000000000000000000000000"
+    )
+      return;
 
     setLoadingState("unstake", true);
     try {
@@ -144,7 +175,13 @@ export function useStaking(stakingContractAddress?: string) {
   };
 
   const claimRewards = async () => {
-    if (!walletClient || !account || !contractAddress) return;
+    if (
+      !walletClient ||
+      !account ||
+      !contractAddress ||
+      contractAddress === "0x0000000000000000000000000000000000000000"
+    )
+      return;
 
     setLoadingState("claim", true);
     try {
@@ -173,7 +210,13 @@ export function useStaking(stakingContractAddress?: string) {
   };
 
   const collectRoyalties = async () => {
-    if (!walletClient || !account || !contractAddress) return;
+    if (
+      !walletClient ||
+      !account ||
+      !contractAddress ||
+      contractAddress === "0x0000000000000000000000000000000000000000"
+    )
+      return;
 
     setLoadingState("collect", true);
     try {
@@ -207,6 +250,7 @@ export function useStaking(stakingContractAddress?: string) {
     stakingData,
     tokenBalances,
     statusMessage,
+    contractAddress,
 
     // Actions
     stakeTokens,

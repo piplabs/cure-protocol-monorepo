@@ -10,7 +10,6 @@ export interface Project {
   image: string;
   tags: string[];
 }
-
 export interface ProjectDetails {
   fullDescription?: string;
   curationDetails?: {
@@ -48,6 +47,20 @@ export interface ProjectDetails {
     userStaked: string;
     rewards: string;
   };
+  // Add this new property:
+  stakingContract?: {
+    address: string;
+    stakingToken: {
+      address: string;
+      symbol: string;
+      decimals: number;
+    };
+    rewardToken?: {
+      address: string;
+      symbol: string;
+      decimals: number;
+    };
+  };
 }
 
 export interface Stage {
@@ -84,4 +97,38 @@ export interface ProjectData {
   stakingContractAddress?: string;
   licenseTermsId?: string;
   isLaunched: boolean;
+}
+
+export interface Dataset {
+  id: string;
+  name: string;
+  description: string;
+  fileSize: string;
+  format: string;
+  uploadDate: string;
+  uploader: string;
+  downloadCount: number;
+  accessLevel: "public" | "staking_required" | "token_holder" | "curator";
+  isAccessible: boolean;
+  metadata: {
+    participants?: number;
+    duration?: string;
+    devices?: string;
+    dataPoints?: string;
+    biomarkers?: string;
+    sessions?: string;
+    scans?: string;
+    variants?: string;
+    [key: string]: string | number | undefined;
+  };
+}
+
+export interface ProjectDatasets {
+  [projectId: string]: Dataset[];
+}
+
+export interface DatasetFilters {
+  projectId: string;
+  searchTerm: string;
+  accessLevel?: string;
 }

@@ -89,4 +89,4 @@ export const CURATE_ABI = [
     ],
     stateMutability: "payable",
   },
-] as const;
+];

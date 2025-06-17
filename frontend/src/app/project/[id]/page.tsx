@@ -3,9 +3,9 @@ import ProjectDetail from "@/components/project/ProjectDetail";
 import { getProjectById } from "@/lib/data/projects";
 
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
