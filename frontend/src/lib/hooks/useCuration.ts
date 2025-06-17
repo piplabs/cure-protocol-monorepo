@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { formatEther, parseEther } from "viem";
 import { useWallet } from "./useWallet";
-import { CONTRACTS, CURATE_ABI } from "@/contracts";
+import { CONTRACTS, CURATE_ABI, ERC20_ABI } from "@/contracts";
 import type { LoadingStates, CurationData } from "@/lib/types/index";
 
 export function useCuration(projectId: string) {
@@ -144,6 +144,50 @@ export function useCuration(projectId: string) {
     }
   };
 
+  const launchProject = async (initData: {
+    fractionalTokenTemplate: string;
+    distributionContractTemplate: string;
+    admin?: string;
+    rewardToken?: string;
+  }) => {
+    if (!walletClient || !account) return;
+
+    setLoadingState("launch", true);
+    try {
+      const hash = await walletClient.writeContract({
+        account,
+        address: CONTRACTS.AscCurate,
+        abi: CURATE_ABI,
+        functionName: "launchProject",
+        args: [
+          initData.fractionalTokenTemplate,
+          initData.distributionContractTemplate,
+          {
+            admin: initData.admin || account,
+            rewardToken: initData.rewardToken || CONTRACTS.StakingToken,
+          },
+        ],
+      });
+
+      console.log("Project launch hash:", hash);
+      showStatus("Project launched successfully!");
+
+      // Refresh data
+      await loadCurationData();
+      showStatus("Project launch completed!");
+
+      return hash;
+    } catch (error: any) {
+      console.error("Failed to launch project:", error);
+      showStatus(
+        `Failed to launch project: ${error.message || "Unknown error"}`
+      );
+      throw error;
+    } finally {
+      setLoadingState("launch", false);
+    }
+  };
+
   return {
     // State
     loading,
@@ -155,6 +199,7 @@ export function useCuration(projectId: string) {
     commitToCuration,
     withdrawFromCuration,
     claimRefund,
+    launchProject,
     loadCurationData,
     loadIpBalance,
     showStatus,

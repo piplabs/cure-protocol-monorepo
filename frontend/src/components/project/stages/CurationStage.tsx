@@ -20,9 +20,11 @@ export default function CurationStage({ project }: CurationStageProps) {
     commitToCuration,
     withdrawFromCuration,
     claimRefund,
+    launchProject,
   } = useCuration(project.id);
 
   const [commitAmount, setCommitAmount] = useState("");
+  const [showLaunchModal, setShowLaunchModal] = useState(false);
   const details = projectDetails[project.id]?.curationDetails;
 
   if (!details) return <div>Curation details not available</div>;
@@ -31,6 +33,19 @@ export default function CurationStage({ project }: CurationStageProps) {
     if (!commitAmount || parseFloat(commitAmount) <= 0) return;
     await commitToCuration(commitAmount);
     setCommitAmount("");
+  };
+
+  const handleLaunch = async () => {
+    try {
+      await launchProject({
+        fractionalTokenTemplate: "0x0000000000000000000000000000000000000000", // Replace with actual template
+        distributionContractTemplate:
+          "0x0000000000000000000000000000000000000000", // Replace with actual template
+      });
+      setShowLaunchModal(false);
+    } catch (error) {
+      console.error("Launch failed:", error);
+    }
   };
 
   const canCommit =
@@ -100,6 +115,22 @@ export default function CurationStage({ project }: CurationStageProps) {
                 <div className="text-xs text-gray-400">Number of Curators</div>
               </div>
             </div>
+
+            {/* Admin Launch Button */}
+            {isConnected && (
+              <div className="mt-6 pt-6 border-t border-gray-700">
+                <button
+                  onClick={() => setShowLaunchModal(true)}
+                  disabled={loading.launch}
+                  className="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  {loading.launch && (
+                    <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
+                  )}
+                  {loading.launch ? "Launching Project..." : "Launch Project"}
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm">
@@ -163,7 +194,7 @@ export default function CurationStage({ project }: CurationStageProps) {
 
                 <div className="space-y-2">
                   <label className="text-gray-400 text-sm">
-                    You&apos;ve committed
+                    You've committed
                   </label>
                   <div className="text-right text-gray-400">
                     {curationData?.userCommitted || "0"} $IP
@@ -251,6 +282,53 @@ export default function CurationStage({ project }: CurationStageProps) {
           </div>
         </div>
       </div>
+
+      {/* Launch Project Modal */}
+      {showLaunchModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 className="text-2xl font-bold text-white mb-4">
+              Launch Project
+            </h3>
+            <p className="text-gray-400 mb-6">
+              This will launch the project and create the fractional token and
+              staking contracts. Make sure all curation requirements are met.
+            </p>
+
+            <div className="space-y-4 mb-6">
+              <div className="p-4 bg-gray-800/30 rounded-xl border border-gray-700/50">
+                <div className="text-sm text-gray-400 mb-2">Current Status</div>
+                <div className="text-white">
+                  • Total Committed:{" "}
+                  {curationData?.totalCommitted || details.bioCommitted} $IP
+                  <br />• Curation Limit:{" "}
+                  {curationData?.curationLimit || details.curationLimit} $IP
+                  <br />• Active Curators: {details.numCurators}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowLaunchModal(false)}
+                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLaunch}
+                disabled={loading.launch}
+                className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                {loading.launch && (
+                  <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />
+                )}
+                {loading.launch ? "Launching..." : "Launch"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
