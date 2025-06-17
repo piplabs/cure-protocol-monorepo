@@ -286,7 +286,7 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         address bioTokenTemplate,
         address stakingContractTemplate,
         IAscStaking.InitData memory initData
-    ) external returns (address bioToken, address stakingContract) {
+    ) external onlyAdmin returns (address bioToken, address stakingContract) {
         _checkAndUpdateState();
         AscCurateStorage storage $ = _getAscCurateStorage();
         State state = $.state;
@@ -301,11 +301,9 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         address ipRoyaltyVault = ROYALTY_MODULE.ipRoyaltyVaults($.ipId);
         if (ipRoyaltyVault == address(0)) revert Errors.AscCurate__IpRoyaltyVaultNotDeployed($.ipId);
 
-        IIPAccount(payable($.ipId)).execute(
-            ipRoyaltyVault,
-            0,
-            abi.encodeWithSelector(IERC20.transferFrom.selector, $.ipId, stakingContract, ROYALTY_MODULE.maxPercent())
-        );
+        if (IERC20(ipRoyaltyVault).allowance($.admin, address(this)) < ROYALTY_MODULE.maxPercent())
+            revert Errors.AscCurate__InsufficientAllowance($.admin, ipRoyaltyVault, ROYALTY_MODULE.maxPercent());
+        IERC20(ipRoyaltyVault).transferFrom($.admin, stakingContract, ROYALTY_MODULE.maxPercent());
 
         emit ProjectLaunched({ ipId: $.ipId, bioToken: bioToken, stakingContract: stakingContract });
     }

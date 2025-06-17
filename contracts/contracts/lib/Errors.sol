@@ -174,6 +174,14 @@ library Errors {
      */
     error AscCurate__IpRoyaltyVaultNotDeployed(address ipId);
 
+    /**
+     * @notice Thrown when the allowance is insufficient
+     * @param spender The address of the spender
+     * @param token The address of the token
+     * @param amount The amount of the token
+     */
+    error AscCurate__InsufficientAllowance(address spender, address token, uint256 amount);
+
     ////////////////////////////////////////////////////////////////////////////
     //                           AscCurateFactory Errors                    //
     ////////////////////////////////////////////////////////////////////////////
