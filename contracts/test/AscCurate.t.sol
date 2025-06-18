@@ -166,12 +166,14 @@ contract AscCurateTest is BaseTest, ERC721Holder {
         // Transfer NFT to the AscCurate contract before launching project
         IERC721(address(spgNftPublic)).approve(address(ascCurateInstance), testIpNftTokenId);
         IERC721(address(spgNftPublic)).transferFrom(u.admin, address(ascCurateInstance), testIpNftTokenId);
-        address ipRoyaltyVault = royaltyModule.ipRoyaltyVaults(testIpId);
-        IERC20(ipRoyaltyVault).approve(address(ascCurateInstance), royaltyModule.maxPercent());
         vm.stopPrank();
         // Admin launches project
         IAscStaking.InitData memory stakingInitData = _createStakingInitData(testIpId);
         
+        address ipRoyaltyVault = royaltyModule.ipRoyaltyVaults(testIpId);
+        // Verify the IP has the full royalty vault tokens suppy
+        assertEq(IERC20(ipRoyaltyVault).balanceOf(testIpId), IERC20(ipRoyaltyVault).totalSupply());
+
         vm.prank(u.admin);
         (address bioToken, address stakingContract) = ascCurateInstance.launchProject(
             address(bioTokenTemplate),
@@ -179,11 +181,12 @@ contract AscCurateTest is BaseTest, ERC721Holder {
             stakingInitData
         );
 
-        // Verify contracts were deployed
         assertTrue(bioToken != address(0), "Bio token should be deployed");
         assertTrue(stakingContract != address(0), "Staking contract should be deployed");
         assertEq(ascCurateInstance.getBioToken(), bioToken);
         assertEq(ascCurateInstance.getStakingContract(), stakingContract);
+        
+        assertEq(IERC20(ipRoyaltyVault).balanceOf(stakingContract), IERC20(ipRoyaltyVault).totalSupply());
     }
 
     function test_AscCurate_claimBioTokens() public {
@@ -210,8 +213,6 @@ contract AscCurateTest is BaseTest, ERC721Holder {
         // The testIpId was created from spgNftPublic token ID 1 in BaseTest
         IERC721(address(spgNftPublic)).approve(address(ascCurateInstance), testIpNftTokenId);
         IERC721(address(spgNftPublic)).transferFrom(u.admin, address(ascCurateInstance), testIpNftTokenId);
-        address ipRoyaltyVault = royaltyModule.ipRoyaltyVaults(testIpId);
-        IERC20(address(ipRoyaltyVault)).approve(address(ascCurateInstance), royaltyModule.maxPercent());
         vm.stopPrank();
 
         IAscStaking.InitData memory stakingInitData = _createStakingInitData(testIpId);

@@ -48,13 +48,9 @@ contract AscStakingTest is BaseTest {
         vm.stopPrank();
         
         // Transfer royalty vault tokens to staking contract so it can claim royalties
-        // The royalty tokens are initially distributed to u.admin (100% in BaseTest setup)
         address ipRoyaltyVault = royaltyModule.ipRoyaltyVaults(testIpId);
-        uint256 availableBalance = IERC20(ipRoyaltyVault).balanceOf(u.admin);
-        if (availableBalance > 0) {
-            vm.prank(u.admin);
-            IERC20(ipRoyaltyVault).transfer(address(ascStaking), availableBalance);
-        }
+        vm.prank(testIpId);
+        IERC20(ipRoyaltyVault).transfer(address(ascStaking), IERC20(ipRoyaltyVault).balanceOf(testIpId));
         
         // Mint tokens to test users
         stakingTokenA.mint(u.alice, 10000 * 10 ** stakingTokenA.decimals());
