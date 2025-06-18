@@ -175,12 +175,9 @@ library Errors {
     error AscCurate__IpRoyaltyVaultNotDeployed(address ipId);
 
     /**
-     * @notice Thrown when the allowance is insufficient
-     * @param spender The address of the spender
-     * @param allowance The allowance of the spender
-     * @param expectedAllowance The expected allowance
+     * @notice Thrown when the IP royalty vault transfer failed
      */
-    error AscCurate__InsufficientRoyaltyVaultAllowance(address spender, uint256 allowance, uint256 expectedAllowance);
+    error AscCurate__IpRoyaltyVaultTransferFailed(address ascVault, address ipId);
 
     ////////////////////////////////////////////////////////////////////////////
     //                           AscCurateFactory Errors                    //

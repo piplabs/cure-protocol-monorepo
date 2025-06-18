@@ -45,6 +45,7 @@ contract BaseTest is Test, PeripheryBaseTest {
     uint256 internal testMinimalIpTokenForLaunch;
     uint256 internal testTotalBioTokenSupply;
     WorkflowStructs.LicenseTermsData[] internal licenseTerms;
+    uint256[] internal licenseTermsIds;
 
     function setUp() public virtual override {
         super.setUp();
@@ -54,6 +55,7 @@ contract BaseTest is Test, PeripheryBaseTest {
 
     function _setUpTestParams() internal virtual {
         rewardToken = mockToken;
+        vm.label(address(rewardToken), "RewardToken");
         testRewardDistributionPeriod = 1_000_000; // 1 million blocks
         testBioTokenAllocPoints = 100;
 
@@ -61,7 +63,7 @@ contract BaseTest is Test, PeripheryBaseTest {
             WorkflowStructs.LicenseTermsData({
                 terms: PILFlavors.commercialRemix({
                     mintingFee: 100 * 10 ** MockERC20(rewardToken).decimals(), // 100 reward tokens
-                    commercialRevShare: 10_000_000, // 10%
+                    commercialRevShare: 10 * 10 ** 6, // 10%
                     royaltyPolicy: royaltyPolicyLAPAddr,
                     currencyToken: address(rewardToken)
                 }),
@@ -78,28 +80,39 @@ contract BaseTest is Test, PeripheryBaseTest {
             })
         );
 
-        WorkflowStructs.RoyaltyShare[] memory royaltyShares = new WorkflowStructs.RoyaltyShare[](1);
-        royaltyShares[0] = WorkflowStructs.RoyaltyShare({
-            recipient: u.admin,
-            percentage: 100_000_000 // 100%
-        });
-
         vm.startPrank(u.admin);
-        mockToken.mint(u.admin, 1 * 10 ** mockToken.decimals());
+        mockToken.mint(u.admin, 1000 * 10 ** mockToken.decimals());
         mockToken.approve(address(spgNftPublic), 1 * 10 ** mockToken.decimals());
-        (testIpId, testIpNftTokenId, ) = royaltyTokenDistributionWorkflows
-            .mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens({
+        (testIpId, testIpNftTokenId, licenseTermsIds) = licenseAttachmentWorkflows
+            .mintAndRegisterIpAndAttachPILTerms({
                 spgNftContract: address(spgNftPublic),
                 recipient: u.admin,
                 ipMetadata: ipMetadataDefault,
                 licenseTermsData: licenseTerms,
-                royaltyShares: royaltyShares,
                 allowDuplicates: true
             });
+        vm.label(testIpId, "IpId");
+        uint256 licenseTermsId = licenseTermsIds[0];
+        (address defaultLicenseTemplate, ) = licenseRegistry.getDefaultLicenseTerms();
+        
+        mockToken.approve(address(royaltyModule), 100 * 10 ** mockToken.decimals());
+        
+        licensingModule.mintLicenseTokens({
+            licensorIpId: testIpId,
+            licenseTemplate: defaultLicenseTemplate,
+            licenseTermsId: licenseTermsId,
+            amount: 1,
+            receiver: testIpId,
+            royaltyContext: "",
+            maxMintingFee: 0,
+            maxRevenueShare: 0
+        });
+        
         vm.stopPrank();
 
         vm.label(testIpId, "IpId");
         vm.label(address(rewardToken), "RewardToken");
+        vm.label(u.admin, "Admin");
 
         testExpirationTime = block.timestamp + 30 days;
         testFundReceiver = u.dan;

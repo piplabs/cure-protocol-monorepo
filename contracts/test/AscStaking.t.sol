@@ -40,7 +40,7 @@ contract AscStakingTest is BaseTest {
                 )
             )
         );
-        
+        vm.label(address(ascStaking), "AscStaking");
         // Add initial staking pools (bioToken is already added during initialization)
         vm.startPrank(u.admin);
         ascStaking.addStakingPool(address(stakingTokenA), allocPointsA);
@@ -48,13 +48,11 @@ contract AscStakingTest is BaseTest {
         vm.stopPrank();
         
         // Transfer royalty vault tokens to staking contract so it can claim royalties
-        // The royalty tokens are initially distributed to u.admin (100% in BaseTest setup)
         address ipRoyaltyVault = royaltyModule.ipRoyaltyVaults(testIpId);
-        uint256 availableBalance = IERC20(ipRoyaltyVault).balanceOf(u.admin);
-        if (availableBalance > 0) {
-            vm.prank(u.admin);
-            IERC20(ipRoyaltyVault).transfer(address(ascStaking), availableBalance);
-        }
+        vm.label(ipRoyaltyVault, "IpRoyaltyVault");
+        uint256 balance = IERC20(ipRoyaltyVault).balanceOf(testIpId);
+        vm.prank(testIpId);
+        IERC20(ipRoyaltyVault).transfer(address(ascStaking), balance);
         
         // Mint tokens to test users
         stakingTokenA.mint(u.alice, 10000 * 10 ** stakingTokenA.decimals());
