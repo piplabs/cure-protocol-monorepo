@@ -262,8 +262,9 @@ contract AscStaking is IAscStaking, ReentrancyGuardUpgradeable {
         if (numberOfBlocks == 0) revert Errors.AscStaking__ZeroRewardDistributionPeriod();
         // will be applied to the next distribution period
         AscStakingStorage storage $ = _getAscStakingStorage();
+        uint256 oldPeriod = $.rewardDistributionPeriod;
         $.rewardDistributionPeriod = numberOfBlocks;
-        emit RewardDistributionPeriodUpdated($.rewardDistributionPeriod, numberOfBlocks);
+        emit RewardDistributionPeriodUpdated(oldPeriod, numberOfBlocks);
     }
 
     /**
@@ -369,7 +370,8 @@ contract AscStaking is IAscStaking, ReentrancyGuardUpgradeable {
      * @param staker The address of the staker
      * @return pendingRewards The pending rewards of the staker
      */
-    function getPendingRewardsForStaker(address stakingToken, address staker) external view returns (uint256) {
+    function getPendingRewardsForStaker(address stakingToken, address staker) external returns (uint256) {
+        _updateStakerRewardInPool(stakingToken, staker);
         return _getAscStakingStorage().poolInfo[stakingToken].pendingRewards[staker];
     }
 
