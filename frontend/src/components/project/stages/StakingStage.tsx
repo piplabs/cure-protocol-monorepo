@@ -1,9 +1,9 @@
+// src/components/project/stages/StakingStage.tsx
 "use client";
 
 import { useState } from "react";
 import { DollarSign, Coins, ArrowUpRight, ExternalLink } from "lucide-react";
 import { Project } from "@/lib/types";
-import { projectDetails } from "@/lib/data/projectDetails";
 import { useStaking } from "@/lib/hooks/useStaking";
 import { useWallet } from "@/lib/hooks/useWallet";
 
@@ -14,79 +14,70 @@ interface StakingStageProps {
 export default function StakingStage({ project }: StakingStageProps) {
   const { isConnected, connectWallet } = useWallet();
 
-  // Get project-specific staking details
-  const projectDetail = projectDetails[project.id];
-  const stakingContractAddress = projectDetail?.stakingContract?.address;
-  const stakingTokenInfo = projectDetail?.stakingContract?.stakingToken;
-  const rewardTokenInfo = projectDetail?.stakingContract?.rewardToken;
-
   const {
     loading,
     stakingData,
     tokenBalances,
     statusMessage,
     contractAddress,
+    bioTokenAddress,
+    isProjectLaunched,
     stakeTokens,
     unstakeTokens,
     claimRewards,
     collectRoyalties,
-  } = useStaking(stakingContractAddress);
+  } = useStaking(project.id);
 
   const [stakeAmount, setStakeAmount] = useState("");
   const [unstakeAmount, setUnstakeAmount] = useState("");
 
   const handleStake = async () => {
-    if (!stakeAmount || parseFloat(stakeAmount) <= 0 || !stakingTokenInfo)
-      return;
-    await stakeTokens(stakingTokenInfo.address, stakeAmount);
+    if (!stakeAmount || parseFloat(stakeAmount) <= 0) return;
+    await stakeTokens(stakeAmount);
     setStakeAmount("");
   };
 
   const handleUnstake = async () => {
-    if (!unstakeAmount || parseFloat(unstakeAmount) <= 0 || !stakingTokenInfo)
-      return;
-    await unstakeTokens(stakingTokenInfo.address, unstakeAmount);
+    if (!unstakeAmount || parseFloat(unstakeAmount) <= 0) return;
+    await unstakeTokens(unstakeAmount);
     setUnstakeAmount("");
   };
 
+  const bioTokenSymbol = "BIO"; // You might want to fetch this dynamically
+  const bioBalance = tokenBalances.BIO || tokenBalances[bioTokenSymbol] || "0";
+
   const canStake =
     isConnected &&
-    stakingTokenInfo &&
-    parseFloat(tokenBalances[stakingTokenInfo.symbol] || "0") >=
-      parseFloat(stakeAmount || "0") &&
+    isProjectLaunched &&
+    parseFloat(bioBalance) >= parseFloat(stakeAmount || "0") &&
     parseFloat(stakeAmount || "0") > 0 &&
     !loading.stake &&
     contractAddress !== "0x0000000000000000000000000000000000000000";
 
   const canUnstake =
     isConnected &&
+    isProjectLaunched &&
     parseFloat(stakingData?.userStaked || "0") >=
       parseFloat(unstakeAmount || "0") &&
     parseFloat(unstakeAmount || "0") > 0 &&
     !loading.unstake &&
     contractAddress !== "0x0000000000000000000000000000000000000000";
 
-  // If no staking contract is configured for this project
-  if (
-    !stakingContractAddress ||
-    !stakingTokenInfo ||
-    contractAddress === "0x0000000000000000000000000000000000000000"
-  ) {
+  // If project is not launched yet
+  if (!isProjectLaunched) {
     return (
       <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-12 backdrop-blur-sm text-center">
         <h3 className="text-2xl font-bold text-white mb-4">
           Staking Not Available
         </h3>
         <p className="text-gray-400 mb-6">
-          {!stakingContractAddress || !stakingTokenInfo
-            ? "Staking contract has not been configured for this project yet."
-            : "Staking contract has not been deployed yet. Complete the curation phase and launch the project first."}
+          This project has not been launched yet. Complete the curation phase
+          and launch the project first to enable staking.
         </p>
-        {stakingTokenInfo && (
-          <div className="text-sm text-gray-500">
-            Expected staking token: {stakingTokenInfo.symbol}
-          </div>
-        )}
+        <div className="text-sm text-gray-500">
+          The BIO token and staking contracts will be deployed during the launch
+          process.
+        </div>
       </div>
     );
   }
@@ -106,8 +97,8 @@ export default function StakingStage({ project }: StakingStageProps) {
             Connect Wallet to Stake
           </h3>
           <p className="text-gray-400 mb-6">
-            Connect your wallet to stake {stakingTokenInfo.symbol} tokens and
-            earn rewards
+            Connect your wallet to stake {bioTokenSymbol} tokens and earn
+            rewards
           </p>
           <button
             onClick={connectWallet}
@@ -126,18 +117,35 @@ export default function StakingStage({ project }: StakingStageProps) {
                   {project.name} Staking
                 </h2>
                 <p className="text-gray-400">
-                  Stake {stakingTokenInfo.symbol} tokens to earn{" "}
-                  {rewardTokenInfo?.symbol || stakingTokenInfo.symbol} rewards
+                  Stake {bioTokenSymbol} tokens to earn rewards
                 </p>
               </div>
               <div className="text-right">
                 <div className="text-sm text-gray-400">Staking Token</div>
                 <div className="text-xl font-bold text-green-400">
-                  {stakingTokenInfo.symbol}
+                  {bioTokenSymbol}
                 </div>
                 <div className="text-xs text-gray-500">
                   Contract: {contractAddress.slice(0, 6)}...
                   {contractAddress.slice(-4)}
+                </div>
+              </div>
+            </div>
+
+            {/* Contract Addresses Display */}
+            <div className="mt-4 p-4 bg-gray-800/30 rounded-xl border border-gray-700/50">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-400">BIO Token:</span>
+                  <div className="text-white font-mono break-all">
+                    {bioTokenAddress}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-gray-400">Staking Contract:</span>
+                  <div className="text-white font-mono break-all">
+                    {contractAddress}
+                  </div>
                 </div>
               </div>
             </div>
@@ -148,7 +156,7 @@ export default function StakingStage({ project }: StakingStageProps) {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-white">Stake Tokens</h3>
                 <div className="text-xs text-gray-400">
-                  Token: {stakingTokenInfo.symbol}
+                  Token: {bioTokenSymbol}
                 </div>
               </div>
 
@@ -159,7 +167,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       <DollarSign className="w-4 h-4 text-white" />
                     </div>
                     <span className="text-white font-medium">
-                      {stakingTokenInfo.symbol}
+                      {bioTokenSymbol}
                     </span>
                   </div>
                   <div className="text-right">
@@ -171,10 +179,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       className="bg-transparent text-white font-bold text-right outline-none w-24"
                     />
                     <div className="text-gray-400 text-sm">
-                      MAX:{" "}
-                      {parseFloat(
-                        tokenBalances[stakingTokenInfo.symbol] || "0"
-                      ).toFixed(4)}
+                      MAX: {parseFloat(bioBalance).toFixed(4)}
                     </div>
                   </div>
                 </div>
@@ -192,7 +197,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       <Coins className="w-4 h-4 text-white" />
                     </div>
                     <span className="text-white font-medium">
-                      Staked {stakingTokenInfo.symbol}
+                      Staked {bioTokenSymbol}
                     </span>
                   </div>
                   <div className="text-right">
@@ -213,7 +218,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       YOU WILL STAKE
                     </span>
                     <span className="text-white font-bold">
-                      {stakeAmount || "0.000"} {stakingTokenInfo.symbol}
+                      {stakeAmount || "0.000"} {bioTokenSymbol}
                     </span>
                   </div>
                 </div>
@@ -226,14 +231,14 @@ export default function StakingStage({ project }: StakingStageProps) {
                   {loading.stake && (
                     <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />
                   )}
-                  {loading.stake
-                    ? "Staking..."
-                    : `Stake ${stakingTokenInfo.symbol}`}
+                  {loading.stake ? "Staking..." : `Stake ${bioTokenSymbol}`}
                 </button>
 
                 {!canStake && stakeAmount && parseFloat(stakeAmount) > 0 && (
                   <div className="text-xs text-red-400 p-3 bg-red-900/20 rounded-lg border border-red-700/50">
-                    Insufficient {stakingTokenInfo.symbol} balance
+                    {!isProjectLaunched
+                      ? "Project not launched yet"
+                      : `Insufficient ${bioTokenSymbol} balance`}
                   </div>
                 )}
               </div>
@@ -248,13 +253,9 @@ export default function StakingStage({ project }: StakingStageProps) {
                 <div className="text-center">
                   <div className="text-gray-400 text-sm mb-1">TOTAL STAKED</div>
                   <div className="text-2xl font-bold text-white">
-                    {stakingData?.totalStaked ||
-                      projectDetail?.staking?.totalStaked ||
-                      "0"}
+                    {stakingData?.totalStaked || "0"}
                   </div>
-                  <div className="text-xs text-gray-400">
-                    {stakingTokenInfo.symbol}
-                  </div>
+                  <div className="text-xs text-gray-400">{bioTokenSymbol}</div>
                 </div>
 
                 <div className="text-center">
@@ -262,7 +263,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                     EST. CURRENT APR
                   </div>
                   <div className="text-2xl font-bold text-green-400">
-                    {stakingData?.apr || projectDetail?.staking?.apr || "TBD"}
+                    {stakingData?.apr || "TBD"}
                   </div>
                 </div>
 
@@ -273,7 +274,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                     </div>
                     <div className="text-white font-medium">
                       {parseFloat(stakingData?.userStaked || "0").toFixed(4)}{" "}
-                      {stakingTokenInfo.symbol}
+                      {bioTokenSymbol}
                     </div>
                   </div>
 
@@ -285,7 +286,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       {parseFloat(stakingData?.pendingRewards || "0").toFixed(
                         4
                       )}{" "}
-                      {rewardTokenInfo?.symbol || stakingTokenInfo.symbol}
+                      {bioTokenSymbol}
                     </div>
                   </div>
 
@@ -341,9 +342,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                     )}
                     {loading.claim
                       ? "Claiming..."
-                      : `Claim ${
-                          rewardTokenInfo?.symbol || stakingTokenInfo.symbol
-                        } Rewards`}
+                      : `Claim ${bioTokenSymbol} Rewards`}
                   </button>
 
                   <button
@@ -363,7 +362,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                   <div className="space-y-1">
                     <div className="flex items-center justify-end gap-2">
                       <span className="text-blue-400 text-sm">
-                        {stakingTokenInfo.symbol}
+                        {bioTokenSymbol}
                       </span>
                       <ExternalLink className="w-3 h-3 text-gray-400" />
                     </div>
@@ -386,13 +385,13 @@ export default function StakingStage({ project }: StakingStageProps) {
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white">
-                {stakingTokenInfo.symbol} Reward History
+                {bioTokenSymbol} Reward History
               </h3>
             </div>
 
             <div className="text-center mb-6">
               <div className="text-gray-400 text-sm mb-2">
-                Track your {stakingTokenInfo.symbol} staking rewards over time.
+                Track your {bioTokenSymbol} staking rewards over time.
               </div>
             </div>
 
@@ -406,7 +405,7 @@ export default function StakingStage({ project }: StakingStageProps) {
             <div className="text-center text-gray-500 py-8">
               <div className="text-lg">No reward history yet</div>
               <div className="text-sm mt-2">
-                Start staking {stakingTokenInfo.symbol} to earn rewards!
+                Start staking {bioTokenSymbol} to earn rewards!
               </div>
             </div>
           </div>

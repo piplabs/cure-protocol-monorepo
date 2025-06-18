@@ -40,7 +40,7 @@ export default function CurationStage({ project }: CurationStageProps) {
       await launchProject({
         fractionalTokenTemplate: "0xf8D299af9CBEd49f50D7844DDD1371157251d0A7", // OwnableERC20 template
         distributionContractTemplate:
-          "0xf8D299af9CBEd49f50D7844DDD1371157251d0A7", // OwnableERC20 template
+          "0xF65729de9784e70dbCB744b3f7A52a49421baE9D", // AscStaking template
         admin: account, // current user's address,
         rewardToken: "0x1514000000000000000000000000000000000000", // $WIP on testnet
       });
@@ -196,7 +196,7 @@ export default function CurationStage({ project }: CurationStageProps) {
 
                 <div className="space-y-2">
                   <label className="text-gray-400 text-sm">
-                    You've committed
+                    You&apos;ve committed
                   </label>
                   <div className="text-right text-gray-400">
                     {curationData?.userCommitted || "0"} $IP

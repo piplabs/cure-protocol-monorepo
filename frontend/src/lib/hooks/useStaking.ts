@@ -1,11 +1,15 @@
+// src/lib/hooks/useStaking.ts
 import { useState, useEffect } from "react";
 import { formatEther, parseEther } from "viem";
 import { useWallet } from "./useWallet";
+import { useCuration } from "./useCuration";
 import { CONTRACTS, STAKING_ABI, ERC20_ABI } from "@/contracts";
 import type { LoadingStates, StakingData } from "@/lib/types/index";
 
-export function useStaking(stakingContractAddress?: string) {
+export function useStaking(projectId: string) {
   const { account, isConnected, publicClient, walletClient } = useWallet();
+  const { projectLaunchData } = useCuration(projectId); // Get launch data from curation hook
+
   const [loading, setLoading] = useState<LoadingStates>({});
   const [stakingData, setStakingData] = useState<StakingData | null>(null);
   const [tokenBalances, setTokenBalances] = useState<{ [key: string]: string }>(
@@ -13,7 +17,11 @@ export function useStaking(stakingContractAddress?: string) {
   );
   const [statusMessage, setStatusMessage] = useState<string>("");
 
-  const contractAddress = stakingContractAddress || CONTRACTS.AscStaking;
+  // Use the staking contract from launch data, fallback to default
+  const contractAddress =
+    projectLaunchData?.stakingContract || CONTRACTS.AscStaking;
+  const bioTokenAddress = projectLaunchData?.bioToken || CONTRACTS.StakingToken;
+  const isProjectLaunched = projectLaunchData?.isLaunched || false;
 
   const showStatus = (message: string) => {
     setStatusMessage(message);
@@ -29,32 +37,53 @@ export function useStaking(stakingContractAddress?: string) {
       isConnected &&
       account &&
       publicClient &&
+      isProjectLaunched &&
       contractAddress &&
       contractAddress !== "0x0000000000000000000000000000000000000000"
     ) {
       loadStakingData();
       loadTokenBalances();
     }
-  }, [isConnected, account, publicClient, contractAddress]);
+  }, [
+    isConnected,
+    account,
+    publicClient,
+    contractAddress,
+    isProjectLaunched,
+    bioTokenAddress,
+  ]);
 
   const loadTokenBalances = async () => {
-    if (!publicClient || !account) return;
+    if (!publicClient || !account || !bioTokenAddress) return;
 
     try {
       const balances: { [key: string]: string } = {};
 
-      // Load BIO balance if contract exists
-      if (
-        CONTRACTS.StakingToken !== "0x0000000000000000000000000000000000000000"
-      ) {
+      // Load BIO token balance (the launched token)
+      if (bioTokenAddress !== "0x0000000000000000000000000000000000000000") {
         const bioBalance = await publicClient.readContract({
-          address: CONTRACTS.StakingToken,
+          address: bioTokenAddress,
           abi: ERC20_ABI,
           functionName: "balanceOf",
           args: [account],
         });
         balances.BIO = formatEther(bioBalance);
+
+        // Also get the token symbol
+        const symbol = (await publicClient.readContract({
+          address: bioTokenAddress,
+          abi: ERC20_ABI,
+          functionName: "symbol",
+          args: [],
+        })) as string;
+        balances[symbol] = formatEther(bioBalance);
       }
+
+      // Load native IP balance for potential other staking
+      const ipBalance = await publicClient.getBalance({
+        address: account,
+      });
+      balances.IP = formatEther(ipBalance);
 
       setTokenBalances(balances);
     } catch (error) {
@@ -67,34 +96,37 @@ export function useStaking(stakingContractAddress?: string) {
       !publicClient ||
       !account ||
       !contractAddress ||
-      contractAddress === "0x0000000000000000000000000000000000000000"
+      contractAddress === "0x0000000000000000000000000000000000000000" ||
+      !isProjectLaunched
     )
       return;
 
     try {
-      // Load staking data
+      // Load staking data from the actual contract
       // Note: You'll need to add getter functions to your staking contract
-      // or implement view functions to get user staking info, total staked, etc.
+      // For now, using mock data but this should be replaced with real contract calls
 
       setStakingData({
         userStaked: "0",
-        totalStaked: "60,846,596",
+        totalStaked: "0",
         pendingRewards: "0",
-        stakingToken: CONTRACTS.StakingToken,
-        rewardToken: CONTRACTS.StakingToken,
-        apr: "4.50%",
+        stakingToken: bioTokenAddress,
+        rewardToken: bioTokenAddress, // Assuming same token for rewards
+        apr: "0%",
       });
     } catch (error) {
       console.error("Failed to load staking data:", error);
     }
   };
 
-  const stakeTokens = async (tokenAddress: string, amount: string) => {
+  const stakeTokens = async (amount: string) => {
     if (
       !walletClient ||
       !account ||
       !contractAddress ||
-      contractAddress === "0x0000000000000000000000000000000000000000"
+      !bioTokenAddress ||
+      contractAddress === "0x0000000000000000000000000000000000000000" ||
+      !isProjectLaunched
     )
       return;
 
@@ -105,7 +137,7 @@ export function useStaking(stakingContractAddress?: string) {
       // Approve tokens first
       await walletClient.writeContract({
         account,
-        address: tokenAddress,
+        address: bioTokenAddress,
         abi: ERC20_ABI,
         functionName: "approve",
         args: [contractAddress, amountWei],
@@ -113,13 +145,13 @@ export function useStaking(stakingContractAddress?: string) {
 
       showStatus("Token approval successful, staking tokens...");
 
-      // Stake tokens using the updated ABI
+      // Stake tokens
       const hash = await walletClient.writeContract({
         account,
         address: contractAddress,
         abi: STAKING_ABI,
         functionName: "deposit",
-        args: [tokenAddress, amountWei],
+        args: [bioTokenAddress, amountWei],
       });
 
       console.log("Staking hash:", hash);
@@ -136,12 +168,14 @@ export function useStaking(stakingContractAddress?: string) {
     }
   };
 
-  const unstakeTokens = async (tokenAddress: string, amount: string) => {
+  const unstakeTokens = async (amount: string) => {
     if (
       !walletClient ||
       !account ||
       !contractAddress ||
-      contractAddress === "0x0000000000000000000000000000000000000000"
+      !bioTokenAddress ||
+      contractAddress === "0x0000000000000000000000000000000000000000" ||
+      !isProjectLaunched
     )
       return;
 
@@ -154,7 +188,7 @@ export function useStaking(stakingContractAddress?: string) {
         address: contractAddress,
         abi: STAKING_ABI,
         functionName: "withdraw",
-        args: [tokenAddress, amountWei],
+        args: [bioTokenAddress, amountWei],
       });
 
       console.log("Unstaking hash:", hash);
@@ -176,7 +210,8 @@ export function useStaking(stakingContractAddress?: string) {
       !walletClient ||
       !account ||
       !contractAddress ||
-      contractAddress === "0x0000000000000000000000000000000000000000"
+      contractAddress === "0x0000000000000000000000000000000000000000" ||
+      !isProjectLaunched
     )
       return;
 
@@ -211,7 +246,8 @@ export function useStaking(stakingContractAddress?: string) {
       !walletClient ||
       !account ||
       !contractAddress ||
-      contractAddress === "0x0000000000000000000000000000000000000000"
+      contractAddress === "0x0000000000000000000000000000000000000000" ||
+      !isProjectLaunched
     )
       return;
 
@@ -248,6 +284,8 @@ export function useStaking(stakingContractAddress?: string) {
     tokenBalances,
     statusMessage,
     contractAddress,
+    bioTokenAddress,
+    isProjectLaunched,
 
     // Actions
     stakeTokens,
