@@ -11,7 +11,7 @@ interface CurationStageProps {
 }
 
 export default function CurationStage({ project }: CurationStageProps) {
-  const { isConnected, connectWallet } = useWallet();
+  const { account, isConnected, connectWallet } = useWallet();
   const {
     loading,
     curationData,
@@ -38,9 +38,11 @@ export default function CurationStage({ project }: CurationStageProps) {
   const handleLaunch = async () => {
     try {
       await launchProject({
-        fractionalTokenTemplate: "0x0000000000000000000000000000000000000000", // Replace with actual template
+        fractionalTokenTemplate: "0xf8D299af9CBEd49f50D7844DDD1371157251d0A7", // OwnableERC20 template
         distributionContractTemplate:
-          "0x0000000000000000000000000000000000000000", // Replace with actual template
+          "0xf8D299af9CBEd49f50D7844DDD1371157251d0A7", // OwnableERC20 template
+        admin: account, // current user's address,
+        rewardToken: "0x1514000000000000000000000000000000000000", // $WIP on testnet
       });
       setShowLaunchModal(false);
     } catch (error) {

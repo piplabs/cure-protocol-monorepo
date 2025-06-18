@@ -7,6 +7,7 @@ import type { LoadingStates, CurationData } from "@/lib/types/index";
 export function useCuration(projectId: string) {
   const { account, isConnected, publicClient, walletClient } = useWallet();
   const [loading, setLoading] = useState<LoadingStates>({});
+  const [ipId, setIpId] = useState<string | null>(null);
   const [curationData, setCurationData] = useState<CurationData | null>(null);
   const [ipBalance, setIpBalance] = useState<string>("0");
   const [statusMessage, setStatusMessage] = useState<string>("");
@@ -45,11 +46,33 @@ export function useCuration(projectId: string) {
     if (!publicClient || !account) return;
 
     try {
-      // TODO: load real curation data from the contract
+      const totalCommitted = await publicClient.readContract({
+        address: CONTRACTS.AscCurate,
+        abi: CURATE_ABI,
+        functionName: "getTotalDeposited",
+      });
+
+      console.log("Total committed:", formatEther(totalCommitted));
+
+      const ipId = await publicClient.readContract({
+        address: CONTRACTS.AscCurate,
+        abi: CURATE_ABI,
+        functionName: "getIpId",
+      });
+      setIpId(ipId);
+
+      const userCommitted = await publicClient.readContract({
+        address: CONTRACTS.AscCurate,
+        abi: CURATE_ABI,
+        functionName: "getDepositedAmount",
+        args: [account],
+      });
+
+      console.log("User committed:", formatEther(userCommitted));
 
       setCurationData({
-        totalCommitted: "663.88K",
-        userCommitted: "0",
+        totalCommitted: formatEther(totalCommitted),
+        userCommitted: formatEther(userCommitted),
         curationLimit: "2.25M",
         isActive: true,
         canClaim: false,
@@ -164,7 +187,10 @@ export function useCuration(projectId: string) {
           initData.distributionContractTemplate,
           {
             admin: initData.admin || account,
+            ipId: ipId,
+            rewardDistributionPeriod: 288000,
             rewardToken: initData.rewardToken || CONTRACTS.StakingToken,
+            bioTokenAllocPoints: 100,
           },
         ],
       });

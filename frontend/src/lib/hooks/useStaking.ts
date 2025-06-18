@@ -56,9 +56,6 @@ export function useStaking(stakingContractAddress?: string) {
         balances.BIO = formatEther(bioBalance);
       }
 
-      // Add more token balances as needed
-      // Example: FRAX, USDC, etc.
-
       setTokenBalances(balances);
     } catch (error) {
       console.error("Failed to load token balances:", error);
