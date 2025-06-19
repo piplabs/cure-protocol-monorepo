@@ -102,14 +102,32 @@ export function useStaking(projectId: string) {
       return;
 
     try {
-      // Load staking data from the actual contract
-      // Note: You'll need to add getter functions to your staking contract
-      // For now, using mock data but this should be replaced with real contract calls
+      const userStaked = await publicClient.readContract({
+        address: contractAddress,
+        abi: STAKING_ABI,
+        functionName: "getUserStakedBalance",
+        args: [bioTokenAddress, account],
+      });
+      // Get total staked in the pool
+      const totalStaked = await publicClient.readContract({
+        address: contractAddress,
+        abi: STAKING_ABI,
+        functionName: "getPoolTotalStakedBalance",
+        args: [bioTokenAddress],
+      });
+
+      // Get pending rewards for the user
+      const pendingRewards = await publicClient.readContract({
+        address: contractAddress,
+        abi: STAKING_ABI,
+        functionName: "getPendingRewardsForStaker",
+        args: [bioTokenAddress, account],
+      });
 
       setStakingData({
-        userStaked: "0",
-        totalStaked: "0",
-        pendingRewards: "0",
+        userStaked: formatEther(userStaked),
+        totalStaked: formatEther(totalStaked),
+        pendingRewards: formatEther(pendingRewards),
         stakingToken: bioTokenAddress,
         rewardToken: bioTokenAddress, // Assuming same token for rewards
         apr: "0%",

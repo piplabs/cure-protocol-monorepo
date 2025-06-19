@@ -178,8 +178,19 @@ export default function StakingStage({ project }: StakingStageProps) {
                       onChange={(e) => setStakeAmount(e.target.value)}
                       className="bg-transparent text-white font-bold text-right outline-none w-24"
                     />
-                    <div className="text-gray-400 text-sm">
-                      MAX: {parseFloat(bioBalance).toFixed(4)}
+                    <div className="flex justify-end mt-1">
+                      <button
+                        type="button"
+                        onClick={() => setStakeAmount(bioBalance)}
+                        className="text-green-400 hover:underline focus:outline-none text-sm"
+                        style={{
+                          background: "none",
+                          border: "none",
+                          padding: 0,
+                        }}
+                      >
+                        MAX: {parseFloat(bioBalance).toFixed(4)}
+                      </button>
                     </div>
                   </div>
                 </div>
