@@ -286,7 +286,7 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         address bioTokenTemplate,
         address stakingContractTemplate,
         IAscStaking.InitData memory initData
-    ) external onlyAdmin returns (address bioToken, address stakingContract) {
+    ) external returns (address bioToken, address stakingContract) {
         _checkAndUpdateState();
         AscCurateStorage storage $ = _getAscCurateStorage();
         State state = $.state;
@@ -304,8 +304,9 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         bytes memory transferResult = IIPAccount(payable($.ipId)).execute(
             ipRoyaltyVault,
             0,
-            abi.encodeWithSignature("transfer(address,uint256)", stakingContract, IERC20(ipRoyaltyVault).balanceOf($.ipId))
+            abi.encodeWithSignature("transfer(address,uint256)", stakingContract, ROYALTY_MODULE.maxPercent())
         );
+
         if (abi.decode(transferResult, (bool)) == false)
             revert Errors.AscCurate__IpRoyaltyVaultTransferFailed(ipRoyaltyVault, $.ipId);
         
@@ -513,3 +514,4 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         }
     }
 }
+
