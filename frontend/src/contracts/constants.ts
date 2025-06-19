@@ -1,7 +1,7 @@
 import { defineChain } from "viem";
 
 export const CONTRACTS = {
-  AscCurate: "0x0000000000000000000000000000000000000000" as const, // Replace with actual address
+  AscCurate: "0x21E47965eD8DB12Da76aDB58092A3c6282B95759" as const, // Replace with actual address
   AscStaking: "0x0000000000000000000000000000000000000000" as const, // Replace with actual address
   StakingToken: "0x0000000000000000000000000000000000000000" as const, // Replace with actual address
 } as const;
