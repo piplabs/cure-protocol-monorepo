@@ -200,7 +200,7 @@ interface IAscStaking {
      * @param staker The address of the staker
      * @return pendingRewards The pending rewards for the staker
      */
-    function getPendingRewardsForStaker(address stakingToken, address staker) external view returns (uint256);
+    function getPendingRewardsForStaker(address stakingToken, address staker) external returns (uint256);
 
     /**
      * @dev Gets the upgradeable beacon address
