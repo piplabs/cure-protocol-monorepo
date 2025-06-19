@@ -302,6 +302,36 @@ export function useCuration(projectId: string) {
     }
   };
 
+  const claimBioTokens = async () => {
+    if (!walletClient || !account) return;
+    setLoadingState("claimBioTokens", true);
+    try {
+      const tx = await walletClient.writeContract({
+        account,
+        address: CONTRACTS.AscCurate,
+        abi: CURATE_ABI,
+        functionName: "claimBioTokens",
+        args: [account],
+      });
+      showStatus("Claim transaction sent! Waiting for confirmation...");
+      const receipt = await publicClient.waitForTransactionReceipt({
+        hash: tx,
+      });
+      showStatus("Bio tokens claimed successfully!");
+      // Optionally, refresh curation data
+      await loadCurationData();
+      return receipt;
+    } catch (error: any) {
+      console.error("Failed to claim bio tokens:", error);
+      showStatus(
+        `Failed to claim bio tokens: ${error.message || "Unknown error"}`
+      );
+      throw error;
+    } finally {
+      setLoadingState("claimBioTokens", false);
+    }
+  };
+
   return {
     // State
     loading,
@@ -319,5 +349,6 @@ export function useCuration(projectId: string) {
     loadIpBalance,
     loadProjectLaunchData,
     showStatus,
+    claimBioTokens,
   };
 }

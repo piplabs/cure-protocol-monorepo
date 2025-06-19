@@ -15,17 +15,30 @@ export default function CurationStage({ project }: CurationStageProps) {
   const {
     loading,
     curationData,
+    projectLaunchData,
     ipBalance,
     statusMessage,
     commitToCuration,
     withdrawFromCuration,
     claimRefund,
     launchProject,
+    claimBioTokens,
   } = useCuration(project.id);
 
   const [commitAmount, setCommitAmount] = useState("");
   const [showLaunchModal, setShowLaunchModal] = useState(false);
+  const [showClaimModal, setShowClaimModal] = useState(false);
   const details = projectDetails[project.id]?.curationDetails;
+  const launchData = projectDetails[project.id]?.launchData;
+  const isLaunched = !!(
+    projectLaunchData &&
+    projectLaunchData.bioToken &&
+    projectLaunchData.stakingContract &&
+    projectLaunchData.bioToken !==
+      "0x0000000000000000000000000000000000000000" &&
+    projectLaunchData.stakingContract !==
+      "0x0000000000000000000000000000000000000000"
+  );
 
   if (!details) return <div>Curation details not available</div>;
 
@@ -55,6 +68,12 @@ export default function CurationStage({ project }: CurationStageProps) {
     parseFloat(ipBalance) >= parseFloat(commitAmount || "0") &&
     parseFloat(commitAmount || "0") > 0 &&
     !loading.commit;
+
+  // Show claim modal if user has deposited > 0 and project is launched
+  const canClaimBioTokens =
+    isLaunched &&
+    curationData &&
+    parseFloat(curationData.userCommitted || "0") > 0;
 
   return (
     <div className="space-y-8">
@@ -119,7 +138,7 @@ export default function CurationStage({ project }: CurationStageProps) {
             </div>
 
             {/* Admin Launch Button */}
-            {isConnected && (
+            {isConnected && !isLaunched && (
               <div className="mt-6 pt-6 border-t border-gray-700">
                 <button
                   onClick={() => setShowLaunchModal(true)}
@@ -130,6 +149,18 @@ export default function CurationStage({ project }: CurationStageProps) {
                     <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
                   )}
                   {loading.launch ? "Launching Project..." : "Launch Project"}
+                </button>
+              </div>
+            )}
+
+            {/* Claim BioTokens Button (opens modal) */}
+            {isConnected && canClaimBioTokens && (
+              <div className="mt-6">
+                <button
+                  onClick={() => setShowClaimModal(true)}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  Claim BioTokens
                 </button>
               </div>
             )}
@@ -326,6 +357,45 @@ export default function CurationStage({ project }: CurationStageProps) {
                   <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />
                 )}
                 {loading.launch ? "Launching..." : "Launch"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Claim BioTokens Modal */}
+      {showClaimModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 className="text-2xl font-bold text-white mb-4">
+              Claim BioTokens
+            </h3>
+            <p className="text-gray-400 mb-6">
+              You have deposited {curationData?.userCommitted} $IP. The project
+              has been launched. You can now claim your BioTokens.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowClaimModal(false)}
+                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await claimBioTokens();
+                    setShowClaimModal(false);
+                  } catch {}
+                }}
+                disabled={loading.claimBioTokens}
+                className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                {loading.claimBioTokens ? (
+                  <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />
+                ) : (
+                  "Claim"
+                )}
               </button>
             </div>
           </div>
