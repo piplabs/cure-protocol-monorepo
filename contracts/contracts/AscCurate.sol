@@ -138,8 +138,6 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         if (initData.fundReceiver == address(0)) revert Errors.AscCurate__ZeroFundReceiverAddress();
         if (IP_ASSET_REGISTRY.ipId(block.chainid, initData.ipNft, initData.ipNftTokenId) != initData.ipId)
             revert Errors.AscCurate__IpNotRegistered(initData.ipNft, initData.ipNftTokenId, initData.ipId);
-        if (IERC721(initData.ipNft).ownerOf(initData.ipNftTokenId) != address(this))
-            revert Errors.AscCurate__IpNotTransferredToCurate(initData.ipId, initData.ipNft, initData.ipNftTokenId);
 
         AscCurateStorage storage $ = _getAscCurateStorage();
         $.admin = initData.admin;
@@ -294,18 +292,24 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         State state = $.state;
         if (state != State.Closed) revert Errors.AscCurate__CurateNotClosed(state);
 
+        if (IERC721($.ipNft).ownerOf($.ipNftTokenId) != address(this))
+            revert Errors.AscCurate__IpNotTransferredToCurate($.ipId, $.ipNft, $.ipNftTokenId);
+
         bioToken = _deployBioToken($.ipId, bioTokenTemplate);
         stakingContract = _deployStakingContract(stakingContractTemplate, bioToken, initData);
 
         address ipRoyaltyVault = ROYALTY_MODULE.ipRoyaltyVaults($.ipId);
         if (ipRoyaltyVault == address(0)) revert Errors.AscCurate__IpRoyaltyVaultNotDeployed($.ipId);
 
-        IIPAccount(payable($.ipId)).execute(
+        bytes memory transferResult = IIPAccount(payable($.ipId)).execute(
             ipRoyaltyVault,
             0,
-            abi.encodeWithSelector(IERC20.transferFrom.selector, $.ipId, stakingContract, ROYALTY_MODULE.maxPercent())
+            abi.encodeWithSignature("transfer(address,uint256)", stakingContract, ROYALTY_MODULE.maxPercent())
         );
 
+        if (abi.decode(transferResult, (bool)) == false)
+            revert Errors.AscCurate__IpRoyaltyVaultTransferFailed(ipRoyaltyVault, $.ipId);
+        
         emit ProjectLaunched({ ipId: $.ipId, bioToken: bioToken, stakingContract: stakingContract });
     }
 
@@ -510,3 +514,4 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         }
     }
 }
+
