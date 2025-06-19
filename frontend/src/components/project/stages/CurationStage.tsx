@@ -29,7 +29,6 @@ export default function CurationStage({ project }: CurationStageProps) {
   const [showLaunchModal, setShowLaunchModal] = useState(false);
   const [showClaimModal, setShowClaimModal] = useState(false);
   const details = projectDetails[project.id]?.curationDetails;
-  const launchData = projectDetails[project.id]?.launchData;
   const isLaunched = !!(
     projectLaunchData &&
     projectLaunchData.bioToken &&
