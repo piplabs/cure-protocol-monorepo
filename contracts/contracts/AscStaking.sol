@@ -370,8 +370,7 @@ contract AscStaking is IAscStaking, ReentrancyGuardUpgradeable {
      * @param staker The address of the staker
      * @return pendingRewards The pending rewards of the staker
      */
-    function getPendingRewardsForStaker(address stakingToken, address staker) external returns (uint256) {
-        _updateStakerRewardInPool(stakingToken, staker);
+    function getPendingRewardsForStaker(address stakingToken, address staker) external view returns (uint256) {
         return _getAscStakingStorage().poolInfo[stakingToken].pendingRewards[staker];
     }
 
