@@ -14,6 +14,7 @@ export interface Project {
 export interface ProjectDetails {
   fullDescription?: string;
   curationDetails?: {
+    address: string;
     bioCommitted: string;
     curationLimit: string;
     totalSupply: string;

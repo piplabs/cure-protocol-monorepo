@@ -12,6 +12,8 @@ interface CurationStageProps {
 
 export default function CurationStage({ project }: CurationStageProps) {
   const { account, isConnected, connectWallet } = useWallet();
+  const details = projectDetails[project.id]?.curationDetails;
+  const curateAddress = details?.address || "";
   const {
     loading,
     curationData,
@@ -23,12 +25,11 @@ export default function CurationStage({ project }: CurationStageProps) {
     claimRefund,
     launchProject,
     claimBioTokens,
-  } = useCuration(project.id);
+  } = useCuration(project.id, curateAddress);
 
   const [commitAmount, setCommitAmount] = useState("");
   const [showLaunchModal, setShowLaunchModal] = useState(false);
   const [showClaimModal, setShowClaimModal] = useState(false);
-  const details = projectDetails[project.id]?.curationDetails;
   const isLaunched = !!(
     projectLaunchData &&
     projectLaunchData.bioToken &&
