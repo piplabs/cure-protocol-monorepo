@@ -455,7 +455,6 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
      */
     function getBioTokensClaimable(address user) external view returns (uint256) {
         AscCurateStorage storage $ = _getAscCurateStorage();
-        if ($.state != State.Closed) revert Errors.AscCurate__CurateNotClosed($.state);
         if ($.deposits[user] == 0 || $.bioTokenClaimed[user]) return 0;
 
         return ($.deposits[user] * TOTAL_BIO_TOKEN_SUPPLY) / $.totalDeposits;
