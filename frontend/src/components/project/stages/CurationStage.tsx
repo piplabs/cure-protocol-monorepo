@@ -67,14 +67,14 @@ export default function CurationStage({ project }: CurationStageProps) {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-green-400 font-medium">Live</span>
+              <div className="w-3 h-3 bg-[#00d4ff] rounded-full animate-pulse" />
+              <span className="text-[#00d4ff] font-medium">Live</span>
             </div>
             <h3 className="text-xl font-bold text-white mb-4">Curation</h3>
 
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
-                <div className="text-3xl font-bold text-green-400 mb-2">
+                <div className="text-3xl font-bold text-[#00d4ff] mb-2">
                   {curationData?.totalCommitted || details.bioCommitted}
                   <span className="text-lg text-gray-400 ml-2">$IP</span>
                 </div>
@@ -180,7 +180,7 @@ export default function CurationStage({ project }: CurationStageProps) {
                 </p>
                 <button
                   onClick={connectWallet}
-                  className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-3 rounded-xl transition-colors"
+                  className="w-full bg-[#00d4ff] hover:bg-[#00b8e6] text-black font-bold py-3 rounded-xl transition-colors"
                 >
                   Connect Wallet
                 </button>
@@ -231,7 +231,7 @@ export default function CurationStage({ project }: CurationStageProps) {
                   <button
                     onClick={handleCommit}
                     disabled={!canCommit}
-                    className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-[#00d4ff] hover:bg-[#00b8e6] disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     {loading.commit && (
                       <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />
@@ -244,7 +244,7 @@ export default function CurationStage({ project }: CurationStageProps) {
                       <button
                         onClick={withdrawFromCuration}
                         disabled={loading.withdraw}
-                        className="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 bg-[#00d4ff] hover:bg-[#00b8e6] disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                       >
                         {loading.withdraw && (
                           <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
@@ -318,7 +318,7 @@ export default function CurationStage({ project }: CurationStageProps) {
               <button
                 onClick={handleLaunch}
                 disabled={loading.launch}
-                className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                className="flex-1 bg-[#00d4ff] hover:bg-[#00b8e6] disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
               >
                 {loading.launch && (
                   <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />

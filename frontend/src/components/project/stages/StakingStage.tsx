@@ -111,7 +111,7 @@ export default function StakingStage({ project }: StakingStageProps) {
           </p>
           <button
             onClick={connectWallet}
-            className="bg-green-500 hover:bg-green-600 text-black font-bold py-3 px-8 rounded-xl transition-colors"
+            className="bg-[#00d4ff] hover:bg-[#00b8e6] text-black font-bold py-3 px-8 rounded-xl transition-colors"
           >
             Connect Wallet
           </button>
@@ -132,7 +132,7 @@ export default function StakingStage({ project }: StakingStageProps) {
               </div>
               <div className="text-right">
                 <div className="text-sm text-gray-400">Staking Token</div>
-                <div className="text-xl font-bold text-green-400">
+                <div className="text-xl font-bold text-[#00d4ff]">
                   {stakingTokenInfo.symbol}
                 </div>
                 <div className="text-xs text-gray-500">
@@ -188,7 +188,7 @@ export default function StakingStage({ project }: StakingStageProps) {
 
                 <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl border border-gray-700/50">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-[#00d4ff] rounded-full flex items-center justify-center">
                       <Coins className="w-4 h-4 text-white" />
                     </div>
                     <span className="text-white font-medium">
@@ -221,7 +221,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                 <button
                   onClick={handleStake}
                   disabled={!canStake}
-                  className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-2"
+                  className="w-full bg-[#00d4ff] hover:bg-[#00b8e6] text-black font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-2"
                 >
                   {loading.stake && (
                     <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />
@@ -261,7 +261,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                   <div className="text-gray-400 text-sm mb-1">
                     EST. CURRENT APR
                   </div>
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold text-[#00d4ff]">
                     {stakingData?.apr || projectDetail?.staking?.apr || "TBD"}
                   </div>
                 </div>
@@ -406,7 +406,9 @@ export default function StakingStage({ project }: StakingStageProps) {
             <div className="text-center text-gray-500 py-8">
               <div className="text-lg">No reward history yet</div>
               <div className="text-sm mt-2">
-                Start staking {stakingTokenInfo.symbol} to earn rewards!
+                <span className="text-[#00d4ff] text-sm">
+                  Start staking {stakingTokenInfo.symbol} to earn rewards!
+                </span>
               </div>
             </div>
           </div>

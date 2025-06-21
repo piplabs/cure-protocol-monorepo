@@ -54,7 +54,7 @@ export default function DataMarketplacePage() {
                 onClick={() => setSelectedProject(projectId)}
                 className={`px-6 py-3 rounded-xl font-medium transition-colors ${
                   selectedProject === projectId
-                    ? "bg-green-500 text-black"
+                    ? "bg-[#00d4ff] text-black"
                     : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700"
                 }`}
               >
@@ -75,7 +75,7 @@ export default function DataMarketplacePage() {
               placeholder="Search datasets..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-4 pr-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:border-green-500 focus:outline-none transition-colors"
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-[#00d4ff] focus:outline-none transition-colors"
             />
           </div>
         </div>

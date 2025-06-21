@@ -18,7 +18,7 @@ export default function MarketHypothesis({ project }: MarketHypothesisProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {data.stats.map((stat, idx) => (
           <div key={idx} className="text-center">
-            <div className="text-3xl font-bold text-green-400 mb-2">
+            <div className="text-3xl font-bold text-[#00d4ff] mb-2">
               {stat.value}
             </div>
             <div className="text-gray-400 text-sm">{stat.label}</div>

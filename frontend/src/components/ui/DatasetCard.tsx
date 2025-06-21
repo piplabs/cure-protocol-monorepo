@@ -27,7 +27,7 @@ export default function DatasetCard({
     if (!isAccessible) {
       return <Lock className="w-4 h-4 text-red-400" />;
     }
-    return <CheckCircle className="w-4 h-4 text-green-400" />;
+    return <CheckCircle className="w-4 h-4 text-[#00d4ff]" />;
   };
 
   const getAccessLabel = (accessLevel: string, isAccessible: boolean) => {
@@ -49,7 +49,7 @@ export default function DatasetCard({
   };
 
   return (
-    <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm hover:border-green-500/30 transition-all">
+    <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm hover:border-[#00d4ff]/30 transition-all">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-2">
           <Database className="w-5 h-5 text-blue-400" />
@@ -59,7 +59,7 @@ export default function DatasetCard({
           {getAccessIcon(dataset.accessLevel, dataset.isAccessible)}
           <span
             className={`text-xs ${
-              dataset.isAccessible ? "text-green-400" : "text-red-400"
+              dataset.isAccessible ? "text-[#00d4ff]" : "text-red-400"
             }`}
           >
             {getAccessLabel(dataset.accessLevel, dataset.isAccessible)}
@@ -104,7 +104,7 @@ export default function DatasetCard({
           disabled={!dataset.isAccessible}
           className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
             dataset.isAccessible
-              ? "bg-green-500 hover:bg-green-600 text-black"
+              ? "bg-[#00d4ff] hover:bg-[#00b8e6] text-black"
               : "bg-gray-600 text-gray-400 cursor-not-allowed"
           }`}
         >

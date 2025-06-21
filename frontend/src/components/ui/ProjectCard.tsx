@@ -11,9 +11,9 @@ interface ProjectCardProps {
 export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link href={`/project/${project.id}`}>
-      <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 hover:border-green-500/30 transition-all duration-300 cursor-pointer backdrop-blur-sm group">
+      <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 hover:border-[#00d4ff]/30 transition-all duration-300 cursor-pointer backdrop-blur-sm group">
         <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl mb-4 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-blue-500/10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00d4ff]/10 to-blue-500/10" />
           <div className="absolute top-4 left-4">
             <span
               className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
@@ -30,7 +30,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </div>
         </div>
 
-        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition-colors">
+        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#00d4ff] transition-colors">
           {project.name}
         </h3>
 
@@ -59,7 +59,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             </div>
             <div className="w-full bg-gray-800 rounded-full h-2">
               <div
-                className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-[#00d4ff] to-blue-500 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${project.progress}%` }}
               />
             </div>

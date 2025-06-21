@@ -19,14 +19,14 @@ export default function StageNavigation({
           onClick={() => onStageChange(stage.id)}
           className={`flex items-center gap-3 pb-4 px-2 relative transition-colors ${
             currentStage === stage.id
-              ? "text-white border-b-2 border-green-500"
+              ? "text-white border-b-2 border-[#00d4ff]"
               : "text-gray-400 hover:text-gray-300"
           }`}
         >
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
               currentStage === stage.id
-                ? "bg-green-500 text-black"
+                ? "bg-[#00d4ff] text-black"
                 : "bg-gray-800 text-gray-400"
             }`}
           >
