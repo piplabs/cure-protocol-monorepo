@@ -87,6 +87,7 @@ export interface CurationData {
   totalCommitted: string;
   userCommitted: string;
   curationLimit: string;
+  claimableBioTokens: string;
   isActive: boolean;
   canClaim: boolean;
 }

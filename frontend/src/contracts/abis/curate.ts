@@ -1,5 +1,56 @@
 export const CURATE_ABI = [
   {
+    type: "constructor",
+    inputs: [
+      { name: "royaltyModule", type: "address", internalType: "address" },
+      { name: "tokenizerModule", type: "address", internalType: "address" },
+      { name: "upgradeableBeacon", type: "address", internalType: "address" },
+      { name: "ipAssetRegistry", type: "address", internalType: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "IP_ASSET_REGISTRY",
+    inputs: [],
+    outputs: [
+      { name: "", type: "address", internalType: "contract IIPAssetRegistry" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "ROYALTY_MODULE",
+    inputs: [],
+    outputs: [
+      { name: "", type: "address", internalType: "contract IRoyaltyModule" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "TOKENIZER_MODULE",
+    inputs: [],
+    outputs: [
+      { name: "", type: "address", internalType: "contract ITokenizerModule" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "TOTAL_BIO_TOKEN_SUPPLY",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "UPGRADEABLE_BEACON",
+    inputs: [],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
+    stateMutability: "view",
+  },
+  {
     type: "function",
     name: "cancel",
     inputs: [],
@@ -9,24 +60,10 @@ export const CURATE_ABI = [
   {
     type: "function",
     name: "claimBioTokens",
-    inputs: [
-      {
-        name: "claimer",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    inputs: [{ name: "claimer", type: "address", internalType: "address" }],
     outputs: [
-      {
-        name: "bioToken",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "amountClaimed",
-        type: "uint256",
-        internalType: "uint256",
-      },
+      { name: "bioToken", type: "address", internalType: "address" },
+      { name: "amountClaimed", type: "uint256", internalType: "uint256" },
     ],
     stateMutability: "nonpayable",
   },
@@ -34,13 +71,7 @@ export const CURATE_ABI = [
     type: "function",
     name: "claimRefund",
     inputs: [],
-    outputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    outputs: [{ name: "amount", type: "uint256", internalType: "uint256" }],
     stateMutability: "nonpayable",
   },
   {
@@ -53,13 +84,7 @@ export const CURATE_ABI = [
   {
     type: "function",
     name: "deposit",
-    inputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    inputs: [{ name: "amount", type: "uint256", internalType: "uint256" }],
     outputs: [],
     stateMutability: "payable",
   },
@@ -67,136 +92,84 @@ export const CURATE_ABI = [
     type: "function",
     name: "getAdmin",
     inputs: [],
-    outputs: [
-      {
-        name: "admin",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "getBioName",
     inputs: [],
-    outputs: [
-      {
-        name: "bioName",
-        type: "string",
-        internalType: "string",
-      },
-    ],
+    outputs: [{ name: "", type: "string", internalType: "string" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "getBioToken",
     inputs: [],
-    outputs: [
-      {
-        name: "bioToken",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "getBioTokenName",
     inputs: [],
-    outputs: [
-      {
-        name: "bioTokenName",
-        type: "string",
-        internalType: "string",
-      },
-    ],
+    outputs: [{ name: "", type: "string", internalType: "string" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "getBioTokenSymbol",
     inputs: [],
-    outputs: [
-      {
-        name: "bioTokenSymbol",
-        type: "string",
-        internalType: "string",
-      },
-    ],
+    outputs: [{ name: "", type: "string", internalType: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getBioTokensClaimable",
+    inputs: [{ name: "user", type: "address", internalType: "address" }],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "getDepositedAmount",
-    inputs: [
-      {
-        name: "user",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    inputs: [{ name: "user", type: "address", internalType: "address" }],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "getExpirationTime",
     inputs: [],
-    outputs: [
-      {
-        name: "expirationTime",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "getFundReceiver",
     inputs: [],
-    outputs: [
-      {
-        name: "fundReceiver",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "getIpId",
     inputs: [],
-    outputs: [
-      {
-        name: "ipId",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getMinimalIpTokenForLaunch",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "getStakingContract",
     inputs: [],
-    outputs: [
-      {
-        name: "stakingContract",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
     stateMutability: "view",
   },
   {
@@ -204,11 +177,7 @@ export const CURATE_ABI = [
     name: "getState",
     inputs: [],
     outputs: [
-      {
-        name: "state",
-        type: "uint8",
-        internalType: "enum IAscCurate.State",
-      },
+      { name: "", type: "uint8", internalType: "enum IAscCurate.State" },
     ],
     stateMutability: "view",
   },
@@ -216,39 +185,21 @@ export const CURATE_ABI = [
     type: "function",
     name: "getTotalDeposited",
     inputs: [],
-    outputs: [
-      {
-        name: "totalDeposited",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "getTotalSupplyOfBioToken",
     inputs: [],
-    outputs: [
-      {
-        name: "totalSupplyOfBioToken",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "view",
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+    stateMutability: "pure",
   },
   {
     type: "function",
     name: "getUpgradeableBeacon",
     inputs: [],
-    outputs: [
-      {
-        name: "upgradeableBeacon",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
     stateMutability: "view",
   },
   {
@@ -260,61 +211,21 @@ export const CURATE_ABI = [
         type: "tuple",
         internalType: "struct IAscCurate.CurateInitData",
         components: [
-          {
-            name: "admin",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "ipId",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "ipNft",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "ipNftTokenId",
-            type: "uint256",
-            internalType: "uint256",
-          },
-          {
-            name: "expirationTime",
-            type: "uint256",
-            internalType: "uint256",
-          },
-          {
-            name: "fundReceiver",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "bioName",
-            type: "string",
-            internalType: "string",
-          },
-          {
-            name: "bioTokenName",
-            type: "string",
-            internalType: "string",
-          },
-          {
-            name: "bioTokenSymbol",
-            type: "string",
-            internalType: "string",
-          },
+          { name: "admin", type: "address", internalType: "address" },
+          { name: "ipId", type: "address", internalType: "address" },
+          { name: "ipNft", type: "address", internalType: "address" },
+          { name: "ipNftTokenId", type: "uint256", internalType: "uint256" },
+          { name: "expirationTime", type: "uint256", internalType: "uint256" },
+          { name: "fundReceiver", type: "address", internalType: "address" },
+          { name: "bioName", type: "string", internalType: "string" },
+          { name: "bioTokenName", type: "string", internalType: "string" },
+          { name: "bioTokenSymbol", type: "string", internalType: "string" },
           {
             name: "minimalIpTokenForLaunch",
             type: "uint256",
             internalType: "uint256",
           },
-          {
-            name: "rewardToken",
-            type: "address",
-            internalType: "address",
-          },
+          { name: "rewardToken", type: "address", internalType: "address" },
         ],
       },
     ],
@@ -325,11 +236,7 @@ export const CURATE_ABI = [
     type: "function",
     name: "launchProject",
     inputs: [
-      {
-        name: "bioTokenTemplate",
-        type: "address",
-        internalType: "address",
-      },
+      { name: "bioTokenTemplate", type: "address", internalType: "address" },
       {
         name: "stakingContractTemplate",
         type: "address",
@@ -340,26 +247,14 @@ export const CURATE_ABI = [
         type: "tuple",
         internalType: "struct IAscStaking.InitData",
         components: [
-          {
-            name: "admin",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "ipId",
-            type: "address",
-            internalType: "address",
-          },
+          { name: "admin", type: "address", internalType: "address" },
+          { name: "ipId", type: "address", internalType: "address" },
           {
             name: "rewardDistributionPeriod",
             type: "uint256",
             internalType: "uint256",
           },
-          {
-            name: "rewardToken",
-            type: "address",
-            internalType: "address",
-          },
+          { name: "rewardToken", type: "address", internalType: "address" },
           {
             name: "bioTokenAllocPoints",
             type: "uint256",
@@ -369,29 +264,27 @@ export const CURATE_ABI = [
       },
     ],
     outputs: [
-      {
-        name: "bioToken",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "stakingContract",
-        type: "address",
-        internalType: "address",
-      },
+      { name: "bioToken", type: "address", internalType: "address" },
+      { name: "stakingContract", type: "address", internalType: "address" },
     ],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
-    name: "transferAdminRole",
+    name: "onERC721Received",
     inputs: [
-      {
-        name: "newAdmin",
-        type: "address",
-        internalType: "address",
-      },
+      { name: "", type: "address", internalType: "address" },
+      { name: "", type: "address", internalType: "address" },
+      { name: "", type: "uint256", internalType: "uint256" },
+      { name: "", type: "bytes", internalType: "bytes" },
     ],
+    outputs: [{ name: "", type: "bytes4", internalType: "bytes4" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "transferAdminRole",
+    inputs: [{ name: "newAdmin", type: "address", internalType: "address" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -400,24 +293,14 @@ export const CURATE_ABI = [
     name: "withdraw",
     inputs: [],
     outputs: [
-      {
-        name: "withdrawnAmount",
-        type: "uint256",
-        internalType: "uint256",
-      },
+      { name: "withdrawnAmount", type: "uint256", internalType: "uint256" },
     ],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
     name: "withdrawIp",
-    inputs: [
-      {
-        name: "recipient",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    inputs: [{ name: "recipient", type: "address", internalType: "address" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -459,18 +342,8 @@ export const CURATE_ABI = [
     ],
     anonymous: false,
   },
-  {
-    type: "event",
-    name: "CurateCanceled",
-    inputs: [],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "CurateClosed",
-    inputs: [],
-    anonymous: false,
-  },
+  { type: "event", name: "CurateCanceled", inputs: [], anonymous: false },
+  { type: "event", name: "CurateClosed", inputs: [], anonymous: false },
   {
     type: "event",
     name: "DepositReceived",
@@ -492,6 +365,19 @@ export const CURATE_ABI = [
   },
   {
     type: "event",
+    name: "Initialized",
+    inputs: [
+      {
+        name: "version",
+        type: "uint64",
+        indexed: false,
+        internalType: "uint64",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "IpWithdrawn",
     inputs: [
       {
@@ -507,12 +393,7 @@ export const CURATE_ABI = [
     type: "event",
     name: "ProjectLaunched",
     inputs: [
-      {
-        name: "ipId",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
+      { name: "ipId", type: "address", indexed: true, internalType: "address" },
       {
         name: "bioToken",
         type: "address",
@@ -566,4 +447,165 @@ export const CURATE_ABI = [
     ],
     anonymous: false,
   },
+  {
+    type: "error",
+    name: "AscCurate__BioTokenAlreadyDeployed",
+    inputs: [{ name: "bioToken", type: "address", internalType: "address" }],
+  },
+  { type: "error", name: "AscCurate__BioTokenNotSet", inputs: [] },
+  {
+    type: "error",
+    name: "AscCurate__BioTokenSupplyLessThanTotalDeposits",
+    inputs: [
+      { name: "bioTokenTotalSupply", type: "uint256", internalType: "uint256" },
+      { name: "totalDeposits", type: "uint256", internalType: "uint256" },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__CallerNotAdmin",
+    inputs: [
+      { name: "caller", type: "address", internalType: "address" },
+      { name: "admin", type: "address", internalType: "address" },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__ClaimerAlreadyClaimed",
+    inputs: [{ name: "claimer", type: "address", internalType: "address" }],
+  },
+  {
+    type: "error",
+    name: "AscCurate__ClaimerNotEligible",
+    inputs: [{ name: "claimer", type: "address", internalType: "address" }],
+  },
+  {
+    type: "error",
+    name: "AscCurate__CurateNotCanceled",
+    inputs: [
+      {
+        name: "currentState",
+        type: "uint8",
+        internalType: "enum IAscCurate.State",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__CurateNotClosed",
+    inputs: [
+      {
+        name: "currentState",
+        type: "uint8",
+        internalType: "enum IAscCurate.State",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__CurateNotOpen",
+    inputs: [
+      {
+        name: "currentState",
+        type: "uint8",
+        internalType: "enum IAscCurate.State",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__DepositAmountMismatch",
+    inputs: [
+      { name: "depositor", type: "address", internalType: "address" },
+      { name: "providedAmount", type: "uint256", internalType: "uint256" },
+      { name: "actualAmount", type: "uint256", internalType: "uint256" },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__ExpirationTimeNotInFuture",
+    inputs: [
+      { name: "expirationTime", type: "uint256", internalType: "uint256" },
+      { name: "currentTime", type: "uint256", internalType: "uint256" },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__IpNotRegistered",
+    inputs: [
+      { name: "ipNft", type: "address", internalType: "address" },
+      { name: "ipNftTokenId", type: "uint256", internalType: "uint256" },
+      { name: "ipId", type: "address", internalType: "address" },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__IpNotTransferredToCurate",
+    inputs: [
+      { name: "ipId", type: "address", internalType: "address" },
+      { name: "ipNft", type: "address", internalType: "address" },
+      { name: "ipNftTokenId", type: "uint256", internalType: "uint256" },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__IpRoyaltyVaultNotDeployed",
+    inputs: [{ name: "ipId", type: "address", internalType: "address" }],
+  },
+  {
+    type: "error",
+    name: "AscCurate__IpRoyaltyVaultTransferFailed",
+    inputs: [
+      { name: "ascVault", type: "address", internalType: "address" },
+      { name: "ipId", type: "address", internalType: "address" },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__NoRefundableDeposit",
+    inputs: [{ name: "claimer", type: "address", internalType: "address" }],
+  },
+  {
+    type: "error",
+    name: "AscCurate__RefundClaimFailed",
+    inputs: [
+      { name: "claimer", type: "address", internalType: "address" },
+      { name: "amount", type: "uint256", internalType: "uint256" },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__TotalDepositsLessThanMinimumTotalDeposits",
+    inputs: [
+      { name: "totalDeposits", type: "uint256", internalType: "uint256" },
+      {
+        name: "minimumTotalDeposits",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "AscCurate__WithdrawFailed",
+    inputs: [
+      { name: "withdrawnAmount", type: "uint256", internalType: "uint256" },
+    ],
+  },
+  { type: "error", name: "AscCurate__ZeroAdminAddress", inputs: [] },
+  { type: "error", name: "AscCurate__ZeroFundReceiverAddress", inputs: [] },
+  { type: "error", name: "AscCurate__ZeroIpAssetRegistryAddress", inputs: [] },
+  { type: "error", name: "AscCurate__ZeroIpIdAddress", inputs: [] },
+  { type: "error", name: "AscCurate__ZeroIpNftAddress", inputs: [] },
+  { type: "error", name: "AscCurate__ZeroIpNftTokenId", inputs: [] },
+  { type: "error", name: "AscCurate__ZeroRoyaltyModuleAddress", inputs: [] },
+  { type: "error", name: "AscCurate__ZeroTokenizerModuleAddress", inputs: [] },
+  {
+    type: "error",
+    name: "AscCurate__ZeroUpgradeableBeaconAddress",
+    inputs: [],
+  },
+  { type: "error", name: "InvalidInitialization", inputs: [] },
+  { type: "error", name: "NotInitializing", inputs: [] },
+  { type: "error", name: "ReentrancyGuardReentrantCall", inputs: [] },
 ];

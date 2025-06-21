@@ -77,13 +77,43 @@ export function useCuration(projectId: string, curateAddress: string) {
 
     console.log("User committed:", formatEther(userCommitted));
 
+    const minimalIpTokenForLaunch = await publicClient.readContract({
+      address: curateAddress,
+      abi: CURATE_ABI,
+      functionName: "getMinimalIpTokenForLaunch",
+    });
+
+    console.log(
+      "Minimal IP token for launch:",
+      formatEther(minimalIpTokenForLaunch)
+    );
+
+    // const claimableBioTokens = await publicClient.readContract({
+    //   address: curateAddress,
+    //   abi: CURATE_ABI,
+    //   functionName: "getBioTokensClaimable",
+    //   args: [account],
+    // });
+
+    const claimableBioTokens = BigInt(1000000000000000000);
+    console.log("Claimable bio tokens:", formatEther(claimableBioTokens));
+
+    const isActive = await publicClient.readContract({
+      address: curateAddress,
+      abi: CURATE_ABI,
+      functionName: "getState",
+    });
+
+    console.log("Is active:", isActive);
+
     try {
       setCurationData({
         totalCommitted: formatEther(totalCommitted),
         userCommitted: formatEther(userCommitted),
-        curationLimit: "2.25M",
-        isActive: true,
-        canClaim: false,
+        curationLimit: formatEther(minimalIpTokenForLaunch),
+        claimableBioTokens: formatEther(claimableBioTokens),
+        isActive: isActive === 1,
+        canClaim: claimableBioTokens > 0,
       });
     } catch (error) {
       console.error("Failed to load curation data:", error);
