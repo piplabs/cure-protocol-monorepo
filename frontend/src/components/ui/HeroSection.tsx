@@ -70,8 +70,8 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto relative flex justify-center">
-        <div className="w-full max-w-4xl text-center">
+      <div className="max-w-7xl mx-auto relative">
+        <div className="w-full max-w-4xl">
           <div>
             <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               Curate & Fund
@@ -87,7 +87,7 @@ export default function HeroSection() {
               Provisioning.
             </p>
 
-            <div className="flex items-center justify-center gap-6 mb-8">
+            <div className="flex items-center gap-6 mb-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-[#00d4ff]">
                   12 BioDAOs
