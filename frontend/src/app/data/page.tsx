@@ -10,9 +10,12 @@ import {
   searchDatasets,
 } from "@/lib/data/datasets";
 import { Dataset } from "@/lib/types/index";
+import { useSearchParams } from "next/navigation";
 
 export default function DataMarketplacePage() {
-  const [selectedProject, setSelectedProject] = useState("reflexdao");
+  const searchParams = useSearchParams();
+  const initialProject = searchParams.get("project") || "reflexdao";
+  const [selectedProject, setSelectedProject] = useState(initialProject);
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
