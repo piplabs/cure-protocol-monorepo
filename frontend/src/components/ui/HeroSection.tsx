@@ -1,3 +1,5 @@
+import { SparklesCore } from "./sparkles";
+
 export default function HeroSection() {
   return (
     <div className="relative py-20 px-6 overflow-hidden">
@@ -48,6 +50,24 @@ export default function HeroSection() {
             flexShrink: 0
           }}
         />
+      </div>
+
+      {/* Contained SparklesCore */}
+      <div className="absolute inset-0 w-full h-full">
+        <div className="w-full h-full relative">
+          {/* Core component */}
+          <SparklesCore
+            background="transparent"
+            minSize={0.4}
+            maxSize={1}
+            particleDensity={100}
+            className="w-full h-full"
+            particleColor="#00d4ff"
+          />
+
+          {/* Linear Gradient mask to create sharp edge at bottom */}
+          <div className="absolute inset-0 w-full h-full [mask-image:linear-gradient(to_top,transparent_0%,white_20%)]"></div>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto relative">
