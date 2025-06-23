@@ -3,7 +3,7 @@ export default function Loading() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
       <div className="text-center">
         <div className="w-16 h-16 border-4 border-gray-700 border-t-[#00d4ff] rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-gray-400">Loading DeSci projects...</p>
+        <p className="text-gray-400">Loading cure protocol projects...</p>
       </div>
     </div>
   );

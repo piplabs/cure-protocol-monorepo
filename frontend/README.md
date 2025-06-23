@@ -1,4 +1,4 @@
-# DeSci Launchpad
+# cure protocol Launchpad
 
 A decentralized science launchpad platform that enables communities to curate, fund, and launch BioDAOs, powered by Story Protocol.
 
@@ -31,7 +31,7 @@ A decentralized science launchpad platform that enables communities to curate, f
 ## 🏗️ Project Structure
 
 ```
-desci-launchpad/
+cure-protocol-launchpad/
 ├── app/
 │   ├── components/
 │   │   ├── ui/              # Reusable UI components

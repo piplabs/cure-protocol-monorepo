@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import WalletHeader from "@/components/layout/WalletHeader";
+import TubelightHeader from "@/components/layout/TubelightHeader";
 import Footer from "@/components/layout/Footer";
 import { WalletProvider } from "@/components/providers/WalletProvider";
 import "./globals.css";
@@ -16,15 +16,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DeSci Launchpad",
+  title: "Cure Protocol",
   description: "Curate & Fund Decentralized Science",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <head>
@@ -37,7 +37,7 @@ export default function RootLayout({
         style={{ fontFamily: '"Host Grotesk", sans-serif' }}
       >
         <WalletProvider>
-          <WalletHeader />
+          <TubelightHeader />
           <main className="pt-20">{children}</main>
           <Footer />
         </WalletProvider>

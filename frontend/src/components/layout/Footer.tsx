@@ -11,7 +11,7 @@ export default function Footer() {
                 <span className="text-white font-bold text-sm">D</span>
               </div>
               <span className="text-white text-xl font-bold">
-                DeSci Launchpad
+                cure protocol
               </span>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
@@ -113,7 +113,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2024 DeSci Launchpad. All rights reserved.
+            © 2024 cure protocol Launchpad. All rights reserved.
           </p>
           <div className="flex items-center gap-6 mt-4 md:mt-0">
             <a

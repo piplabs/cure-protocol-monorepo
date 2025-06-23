@@ -40,7 +40,7 @@ export default function DataMarketplacePage() {
             Research Data Marketplace
           </h1>
           <p className="text-gray-300 text-lg">
-            Access high-quality research datasets from DeSci projects. Powered
+            Access high-quality research datasets from cure protocol projects. Powered
             by Poseidon decentralized storage.
           </p>
         </div>

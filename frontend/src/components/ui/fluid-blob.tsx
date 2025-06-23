@@ -119,26 +119,17 @@ function LavaLampShader() {
   // Update resolution and camera when size changes
   React.useEffect(() => {
     const { width, height } = size;
-    const aspect = width / height;
     
-    // Dynamically adjust camera viewport based on aspect ratio
+    // Set camera to use a large fixed viewport that covers the entire container
     if (camera && camera.type === 'OrthographicCamera') {
       const orthoCamera = camera as THREE.OrthographicCamera;
-      const viewSize = 20;
+      const viewSize = 50; // Large fixed viewport
       
-      if (aspect > 1) {
-        // Landscape
-        orthoCamera.left = -viewSize * aspect;
-        orthoCamera.right = viewSize * aspect;
-        orthoCamera.top = viewSize;
-        orthoCamera.bottom = -viewSize;
-      } else {
-        // Portrait
-        orthoCamera.left = -viewSize;
-        orthoCamera.right = viewSize;
-        orthoCamera.top = viewSize / aspect;
-        orthoCamera.bottom = -viewSize / aspect;
-      }
+      // Always use square viewport to maintain blob proportions
+      orthoCamera.left = -viewSize;
+      orthoCamera.right = viewSize;
+      orthoCamera.top = viewSize;
+      orthoCamera.bottom = -viewSize;
       
       orthoCamera.updateProjectionMatrix();
     }
