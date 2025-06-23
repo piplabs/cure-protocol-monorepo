@@ -5,10 +5,13 @@ import { useWallet } from "./useWallet";
 import { useCuration } from "./useCuration";
 import { CONTRACTS, STAKING_ABI, ERC20_ABI } from "@/contracts";
 import type { LoadingStates, StakingData } from "@/lib/types/index";
+import { projectDetails } from "@/lib/data/projectDetails";
 
 export function useStaking(projectId: string) {
   const { account, isConnected, publicClient, walletClient } = useWallet();
-  const { projectLaunchData } = useCuration(projectId); // Get launch data from curation hook
+  const details = projectDetails[projectId]?.curationDetails;
+  const curateAddress = details?.address || "";
+  const { projectLaunchData } = useCuration(projectId, curateAddress); // Get launch data from curation hook
 
   const [loading, setLoading] = useState<LoadingStates>({});
   const [stakingData, setStakingData] = useState<StakingData | null>(null);

@@ -14,6 +14,7 @@ export interface Project {
 export interface ProjectDetails {
   fullDescription?: string;
   curationDetails?: {
+    address: string;
     bioCommitted: string;
     curationLimit: string;
     totalSupply: string;
@@ -86,6 +87,7 @@ export interface CurationData {
   totalCommitted: string;
   userCommitted: string;
   curationLimit: string;
+  claimableBioTokens: string;
   isActive: boolean;
   canClaim: boolean;
 }

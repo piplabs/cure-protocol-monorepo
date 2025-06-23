@@ -12,6 +12,8 @@ interface CurationStageProps {
 
 export default function CurationStage({ project }: CurationStageProps) {
   const { account, isConnected, connectWallet } = useWallet();
+  const details = projectDetails[project.id]?.curationDetails;
+  const curateAddress = details?.address || "";
   const {
     loading,
     curationData,
@@ -23,12 +25,11 @@ export default function CurationStage({ project }: CurationStageProps) {
     claimRefund,
     launchProject,
     claimBioTokens,
-  } = useCuration(project.id);
+  } = useCuration(project.id, curateAddress);
 
   const [commitAmount, setCommitAmount] = useState("");
   const [showLaunchModal, setShowLaunchModal] = useState(false);
   const [showClaimModal, setShowClaimModal] = useState(false);
-  const details = projectDetails[project.id]?.curationDetails;
   const isLaunched = !!(
     projectLaunchData &&
     projectLaunchData.bioToken &&
@@ -72,7 +73,9 @@ export default function CurationStage({ project }: CurationStageProps) {
   const canClaimBioTokens =
     isLaunched &&
     curationData &&
-    parseFloat(curationData.userCommitted || "0") > 0;
+    parseFloat(curationData.userCommitted || "0") > 0 &&
+    parseFloat(curationData.claimableBioTokens || "0") > 0 &&
+    !curationData.isActive;
 
   return (
     <div className="space-y-8">
@@ -91,7 +94,6 @@ export default function CurationStage({ project }: CurationStageProps) {
               <span className="text-green-400 font-medium">Live</span>
             </div>
             <h3 className="text-xl font-bold text-white mb-4">Curation</h3>
-
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
                 <div className="text-3xl font-bold text-green-400 mb-2">
@@ -108,7 +110,6 @@ export default function CurationStage({ project }: CurationStageProps) {
                 <div className="text-gray-400 text-sm">Curation Limit</div>
               </div>
             </div>
-
             <div className="grid grid-cols-4 gap-4 p-4 bg-gray-800/30 rounded-xl border border-gray-700/50">
               <div className="text-center">
                 <div className="text-lg font-bold text-white">
@@ -135,23 +136,25 @@ export default function CurationStage({ project }: CurationStageProps) {
                 <div className="text-xs text-gray-400">Number of Curators</div>
               </div>
             </div>
-
-            {/* Admin Launch Button */}
-            {isConnected && !isLaunched && (
-              <div className="mt-6 pt-6 border-t border-gray-700">
-                <button
-                  onClick={() => setShowLaunchModal(true)}
-                  disabled={loading.launch}
-                  className="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
-                >
-                  {loading.launch && (
-                    <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
-                  )}
-                  {loading.launch ? "Launching Project..." : "Launch Project"}
-                </button>
-              </div>
-            )}
-
+            {/* Launch Button */}
+            {isConnected &&
+              !isLaunched &&
+              curationData &&
+              parseFloat(curationData.totalCommitted) >=
+                parseFloat(curationData.curationLimit) && (
+                <div className="mt-6 pt-6 border-t border-gray-700">
+                  <button
+                    onClick={() => setShowLaunchModal(true)}
+                    disabled={loading.launch}
+                    className="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    {loading.launch && (
+                      <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
+                    )}
+                    {loading.launch ? "Launching Project..." : "Launch Project"}
+                  </button>
+                </div>
+              )}
             {/* Claim BioTokens Button (opens modal) */}
             {isConnected && canClaimBioTokens && (
               <div className="mt-6">

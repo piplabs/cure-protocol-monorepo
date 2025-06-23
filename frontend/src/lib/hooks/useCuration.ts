@@ -9,7 +9,7 @@ import type {
   ProjectLaunchData,
 } from "@/lib/types/index";
 
-export function useCuration(projectId: string) {
+export function useCuration(projectId: string, curateAddress: string) {
   const { account, isConnected, publicClient, walletClient } = useWallet();
   const [loading, setLoading] = useState<LoadingStates>({});
   const [curationData, setCurationData] = useState<CurationData | null>(null);
@@ -54,14 +54,14 @@ export function useCuration(projectId: string) {
     if (!publicClient || !account) return;
 
     const ipId = await publicClient.readContract({
-      address: CONTRACTS.AscCurate,
+      address: curateAddress,
       abi: CURATE_ABI,
       functionName: "getIpId",
     });
     setIpId(ipId);
 
     const totalCommitted = await publicClient.readContract({
-      address: CONTRACTS.AscCurate,
+      address: curateAddress,
       abi: CURATE_ABI,
       functionName: "getTotalDeposited",
     });
@@ -69,7 +69,7 @@ export function useCuration(projectId: string) {
     console.log("Total committed:", formatEther(totalCommitted));
 
     const userCommitted = await publicClient.readContract({
-      address: CONTRACTS.AscCurate,
+      address: curateAddress,
       abi: CURATE_ABI,
       functionName: "getDepositedAmount",
       args: [account],
@@ -77,13 +77,42 @@ export function useCuration(projectId: string) {
 
     console.log("User committed:", formatEther(userCommitted));
 
+    const minimalIpTokenForLaunch = await publicClient.readContract({
+      address: curateAddress,
+      abi: CURATE_ABI,
+      functionName: "getMinimalIpTokenForLaunch",
+    });
+
+    console.log(
+      "Minimal IP token for launch:",
+      formatEther(minimalIpTokenForLaunch)
+    );
+
+    const claimableBioTokens = await publicClient.readContract({
+      address: curateAddress,
+      abi: CURATE_ABI,
+      functionName: "getBioTokensClaimable",
+      args: [account],
+    });
+
+    console.log("Claimable bio tokens:", formatEther(claimableBioTokens));
+
+    const isActive = await publicClient.readContract({
+      address: curateAddress,
+      abi: CURATE_ABI,
+      functionName: "getState",
+    });
+
+    console.log("Is active:", isActive);
+
     try {
       setCurationData({
         totalCommitted: formatEther(totalCommitted),
         userCommitted: formatEther(userCommitted),
-        curationLimit: "2.25M",
-        isActive: true,
-        canClaim: false,
+        curationLimit: formatEther(minimalIpTokenForLaunch),
+        claimableBioTokens: formatEther(claimableBioTokens),
+        isActive: isActive === 1,
+        canClaim: claimableBioTokens > 0,
       });
     } catch (error) {
       console.error("Failed to load curation data:", error);
@@ -91,18 +120,18 @@ export function useCuration(projectId: string) {
   };
 
   const loadProjectLaunchData = async () => {
-    if (!publicClient || !CONTRACTS.AscCurate) return;
+    if (!publicClient || !curateAddress) return;
 
     try {
       // Check if project has been launched by calling the getter functions
       const [bioToken, stakingContract] = await Promise.all([
         publicClient.readContract({
-          address: CONTRACTS.AscCurate,
+          address: curateAddress,
           abi: CURATE_ABI,
           functionName: "getBioToken",
         }) as Promise<string>,
         publicClient.readContract({
-          address: CONTRACTS.AscCurate,
+          address: curateAddress,
           abi: CURATE_ABI,
           functionName: "getStakingContract",
         }) as Promise<string>,
@@ -143,7 +172,7 @@ export function useCuration(projectId: string) {
       // Since we're using native $IP token, we send it as value in the transaction
       const hash = await walletClient.writeContract({
         account,
-        address: CONTRACTS.AscCurate,
+        address: curateAddress,
         abi: CURATE_ABI,
         functionName: "deposit",
         args: [amountWei],
@@ -171,7 +200,7 @@ export function useCuration(projectId: string) {
     try {
       const hash = await walletClient.writeContract({
         account,
-        address: CONTRACTS.AscCurate,
+        address: curateAddress,
         abi: CURATE_ABI,
         functionName: "withdraw",
         args: [],
@@ -198,7 +227,7 @@ export function useCuration(projectId: string) {
     try {
       const hash = await walletClient.writeContract({
         account,
-        address: CONTRACTS.AscCurate,
+        address: curateAddress,
         abi: CURATE_ABI,
         functionName: "claimRefund",
         args: [],
@@ -240,7 +269,7 @@ export function useCuration(projectId: string) {
     try {
       const hash = await walletClient.writeContract({
         account,
-        address: CONTRACTS.AscCurate,
+        address: curateAddress,
         abi: CURATE_ABI,
         functionName: "launchProject",
         args: [
@@ -269,12 +298,12 @@ export function useCuration(projectId: string) {
 
       const [bioToken, stakingContract] = await Promise.all([
         publicClient.readContract({
-          address: CONTRACTS.AscCurate,
+          address: curateAddress,
           abi: CURATE_ABI,
           functionName: "getBioToken",
         }) as Promise<string>,
         publicClient.readContract({
-          address: CONTRACTS.AscCurate,
+          address: curateAddress,
           abi: CURATE_ABI,
           functionName: "getStakingContract",
         }) as Promise<string>,
@@ -308,7 +337,7 @@ export function useCuration(projectId: string) {
     try {
       const tx = await walletClient.writeContract({
         account,
-        address: CONTRACTS.AscCurate,
+        address: curateAddress,
         abi: CURATE_ABI,
         functionName: "claimBioTokens",
         args: [account],
