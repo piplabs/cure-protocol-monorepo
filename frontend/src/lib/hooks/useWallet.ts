@@ -26,8 +26,10 @@ export function useWallet() {
       });
       setPublicClient(client);
 
-      // Check if wallet is already connected
-      checkWalletConnection();
+      // Check if wallet is already connected, unless explicitly disconnected
+      if (!window.sessionStorage.getItem("walletDisconnected")) {
+        checkWalletConnection();
+      }
     }
   }, []);
 
@@ -82,6 +84,9 @@ export function useWallet() {
         setChainId(parseInt(currentChainId, 16));
         setWalletClient(walletClient);
         setIsConnected(true);
+        if (typeof window !== "undefined") {
+          window.sessionStorage.removeItem("walletDisconnected");
+        }
       } else {
         alert("Please install MetaMask to continue");
         throw new Error("Please install MetaMask to continue");
@@ -100,6 +105,9 @@ export function useWallet() {
     setIsConnected(false);
     setBalance("0");
     setChainId(null);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem("walletDisconnected", "1");
+    }
   };
 
   const loadUserBalance = async () => {

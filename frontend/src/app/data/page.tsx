@@ -12,6 +12,8 @@ import {
 import { Dataset } from "@/lib/types/index";
 import { useSearchParams } from "next/navigation";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { useWallet } from "@/lib/hooks/useWallet";
+import { DATA_DOWNLOAD_WHITELIST } from "@/lib/utils/constants";
 
 export default function DataMarketplacePage() {
   const searchParams = useSearchParams();
@@ -24,11 +26,23 @@ export default function DataMarketplacePage() {
     "idle" | "downloading" | "success" | "error"
   >("idle");
   const [downloadFileName, setDownloadFileName] = useState<string>("");
+  const [permissionError, setPermissionError] = useState<string | null>(null);
+  const { account, isConnected, connectWallet } = useWallet();
 
   const handleDownload = async (dataset: Dataset) => {
     if (!dataset.isAccessible) {
       alert(
         "You need to meet the access requirements to download this dataset. Please stake tokens or participate in curation."
+      );
+      return;
+    }
+    if (!isConnected) {
+      setPermissionError("connect");
+      return;
+    }
+    if (!account || !DATA_DOWNLOAD_WHITELIST.includes(account.toLowerCase())) {
+      setPermissionError(
+        "Your wallet is not whitelisted to download datasets. Please contact the project admin to request access."
       );
       return;
     }
@@ -75,6 +89,7 @@ export default function DataMarketplacePage() {
         setDownloadFileName("");
       }, 2000);
     } catch (e) {
+      console.error("Download error:", e);
       setDownloadStatus("error");
       setTimeout(() => {
         setDownloadProgress(null);
@@ -199,6 +214,54 @@ export default function DataMarketplacePage() {
                 </div>
               </div>
               {downloadStatus === "downloading" && <LoadingSpinner size="md" />}
+            </div>
+          </div>
+        )}
+
+        {/* Permission/Connect Modal */}
+        {permissionError && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div className="bg-gray-900 border border-red-700 rounded-2xl p-8 max-w-sm w-full flex flex-col items-center">
+              {permissionError === "connect" ? (
+                <>
+                  <h3 className="text-lg font-bold text-yellow-400 mb-4">
+                    Connect Wallet Required
+                  </h3>
+                  <div className="text-gray-300 mb-4 text-center">
+                    You must connect your wallet to download datasets.
+                  </div>
+                  <button
+                    className="px-6 py-2 rounded-xl font-semibold bg-green-500 text-black hover:bg-green-400 transition-colors mt-2"
+                    onClick={async () => {
+                      await connectWallet();
+                      setPermissionError(null);
+                    }}
+                  >
+                    Connect Wallet
+                  </button>
+                  <button
+                    className="px-6 py-2 rounded-xl font-semibold bg-gray-700 text-white hover:bg-gray-600 transition-colors mt-2"
+                    onClick={() => setPermissionError(null)}
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-lg font-bold text-red-400 mb-4">
+                    Download Not Permitted
+                  </h3>
+                  <div className="text-gray-300 mb-4 text-center">
+                    {permissionError}
+                  </div>
+                  <button
+                    className="px-6 py-2 rounded-xl font-semibold bg-red-500 text-white hover:bg-red-400 transition-colors mt-2"
+                    onClick={() => setPermissionError(null)}
+                  >
+                    Close
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}

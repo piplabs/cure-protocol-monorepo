@@ -18,3 +18,9 @@ export const PROJECT_STAGES = [
 ];
 
 export const FILTER_TABS = ["All", "Curating", "Upcoming", "Live"];
+
+// Whitelisted addresses for data download (edit as needed)
+export const DATA_DOWNLOAD_WHITELIST = [
+  "0x15cC412BEc3623a079FD46eD7d3d3ECa802884ca".toLowerCase(),
+  // Add more addresses here as needed
+];
