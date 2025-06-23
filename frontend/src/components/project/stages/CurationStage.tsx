@@ -136,12 +136,12 @@ export default function CurationStage({ project }: CurationStageProps) {
                 <div className="text-xs text-gray-400">Number of Curators</div>
               </div>
             </div>
-            0{/* Admin Launch Button */}
+            {/* Launch Button */}
             {isConnected &&
               !isLaunched &&
               curationData &&
-              parseFloat(curationData.totalCommitted || "0") >=
-                parseFloat(curationData.curationLimit || "0") && (
+              parseFloat(curationData.totalCommitted) >=
+                parseFloat(curationData.curationLimit) && (
                 <div className="mt-6 pt-6 border-t border-gray-700">
                   <button
                     onClick={() => setShowLaunchModal(true)}
