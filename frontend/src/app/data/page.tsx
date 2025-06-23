@@ -11,6 +11,7 @@ import {
 } from "@/lib/data/datasets";
 import { Dataset } from "@/lib/types/index";
 import { useSearchParams } from "next/navigation";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function DataMarketplacePage() {
   const searchParams = useSearchParams();
@@ -18,18 +19,69 @@ export default function DataMarketplacePage() {
   const [selectedProject, setSelectedProject] = useState(initialProject);
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
+  const [downloadStatus, setDownloadStatus] = useState<
+    "idle" | "downloading" | "success" | "error"
+  >("idle");
+  const [downloadFileName, setDownloadFileName] = useState<string>("");
 
-  const handleDownload = (dataset: Dataset) => {
+  const handleDownload = async (dataset: Dataset) => {
     if (!dataset.isAccessible) {
       alert(
         "You need to meet the access requirements to download this dataset. Please stake tokens or participate in curation."
       );
       return;
     }
-
-    // For MVP, we'll just show a success message
-    // In production, this would trigger actual download from Poseidon
-    alert(`Downloading ${dataset.name}... (${dataset.fileSize})`);
+    if (!dataset.downloadUrl) {
+      alert("No download available for this dataset.");
+      return;
+    }
+    setDownloadProgress(0);
+    setDownloadStatus("downloading");
+    setDownloadFileName(dataset.name);
+    try {
+      const response = await fetch(dataset.downloadUrl);
+      if (!response.ok || !response.body) throw new Error("Network error");
+      const contentLength = response.headers.get("content-length");
+      const total = contentLength ? parseInt(contentLength, 10) : 0;
+      let loaded = 0;
+      const reader = response.body.getReader();
+      const chunks = [];
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+          chunks.push(value);
+          loaded += value.length;
+          if (total) {
+            setDownloadProgress(Math.round((loaded / total) * 100));
+          }
+        }
+      }
+      const blob = new Blob(chunks);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = dataset.downloadUrl.split("/").pop() || dataset.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      setDownloadProgress(100);
+      setDownloadStatus("success");
+      setTimeout(() => {
+        setDownloadProgress(null);
+        setDownloadStatus("idle");
+        setDownloadFileName("");
+      }, 2000);
+    } catch (e) {
+      setDownloadStatus("error");
+      setTimeout(() => {
+        setDownloadProgress(null);
+        setDownloadStatus("idle");
+        setDownloadFileName("");
+      }, 2000);
+    }
   };
 
   const filteredDatasets = searchDatasets(selectedProject, searchTerm);
@@ -114,6 +166,41 @@ export default function DataMarketplacePage() {
             onClose={() => setSelectedDataset(null)}
             onDownload={handleDownload}
           />
+        )}
+
+        {/* Download Progress Modal */}
+        {downloadProgress !== null && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 max-w-sm w-full flex flex-col items-center">
+              <h3 className="text-lg font-bold text-white mb-4">
+                {downloadStatus === "downloading" &&
+                  `Downloading ${downloadFileName}...`}
+                {downloadStatus === "success" && "Download Complete!"}
+                {downloadStatus === "error" && "Download Failed"}
+              </h3>
+              <div className="w-full mb-4">
+                <div className="w-full bg-gray-800 rounded-full h-4">
+                  <div
+                    className={`h-4 rounded-full transition-all duration-300 ${
+                      downloadStatus === "error"
+                        ? "bg-red-500"
+                        : downloadStatus === "success"
+                        ? "bg-green-500"
+                        : "bg-blue-500"
+                    }`}
+                    style={{ width: `${downloadProgress}%` }}
+                  />
+                </div>
+                <div className="text-center text-sm text-gray-300 mt-2">
+                  {downloadStatus === "downloading" && `${downloadProgress}%`}
+                  {downloadStatus === "success" && "File saved to your device."}
+                  {downloadStatus === "error" &&
+                    "There was a problem downloading the file."}
+                </div>
+              </div>
+              {downloadStatus === "downloading" && <LoadingSpinner size="md" />}
+            </div>
+          </div>
         )}
       </div>
     </div>

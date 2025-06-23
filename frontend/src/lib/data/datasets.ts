@@ -20,6 +20,7 @@ export const mockDatasets: ProjectDatasets = {
         devices: "Heart rate monitors, sleep trackers",
         dataPoints: "1.2M measurements",
       },
+      downloadUrl: "/mock-dataset-1.csv",
     },
     {
       id: "reflex-002",
@@ -39,6 +40,7 @@ export const mockDatasets: ProjectDatasets = {
         biomarkers: "24 different markers",
         dataPoints: "850K measurements",
       },
+      downloadUrl: "/mock-dataset-2.json",
     },
     {
       id: "reflex-003",
@@ -58,6 +60,7 @@ export const mockDatasets: ProjectDatasets = {
         sessions: "300 stress tests",
         dataPoints: "2.1M measurements",
       },
+      downloadUrl: "/mock-dataset-3.txt",
     },
   ],
   cerebrumdao: [
@@ -79,6 +82,7 @@ export const mockDatasets: ProjectDatasets = {
         biomarkers: "40 neural markers",
         dataPoints: "3.5M measurements",
       },
+      downloadUrl: "/mock-dataset-1.csv",
     },
     {
       id: "cerebrum-002",
@@ -98,6 +102,7 @@ export const mockDatasets: ProjectDatasets = {
         scans: "720 MRI sessions",
         dataPoints: "2.8M voxels per scan",
       },
+      downloadUrl: "/mock-dataset-2.json",
     },
   ],
   curetopia: [
@@ -119,6 +124,7 @@ export const mockDatasets: ProjectDatasets = {
         variants: "150K genetic variants",
         dataPoints: "50M base pairs",
       },
+      downloadUrl: "/mock-dataset-3.txt",
     },
   ],
 };

@@ -131,6 +131,7 @@ export interface Dataset {
     variants?: string;
     [key: string]: string | number | undefined;
   };
+  downloadUrl?: string;
 }
 
 export interface ProjectDatasets {
