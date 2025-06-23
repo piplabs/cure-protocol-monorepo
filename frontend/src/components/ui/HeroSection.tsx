@@ -82,7 +82,7 @@ export default function HeroSection() {
             </h1>
 
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              The cure protocol Launchpad enables the community to launch new BioDAOs
+              Cure Protocol enables the community to launch new BioDAOs
               through a 3-phase process: Curation, Fundraising, and Liquidity
               Provisioning.
             </p>

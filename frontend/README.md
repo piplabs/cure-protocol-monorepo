@@ -1,4 +1,4 @@
-# cure protocol Launchpad
+# cure protocol
 
 A decentralized science launchpad platform that enables communities to curate, fund, and launch BioDAOs, powered by Story Protocol.
 

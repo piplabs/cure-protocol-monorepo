@@ -19,6 +19,7 @@ precision highp float;
 varying vec2 vUv;
 uniform float time;
 uniform vec4 resolution;
+uniform vec4 viewport; // left, right, top, bottom
 
 float PI = 3.141592653589793238;
 
@@ -89,9 +90,12 @@ float rayMarch(vec3 rayOrigin, vec3 ray) {
 }
 
 void main() {
-    vec2 newUV = (vUv - vec2(0.5)) * resolution.zw + vec2(0.5);
+    // Convert UV to camera space using viewport
+    vec2 cameraSpace = (vUv - vec2(0.5)) * 1.0; // Convert to [-1, 1] range
+    cameraSpace.x *= (viewport.y - viewport.x) / (viewport.w - viewport.z); // Apply aspect ratio
+    
     vec3 cameraPos = vec3(0.0, 0.0, 5.0);
-    vec3 ray = normalize(vec3((vUv - vec2(0.5)) * resolution.zw, -1));
+    vec3 ray = normalize(vec3(cameraSpace, -1.0));
     vec3 color = vec3(1.0);
     
     float t = rayMarch(cameraPos, ray);
@@ -109,33 +113,51 @@ void main() {
 
 function LavaLampShader() {
   const meshRef = useRef<THREE.Mesh>(null);
-  const { size, camera } = useThree();
+  const cameraRef = useRef<THREE.OrthographicCamera>(null);
+  const { size, camera, gl } = useThree();
   
   const uniforms = useMemo(() => ({
     time: { value: 0 },
-    resolution: { value: new THREE.Vector4() }
+    resolution: { value: new THREE.Vector4() },
+    viewport: { value: new THREE.Vector4() }
   }), []);
-
+  React.useEffect(() => {
+    if (camera) {
+        cameraRef.current = camera as THREE.OrthographicCamera;
+    }
+  }, [camera]);
   // Update resolution and camera when size changes
   React.useEffect(() => {
     const { width, height } = size;
     
     // Set camera to use a large fixed viewport that covers the entire container
-    if (camera && camera.type === 'OrthographicCamera') {
-      const orthoCamera = camera as THREE.OrthographicCamera;
-      const viewSize = 50; // Large fixed viewport
+    if (cameraRef.current && cameraRef.current.type === 'OrthographicCamera') {
+      const orthoCamera = cameraRef.current as THREE.OrthographicCamera;
+      const viewSize = 100; // Large fixed viewport
       
       // Always use square viewport to maintain blob proportions
-      orthoCamera.left = -viewSize;
-      orthoCamera.right = viewSize;
+      const aspect = width / height;
+      console.log("width", width, "height", height);
+      orthoCamera.left = -viewSize * aspect;
+      orthoCamera.right = viewSize * aspect;
       orthoCamera.top = viewSize;
       orthoCamera.bottom = -viewSize;
+      console.log("yo bro", orthoCamera.left, orthoCamera.right, orthoCamera.top, orthoCamera.bottom);
+      
+      // Update viewport uniform with actual camera values
+      uniforms.viewport.value.set(
+        orthoCamera.left,
+        orthoCamera.right,
+        orthoCamera.top,
+        orthoCamera.bottom
+      );
       
       orthoCamera.updateProjectionMatrix();
     }
     
     uniforms.resolution.value.set(width, height, 1, 1);
-  }, [size, camera, uniforms]);
+    gl.setSize(width, height);
+  }, [size, cameraRef, uniforms]);
 
   useFrame((state) => {
     if (meshRef.current) {
@@ -162,15 +184,6 @@ export const LavaLamp = () => {
     <div style={{ width: '100%', height: '100%', background: '#000', position: "absolute" }}>
       <Canvas
         key="lava-lamp-canvas"
-        camera={{
-          left: -1,
-          right: 1,
-          top: 1,
-          bottom: -1,
-          near: -1000,
-          far: 1000,
-          position: [0, 0, 2]
-        }}
         orthographic
         gl={{ antialias: true }}
         style={{ width: '100%', height: '100%' }}
