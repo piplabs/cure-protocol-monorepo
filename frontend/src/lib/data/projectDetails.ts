@@ -115,7 +115,7 @@ export const projectDetails: Record<string, ProjectDetails> = {
     fullDescription:
       "Curing the 10,000 rare genetic diseases. We are uniting patient groups and populations to tackle the $1T rare disease market. We're going directly to patients, turning them into research scientists, and making them the center of focus.",
     curationDetails: {
-      address: "0x55Ba79d2733770260f4237Cb1d4a44A64e6a54A6",
+      address: "0x0bE81A59736f28049C84277FAa78d6C1282A423B",
       bioCommitted: "663.88K",
       curationLimit: "2.25M",
       totalSupply: "1B CURE",

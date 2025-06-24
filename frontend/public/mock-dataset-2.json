@@ -1,0 +1,26 @@
+[
+  {
+    "session_id": "MRI001",
+    "participant_id": "P1001",
+    "scan_date": "2024-02-15",
+    "modality": "T1-weighted",
+    "brain_volume_mm3": 1123500,
+    "diagnosis": "control"
+  },
+  {
+    "session_id": "MRI002",
+    "participant_id": "P1002",
+    "scan_date": "2024-02-15",
+    "modality": "T2-weighted",
+    "brain_volume_mm3": 1098000,
+    "diagnosis": "early-stage"
+  },
+  {
+    "session_id": "MRI003",
+    "participant_id": "P1003",
+    "scan_date": "2024-02-16",
+    "modality": "T1-weighted",
+    "brain_volume_mm3": 1056000,
+    "diagnosis": "late-stage"
+  }
+]
