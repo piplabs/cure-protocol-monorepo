@@ -16,12 +16,14 @@ interface DatasetCardProps {
   dataset: Dataset;
   onViewDetails: (dataset: Dataset) => void;
   onDownload: (dataset: Dataset) => void;
+  canDownload: boolean;
 }
 
 export default function DatasetCard({
   dataset,
   onViewDetails,
   onDownload,
+  canDownload,
 }: DatasetCardProps) {
   const getAccessIcon = (accessLevel: string, isAccessible: boolean) => {
     if (!isAccessible) {
@@ -101,9 +103,9 @@ export default function DatasetCard({
         </button>
         <button
           onClick={() => onDownload(dataset)}
-          disabled={!dataset.isAccessible}
+          disabled={!(canDownload && dataset.isAccessible)}
           className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-            dataset.isAccessible
+            canDownload && dataset.isAccessible
               ? "bg-green-500 hover:bg-green-600 text-black"
               : "bg-gray-600 text-gray-400 cursor-not-allowed"
           }`}

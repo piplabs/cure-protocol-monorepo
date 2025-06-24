@@ -7,12 +7,14 @@ interface DatasetDetailModalProps {
   dataset: Dataset;
   onClose: () => void;
   onDownload: (dataset: Dataset) => void;
+  canDownload: boolean;
 }
 
 export default function DatasetDetailModal({
   dataset,
   onClose,
   onDownload,
+  canDownload,
 }: DatasetDetailModalProps) {
   const getAccessIcon = (accessLevel: string, isAccessible: boolean) => {
     if (!isAccessible) {
@@ -156,9 +158,9 @@ export default function DatasetDetailModal({
             </button>
             <button
               onClick={() => onDownload(dataset)}
-              disabled={!dataset.isAccessible}
+              disabled={!(canDownload && dataset.isAccessible)}
               className={`flex-1 px-4 py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
-                dataset.isAccessible
+                canDownload && dataset.isAccessible
                   ? "bg-green-500 hover:bg-green-600 text-black"
                   : "bg-gray-600 text-gray-400 cursor-not-allowed"
               }`}

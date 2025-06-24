@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Database } from "lucide-react";
 import DatasetCard from "@/components/ui/DatasetCard";
 import DatasetDetailModal from "@/components/ui/DatasetDetailModal";
@@ -28,6 +28,15 @@ export default function DataMarketplacePage() {
   const [downloadFileName, setDownloadFileName] = useState<string>("");
   const [permissionError, setPermissionError] = useState<string | null>(null);
   const { account, isConnected, connectWallet } = useWallet();
+
+  useEffect(() => {
+    setPermissionError(null);
+  }, [account, isConnected]);
+
+  const canDownload =
+    !!isConnected &&
+    !!account &&
+    DATA_DOWNLOAD_WHITELIST.includes(account.toLowerCase());
 
   const handleDownload = async (dataset: Dataset) => {
     if (!dataset.isAccessible) {
@@ -158,6 +167,7 @@ export default function DataMarketplacePage() {
               dataset={dataset}
               onViewDetails={setSelectedDataset}
               onDownload={handleDownload}
+              canDownload={canDownload}
             />
           ))}
         </div>
@@ -180,6 +190,7 @@ export default function DataMarketplacePage() {
             dataset={selectedDataset}
             onClose={() => setSelectedDataset(null)}
             onDownload={handleDownload}
+            canDownload={canDownload}
           />
         )}
 
