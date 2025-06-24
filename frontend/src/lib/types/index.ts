@@ -16,7 +16,7 @@ export interface ProjectDetails {
   curationDetails?: {
     address: string;
     bioCommitted: string;
-    curationLimit: string;
+    minimumCommit: string;
     totalSupply: string;
     curatorAllocation: string;
     curationFDV: string;
@@ -86,10 +86,11 @@ export interface LoadingStates {
 export interface CurationData {
   totalCommitted: string;
   userCommitted: string;
-  curationLimit: string;
+  minimumCommit: string;
   claimableBioTokens: string;
   isActive: boolean;
   canClaim: boolean;
+  state: number; // 0 = open, 1 = closed, 2 = cancelled
 }
 
 export interface StakingData {

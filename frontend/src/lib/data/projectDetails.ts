@@ -8,7 +8,7 @@ export const projectDetails: Record<string, ProjectDetails> = {
     curationDetails: {
       address: "0x21E47965eD8DB12Da76aDB58092A3c6282B95759",
       bioCommitted: "663.88K",
-      curationLimit: "2.25M",
+      minimumCommit: "2.25M",
       totalSupply: "1B REFLEX",
       curatorAllocation: "50M REFLEX",
       curationFDV: "$0",
@@ -72,9 +72,9 @@ export const projectDetails: Record<string, ProjectDetails> = {
     fullDescription:
       "Building the world's largest engaged community focused on enabling scientific breakthroughs that prevent the onset of neurodegeneration and extend our healthy brain years.",
     curationDetails: {
-      address: "0xc1895A8D28cc110827B562D42CB2aa7d701CA81d",
+      address: "0x728d9B025EA389979b950762FbB198C84f75FA81",
       bioCommitted: "663.88K",
-      curationLimit: "2.25M",
+      minimumCommit: "2.25M",
       totalSupply: "1B CERE",
       curatorAllocation: "50M CERE",
       curationFDV: "$0",
@@ -115,9 +115,9 @@ export const projectDetails: Record<string, ProjectDetails> = {
     fullDescription:
       "Curing the 10,000 rare genetic diseases. We are uniting patient groups and populations to tackle the $1T rare disease market. We're going directly to patients, turning them into research scientists, and making them the center of focus.",
     curationDetails: {
-      address: "0x0bE81A59736f28049C84277FAa78d6C1282A423B",
+      address: "0x044b35233c058231Ba861F426651643627ABe04c",
       bioCommitted: "663.88K",
-      curationLimit: "2.25M",
+      minimumCommit: "2.25M",
       totalSupply: "1B CURE",
       curatorAllocation: "50M CURE",
       curationFDV: "$0",

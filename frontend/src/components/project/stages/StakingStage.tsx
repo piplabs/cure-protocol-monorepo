@@ -244,14 +244,6 @@ export default function StakingStage({ project }: StakingStageProps) {
                   )}
                   {loading.stake ? "Staking..." : `Stake ${bioTokenSymbol}`}
                 </button>
-
-                {!canStake && stakeAmount && parseFloat(stakeAmount) > 0 && (
-                  <div className="text-xs text-red-400 p-3 bg-red-900/20 rounded-lg border border-red-700/50">
-                    {!isProjectLaunched
-                      ? "Project not launched yet"
-                      : `Insufficient ${bioTokenSymbol} balance`}
-                  </div>
-                )}
               </div>
             </div>
 
