@@ -378,6 +378,7 @@ export function useCuration(projectId: string, curateAddress: string) {
       });
       showStatus("Curation closed successfully! Updating data...");
       // Refresh data
+      console.log("Close Curation hash: ", hash);
       await Promise.all([loadCurationData(), loadIpBalance()]);
       showStatus("Curation closed!");
     } catch (error: any) {

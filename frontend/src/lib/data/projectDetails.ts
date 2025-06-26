@@ -6,7 +6,7 @@ export const projectDetails: Record<string, ProjectDetails> = {
     fullDescription:
       "Advancing chronic disease prevention through wearable technology and autonomic nervous system (ANS) tracking. ReflexDAO empowers individuals to own their health data and fuel ANS research and innovation through a token-powered, decentralized network.",
     curationDetails: {
-      address: "0x21E47965eD8DB12Da76aDB58092A3c6282B95759",
+      address: "0x19D0E2aD3908B809A7a97068A147805C1aD8B20f",
       bioCommitted: "663.88K",
       minimumCommit: "2.25M",
       totalSupply: "1B REFLEX",

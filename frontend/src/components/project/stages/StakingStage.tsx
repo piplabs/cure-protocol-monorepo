@@ -194,14 +194,12 @@ export default function StakingStage({ project }: StakingStageProps) {
                     </div>
                   </div>
                 </div>
-
                 <div className="flex items-center justify-center">
                   <div className="flex items-center gap-2 p-2 bg-gray-800/50 rounded-lg border border-gray-700/50">
                     <ArrowUpRight className="w-4 h-4 text-gray-400" />
                     <ArrowUpRight className="w-4 h-4 text-gray-400 rotate-180" />
                   </div>
                 </div>
-
                 <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl border border-gray-700/50">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
@@ -217,7 +215,6 @@ export default function StakingStage({ project }: StakingStageProps) {
                     </div>
                   </div>
                 </div>
-
                 <div className="bg-gray-800/30 rounded-xl p-4 border border-gray-700/50">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-400 text-sm">STAKING FEE</span>
@@ -233,7 +230,6 @@ export default function StakingStage({ project }: StakingStageProps) {
                     </span>
                   </div>
                 </div>
-
                 <button
                   onClick={handleStake}
                   disabled={!canStake}
@@ -338,7 +334,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       !stakingData?.pendingRewards ||
                       parseFloat(stakingData.pendingRewards) === 0
                     }
-                    className="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-2 rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-2 rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     {loading.claim && (
                       <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
@@ -348,7 +344,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       : `Claim ${bioTokenSymbol} Rewards`}
                   </button>
 
-                  <button
+                  {/* <button
                     onClick={collectRoyalties}
                     disabled={loading.collect}
                     className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-2 rounded-xl transition-colors flex items-center justify-center gap-2"
@@ -357,7 +353,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
                     )}
                     {loading.collect ? "Collecting..." : "Collect Royalties"}
-                  </button>
+                  </button> */}
                 </div>
 
                 <div className="text-right">
