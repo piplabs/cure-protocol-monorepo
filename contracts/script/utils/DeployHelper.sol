@@ -14,6 +14,8 @@ import { ISPGNFT } from "@storyprotocol/periphery/contracts/interfaces/ISPGNFT.s
 import { WorkflowStructs } from "@storyprotocol/periphery/contracts/lib/WorkflowStructs.sol";
 import { PILFlavors } from "@storyprotocol/core/lib/PILFlavors.sol";
 import { Licensing } from "@storyprotocol/core/lib/Licensing.sol";
+import { LicensingModule } from "@storyprotocol/core/modules/licensing/LicensingModule.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import { IAscCurate } from "../../contracts/interfaces/IAscCurate.sol";
 import { AscCurate } from "../../contracts/AscCurate.sol";
@@ -32,6 +34,8 @@ contract DeployerHelper is Script {
     address internal constant ROYALTY_MODULE = 0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086;
     address internal constant TOKENIZER_MODULE = 0xAC937CeEf893986A026f701580144D9289adAC4C;
     address internal constant IP_ASSET_REGISTRY = 0x77319B4031e6eF1250907aa00018B8B1c67a244b;
+    address internal constant WIP_TOKEN = 0x1514000000000000000000000000000000000000;
+    address internal constant LICENSE_MODULE = 0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f;
 
     address internal ADMIN = vm.envAddress("ADMIN");
 
@@ -89,18 +93,37 @@ contract DeployerHelper is Script {
                 expectGroupRewardPool: address(0)
             })
         });
-        (address ipId, uint256 ipNftTokenId, ) = LICENSE_ATTACHMENT_WORKFLOWS.mintAndRegisterIpAndAttachPILTerms({
-            spgNftContract: collection,
-            recipient: ADMIN,
-            ipMetadata: WorkflowStructs.IPMetadata({
-                ipMetadataURI: "TEST",
-                ipMetadataHash: bytes32(0),
-                nftMetadataURI: "TEST",
-                nftMetadataHash: bytes32(0)
-            }),
-            licenseTermsData: licenseTermsData,
-            allowDuplicates: true
-        });
+        (address ipId, uint256 ipNftTokenId, uint256[] memory licenseTermsIds) = LICENSE_ATTACHMENT_WORKFLOWS
+            .mintAndRegisterIpAndAttachPILTerms({
+                spgNftContract: collection,
+                recipient: ADMIN,
+                ipMetadata: WorkflowStructs.IPMetadata({
+                    ipMetadataURI: "TEST",
+                    ipMetadataHash: bytes32(0),
+                    nftMetadataURI: "TEST",
+                    nftMetadataHash: bytes32(0)
+                }),
+                licenseTermsData: licenseTermsData,
+                allowDuplicates: true
+            });
+
+        // get some wip
+        (bool success, ) = WIP_TOKEN.call{ value: 1 ether }(abi.encodeWithSignature("deposit()"));
+        require(success, "Failed to deposit to WIP token");
+
+        // approve 1 WIP to royalty module
+        IERC20(WIP_TOKEN).approve(ROYALTY_MODULE, 1 ether);
+
+        LicensingModule(LICENSE_MODULE).mintLicenseTokens(
+            ipId,
+            0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316,
+            licenseTermsIds[0],
+            1,
+            ADMIN,
+            "",
+            1 ether,
+            1e7
+        );
 
         // deploy template
         // OwnableERC20 template

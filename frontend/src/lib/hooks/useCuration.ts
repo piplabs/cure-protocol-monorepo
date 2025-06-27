@@ -109,10 +109,11 @@ export function useCuration(projectId: string, curateAddress: string) {
       setCurationData({
         totalCommitted: formatEther(totalCommitted),
         userCommitted: formatEther(userCommitted),
-        curationLimit: formatEther(minimalIpTokenForLaunch),
+        minimumCommit: formatEther(minimalIpTokenForLaunch),
         claimableBioTokens: formatEther(claimableBioTokens),
-        isActive: isActive === 1,
+        isActive: isActive === 0,
         canClaim: claimableBioTokens > 0,
+        state: Number(isActive),
       });
     } catch (error) {
       console.error("Failed to load curation data:", error);
@@ -120,6 +121,7 @@ export function useCuration(projectId: string, curateAddress: string) {
   };
 
   const loadProjectLaunchData = async () => {
+    console.log("Loading project launch data for", curateAddress);
     if (!publicClient || !curateAddress) return;
 
     try {
@@ -136,6 +138,8 @@ export function useCuration(projectId: string, curateAddress: string) {
           functionName: "getStakingContract",
         }) as Promise<string>,
       ]);
+      console.log("bioToken", bioToken);
+      console.log("stakingContract", stakingContract);
 
       // Check if addresses are not zero address (indicating project has been launched)
       const isLaunched =
@@ -361,6 +365,32 @@ export function useCuration(projectId: string, curateAddress: string) {
     }
   };
 
+  const closeCuration = async () => {
+    if (!walletClient || !account) return;
+    setLoadingState("close", true);
+    try {
+      const hash = await walletClient.writeContract({
+        account,
+        address: curateAddress,
+        abi: CURATE_ABI,
+        functionName: "close",
+        args: [],
+      });
+      showStatus("Curation closed successfully! Updating data...");
+      // Refresh data
+      console.log("Close Curation hash: ", hash);
+      await Promise.all([loadCurationData(), loadIpBalance()]);
+      showStatus("Curation closed!");
+    } catch (error: any) {
+      console.error("Failed to close curation:", error);
+      showStatus(
+        `Failed to close curation: ${error.message || "Unknown error"}`
+      );
+    } finally {
+      setLoadingState("close", false);
+    }
+  };
+
   return {
     // State
     loading,
@@ -379,5 +409,6 @@ export function useCuration(projectId: string, curateAddress: string) {
     loadProjectLaunchData,
     showStatus,
     claimBioTokens,
+    closeCuration,
   };
 }

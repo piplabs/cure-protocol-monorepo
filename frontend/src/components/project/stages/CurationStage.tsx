@@ -6,6 +6,8 @@ import { projectDetails } from "@/lib/data/projectDetails";
 import { useCuration } from "@/lib/hooks/useCuration";
 import { useWallet } from "@/lib/hooks/useWallet";
 
+const ADMIN_ADDRESS = "0x87554276f7282ce433a12b286c9fcfd2fa09ec41";
+
 interface CurationStageProps {
   project: Project;
 }
@@ -25,6 +27,9 @@ export default function CurationStage({ project }: CurationStageProps) {
     claimRefund,
     launchProject,
     claimBioTokens,
+    closeCuration,
+    showStatus,
+    loadProjectLaunchData,
   } = useCuration(project.id, curateAddress);
 
   const [commitAmount, setCommitAmount] = useState("");
@@ -57,11 +62,17 @@ export default function CurationStage({ project }: CurationStageProps) {
         admin: account, // current user's address,
         rewardToken: "0x1514000000000000000000000000000000000000", // $WIP on testnet
       });
+      await loadProjectLaunchData();
       setShowLaunchModal(false);
-    } catch (error) {
+      showStatus("Project launched successfully! 🚀");
+    } catch (error: any) {
       console.error("Launch failed:", error);
+      showStatus(`Launch failed: ${error.message || "Unknown error"}`);
     }
   };
+
+  // Debug: log projectLaunchData
+  console.log("projectLaunchData", projectLaunchData);
 
   const canCommit =
     isConnected &&
@@ -74,8 +85,7 @@ export default function CurationStage({ project }: CurationStageProps) {
     isLaunched &&
     curationData &&
     parseFloat(curationData.userCommitted || "0") > 0 &&
-    parseFloat(curationData.claimableBioTokens || "0") > 0 &&
-    !curationData.isActive;
+    parseFloat(curationData.claimableBioTokens || "0") > 0;
 
   return (
     <div className="space-y-8">
@@ -104,7 +114,7 @@ export default function CurationStage({ project }: CurationStageProps) {
               </div>
               <div>
                 <div className="text-3xl font-bold text-white mb-2">
-                  {curationData?.curationLimit || details.curationLimit}
+                  {curationData?.minimumCommit || details.minimumCommit}
                   <span className="text-lg text-gray-400 ml-2">$IP</span>
                 </div>
                 <div className="text-gray-400 text-sm">Curation Limit</div>
@@ -141,7 +151,8 @@ export default function CurationStage({ project }: CurationStageProps) {
               !isLaunched &&
               curationData &&
               parseFloat(curationData.totalCommitted) >=
-                parseFloat(curationData.curationLimit) && (
+                parseFloat(curationData.minimumCommit) &&
+              !curationData.isActive && (
                 <div className="mt-6 pt-6 border-t border-gray-700">
                   <button
                     onClick={() => setShowLaunchModal(true)}
@@ -166,6 +177,25 @@ export default function CurationStage({ project }: CurationStageProps) {
                 </button>
               </div>
             )}
+            {/* Admin Close Curation Button */}
+            {isConnected &&
+              parseFloat(curationData?.totalCommitted || "0") >=
+                parseFloat(curationData?.minimumCommit || "0") &&
+              account?.toLowerCase() === ADMIN_ADDRESS.toLowerCase() &&
+              curationData?.state === 0 && (
+                <div className="mt-6">
+                  <button
+                    onClick={closeCuration}
+                    disabled={loading.close}
+                    className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    {loading.close && (
+                      <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
+                    )}
+                    {loading.close ? "Closing..." : "Close Curation"}
+                  </button>
+                </div>
+              )}
           </div>
 
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm">
@@ -274,12 +304,14 @@ export default function CurationStage({ project }: CurationStageProps) {
                     {loading.commit ? "Committing..." : "Commit"}
                   </button>
 
-                  {curationData?.userCommitted &&
-                    parseFloat(curationData.userCommitted) > 0 && (
+                  {curationData &&
+                    account?.toLowerCase() === ADMIN_ADDRESS.toLowerCase() &&
+                    parseFloat(curationData.totalCommitted || "0") >
+                      parseFloat(curationData.minimumCommit || "0") && (
                       <button
                         onClick={withdrawFromCuration}
                         disabled={loading.withdraw}
-                        className="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 bg-orange-700 hover:bg-orange-800 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                       >
                         {loading.withdraw && (
                           <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
@@ -289,23 +321,17 @@ export default function CurationStage({ project }: CurationStageProps) {
                     )}
                 </div>
 
-                {curationData?.canClaim && (
+                {curationData?.canClaim && curationData?.state === 2 && (
                   <button
                     onClick={claimRefund}
                     disabled={loading.claim}
-                    className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-teal-700 hover:bg-teal-800 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     {loading.claim && (
                       <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
                     )}
                     {loading.claim ? "Claiming..." : "Claim Refund"}
                   </button>
-                )}
-
-                {!canCommit && commitAmount && parseFloat(commitAmount) > 0 && (
-                  <div className="text-xs text-red-400 p-3 bg-red-900/20 rounded-lg border border-red-700/50">
-                    Insufficient $IP balance. Required: {commitAmount} $IP
-                  </div>
                 )}
 
                 <div className="text-xs text-gray-500 p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
@@ -336,8 +362,8 @@ export default function CurationStage({ project }: CurationStageProps) {
                 <div className="text-white">
                   • Total Committed:{" "}
                   {curationData?.totalCommitted || details.bioCommitted} $IP
-                  <br />• Curation Limit:{" "}
-                  {curationData?.curationLimit || details.curationLimit} $IP
+                  <br />• Minimum Commit:{" "}
+                  {curationData?.minimumCommit || details.minimumCommit} $IP
                   <br />• Active Curators: {details.numCurators}
                 </div>
               </div>
