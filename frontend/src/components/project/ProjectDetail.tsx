@@ -8,7 +8,6 @@ import CurationStage from "@/components/project/stages/CurationStage";
 import FundraisingStage from "@/components/project/stages/FundraisingStage";
 import AMMStage from "@/components/project/stages/AMMStage";
 import StakingStage from "@/components/project/stages/StakingStage";
-import { SplashCursor } from "@/components/ui/splash-cursor";
 
 import { Project } from "@/lib/types";
 import { PROJECT_STAGES } from "@/lib/utils/constants";
@@ -37,9 +36,6 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 -mt-20 pt-20">
-      <div className="absolute inset-0 z-0 opacity-40">
-        <SplashCursor />
-      </div>
       <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
         <ProjectHeader project={project} />
         <StageNavigation

@@ -92,23 +92,32 @@ export default function HeroSection() {
                 <div className="text-3xl font-bold text-[#00d4ff]">
                   12 BioDAOs
                 </div>
-                <div className="text-gray-400 text-sm">Launched & Funded</div>
+                <div className="text-white text-sm">Launched & Funded</div>
               </div>
 
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-400">$24.3M</div>
-                <div className="text-gray-400 text-sm">Raised for Research</div>
+                <div className="text-white text-sm">Raised for Research</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-400">$15M</div>
-                <div className="text-gray-400 text-sm">
+                <div className="text-gray-100 text-sm">
                   Deployed in Research
                 </div>
               </div>
             </div>
 
-            <button className="px-8 py-4 bg-gradient-to-r from-[#00d4ff] to-blue-500 hover:from-[#00b8e6] hover:to-blue-600 text-white font-bold rounded-xl transition-all transform hover:scale-105">
-              Learn more about the mechanics
+            <button className="relative px-10 py-10 transition-all transform hover:scale-105 focus:outline-none">\
+              <img
+                src="/art/home page/button.svg"
+                alt=""
+                className="absolute inset-0 w-full h-full object-fill"
+                aria-hidden="true"
+              />
+              {/* Button label */}
+              <span className="relative z-10 text-white font-bold right-6.5 bottom-1">
+                Learn more about the mechanics
+              </span>
             </button>
           </div>
 
