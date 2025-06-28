@@ -39,12 +39,12 @@ export default function WalletHeader() {
   };
 
   return (
-    <header className="border-b border-gray-800/50 bg-black/50 backdrop-blur-sm sticky top-0 z-50">
+    <header className="fixed top-0 left-0 right-0 bg-gradient-to-r from-[#86C7E8]/30 to-[#106793]/30 backdrop-blur-sm z-50">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-[#00d4ff] to-blue-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">D</span>
               </div>
               <span className="text-white text-xl font-bold">DeSci</span>
@@ -88,7 +88,7 @@ export default function WalletHeader() {
             <button
               onClick={handleConnect}
               disabled={loading}
-              className="px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-medium rounded-lg transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-[#00d4ff] hover:bg-[#00b8e6] disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-medium rounded-lg transition-colors flex items-center gap-2"
             >
               {loading && (
                 <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />

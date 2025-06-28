@@ -35,8 +35,8 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 -mt-20 pt-20">
+      <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
         <ProjectHeader project={project} />
         {/* Data Marketplace Link */}
         {["reflexdao", "cerebrumdao", "curetopia"].includes(project.id) && (

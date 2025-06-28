@@ -20,7 +20,7 @@ export default function FundraisingStage({}: FundraisingStageProps) {
             <div className="aspect-video bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-xl relative overflow-hidden">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-6xl font-bold text-green-400 mb-2">
+                  <div className="text-6xl font-bold text-[#00d4ff] mb-2">
                     14.21K
                   </div>
                   <div className="text-gray-400">Total Contributions</div>
@@ -87,13 +87,13 @@ export default function FundraisingStage({}: FundraisingStageProps) {
               <h4 className="text-white font-medium mb-3">How it works</h4>
               <div className="space-y-3 text-sm text-gray-300">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-green-500 text-black rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                  <div className="w-6 h-6 bg-[#00d4ff] text-black rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                     ✓
                   </div>
                   <span>Same price for all buyers</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-green-500 text-black rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                  <div className="w-6 h-6 bg-[#00d4ff] text-black rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                     ✓
                   </div>
                   <span>Price determined at the end of the auction</span>
@@ -114,20 +114,20 @@ export default function FundraisingStage({}: FundraisingStageProps) {
 
           <div className="text-center mb-6">
             <div className="text-2xl font-bold text-white mb-2">
-              1 <span className="text-green-400">SOL</span> = 1.06K{" "}
+              1 <span className="text-[#00d4ff]">SOL</span> = 1.06K{" "}
               <span className="text-purple-400">CURES</span>
             </div>
             <div className="text-gray-400 text-sm">$10/06</div>
           </div>
 
-          <button className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-3 rounded-xl transition-colors mb-6">
+          <button className="w-full bg-[#00d4ff] hover:bg-[#00b8e6] text-black font-bold py-3 rounded-xl transition-colors mb-6">
             Connect Wallet
           </button>
 
           <div className="text-center text-gray-400 text-sm">
             <a
               href="#"
-              className="text-green-400 hover:text-green-300 transition-colors"
+              className="text-[#00d4ff] hover:text-[#00b8e6] transition-colors"
             >
               View on Solscan
             </a>

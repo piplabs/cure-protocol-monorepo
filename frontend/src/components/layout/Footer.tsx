@@ -2,16 +2,16 @@ import { Github, Twitter } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-800/50 bg-black/50 backdrop-blur-sm">
+    <footer className="border-t border-gray-800/50 bg-[#121B3D] backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-[#00d4ff] to-blue-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">D</span>
               </div>
               <span className="text-white text-xl font-bold">
-                DeSci Launchpad
+                cure protocol
               </span>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
@@ -113,7 +113,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2024 DeSci Launchpad. All rights reserved.
+            © 2024 cure protocol. All rights reserved.
           </p>
           <div className="flex items-center gap-6 mt-4 md:mt-0">
             <a

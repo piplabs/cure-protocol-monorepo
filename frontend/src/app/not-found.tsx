@@ -15,7 +15,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-black font-medium rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-[#00d4ff] hover:bg-[#00b8e6] text-black font-medium rounded-lg transition-colors"
         >
           <ChevronRight className="w-4 h-4 rotate-180" />
           Back to Launchpad

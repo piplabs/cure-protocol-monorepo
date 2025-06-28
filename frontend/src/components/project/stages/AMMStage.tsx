@@ -20,7 +20,7 @@ export default function AMMStage({ project }: AMMStageProps) {
                 <button className="px-3 py-1 bg-gray-800/50 text-gray-300 rounded-lg border border-gray-700/50 hover:bg-gray-700/50 transition-colors">
                   Swap
                 </button>
-                <span className="text-green-400 font-medium">
+                <span className="text-[#00d4ff] font-medium">
                   Bonding Curve
                 </span>
               </div>
@@ -192,7 +192,7 @@ export default function AMMStage({ project }: AMMStageProps) {
                 </div>
               </div>
 
-              <button className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-4 rounded-xl transition-colors">
+              <button className="w-full bg-[#00d4ff] hover:bg-[#00b8e6] text-black font-bold py-4 rounded-xl transition-colors">
                 Connect Wallet
               </button>
 

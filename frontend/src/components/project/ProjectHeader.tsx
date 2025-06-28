@@ -13,7 +13,7 @@ export default function ProjectHeader({ project }: ProjectHeaderProps) {
   return (
     <div className="flex items-start gap-8 mb-8">
       <div className="w-32 h-32 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl flex items-center justify-center border border-gray-700/50">
-        <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-xl flex items-center justify-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-[#00d4ff] to-blue-500 rounded-xl flex items-center justify-center">
           <Brain className="w-8 h-8 text-white" />
         </div>
       </div>

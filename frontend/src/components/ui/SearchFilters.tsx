@@ -46,7 +46,7 @@ export default function SearchFilters({
             placeholder="Search by name"
             value={searchTerm}
             onChange={handleSearchChange}
-            className="w-full pl-12 pr-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:border-green-500 focus:outline-none transition-colors"
+            className="w-full pl-12 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-[#00d4ff] focus:outline-none transition-colors"
           />
         </div>
       </div>
@@ -74,7 +74,7 @@ export default function SearchFilters({
               onClick={() => handleTabChange(tab)}
               className={`px-4 py-2 rounded-lg text-sm transition-colors ${
                 activeTab === tab
-                  ? "bg-green-500 text-black"
+                  ? "bg-[#00d4ff] text-black"
                   : "text-gray-400 hover:text-white"
               }`}
             >
