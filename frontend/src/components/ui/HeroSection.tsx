@@ -1,4 +1,5 @@
 import { SparklesCore } from "./sparkles";
+import { AnimatedSparkleButton } from "./AnimatedSparkleButton";
 
 export default function HeroSection() {
   return (
@@ -107,7 +108,9 @@ export default function HeroSection() {
               </div>
             </div>
 
-            <button className="relative px-10 py-10 transition-all transform hover:scale-105 focus:outline-none">\
+            <button className="relative px-10 py-10 transition-all transform hover:scale-105 focus:outline-none">
+              
+              <AnimatedSparkleButton className="absolute inset-0" />
               <img
                 src="/art/home page/button.svg"
                 alt=""
