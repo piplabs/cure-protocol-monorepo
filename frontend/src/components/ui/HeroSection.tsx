@@ -1,5 +1,6 @@
 import { SparklesCore } from "./sparkles";
 import { AnimatedSparkleButton } from "./AnimatedSparkleButton";
+import { TextShimmer } from "./text-shimmer";
 
 export default function HeroSection() {
   return (
@@ -77,9 +78,13 @@ export default function HeroSection() {
             <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               Curate & Fund
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00d4ff] to-blue-400">
+              <TextShimmer
+                as="span"
+                shimmerBackground="linear-gradient(to right, #00d4ff, #60a5fa)"
+                className="[--base-gradient-color:rgba(255,255,255,0.5)]"
+              >
                 Decentralized Science
-              </span>
+              </TextShimmer>
             </h1>
 
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
