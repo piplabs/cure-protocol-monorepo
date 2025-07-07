@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { LucideIcon, LayoutDashboard, Rocket, Database } from "lucide-react";
 import { useWalletContext } from "../providers/WalletProvider";
@@ -66,9 +67,12 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-[#00d4ff] to-blue-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">D</span>
-            </div>
+            <Image
+              src="/art/home page/c-logo.svg"
+              alt="Cure Protocol Logo"
+              width={32}
+              height={32}
+            />
             <span className="text-white text-xl font-bold">cure protocol</span>
           </Link>
 
