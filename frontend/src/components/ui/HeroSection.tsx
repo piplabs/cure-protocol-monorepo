@@ -1,6 +1,8 @@
+"use client";
 import { SparklesCore } from "./sparkles";
 import { AnimatedSparkleButton } from "./AnimatedSparkleButton";
 import { TextShimmer } from "./text-shimmer";
+import { motion } from "framer-motion";
 
 export default function HeroSection() {
   return (
@@ -71,90 +73,101 @@ export default function HeroSection() {
           <div className="absolute inset-0 w-full h-full [mask-image:linear-gradient(to_top,transparent_0%,white_20%)]"></div>
         </div>
       </div>
+      <motion.div
+        initial={{ opacity: 0.0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 0.3,
+          duration: 0.8,
+          ease: "easeInOut",
+        }}
+        className="relative"
+      >
+        <div className="max-w-7xl mx-auto relative">
+          <div className="w-full max-w-4xl">
+            <div>
+              <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                Curate & Fund
+                <br />
+                <TextShimmer
+                  as="span"
+                  shimmerBackground="linear-gradient(to right, #00d4ff, #60a5fa)"
+                  className="[--base-gradient-color:rgba(255,255,255,0.5)]"
+                >
+                  Decentralized Science
+                </TextShimmer>
+              </h1>
 
-      <div className="max-w-7xl mx-auto relative">
-        <div className="w-full max-w-4xl">
-          <div>
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Curate & Fund
-              <br />
-              <TextShimmer
-                as="span"
-                shimmerBackground="linear-gradient(to right, #00d4ff, #60a5fa)"
-                className="[--base-gradient-color:rgba(255,255,255,0.5)]"
-              >
-                Decentralized Science
-              </TextShimmer>
-            </h1>
+              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                Cure Protocol enables the community to launch new BioDAOs
+                through a 3-phase process: Curation, Fundraising, and Liquidity
+                Provisioning.
+              </p>
 
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              Cure Protocol enables the community to launch new BioDAOs
-              through a 3-phase process: Curation, Fundraising, and Liquidity
-              Provisioning.
-            </p>
-
-            <div className="flex items-center gap-6 mb-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-[#00d4ff]">
-                  12 BioDAOs
-                </div>
-                <div className="text-white text-sm">Launched & Funded</div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-400">$24.3M</div>
-                <div className="text-white text-sm">Raised for Research</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-400">$15M</div>
-                <div className="text-gray-100 text-sm">
-                  Deployed in Research
-                </div>
-              </div>
-            </div>
-
-            <button className="relative px-10 py-10 transition-all transform hover:scale-105 focus:outline-none">
-              
-              <AnimatedSparkleButton className="absolute inset-0" />
-              <img
-                src="/art/home page/button.svg"
-                alt=""
-                className="absolute inset-0 w-full h-full object-fill"
-                aria-hidden="true"
-              />
-              {/* Button label */}
-              <span className="relative z-10 text-white font-bold right-6.5 bottom-1">
-                Learn more about the mechanics
-              </span>
-            </button>
-          </div>
-
-          {/* <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#00d4ff]/20 to-blue-500/20 rounded-3xl blur-3xl" />
-            <div className="relative bg-gray-900/50 border border-gray-800/50 rounded-3xl p-8 backdrop-blur-sm">
-              <div className="grid grid-cols-2 gap-6">
-                {[
-                  "Longevity",
-                  "Men's Health",
-                  "Metabolic Health",
-                  "Oncology",
-                  "Chronic Diseases",
-                  "Gut Health",
-                  "Rare Diseases",
-                  "Brain Longevity",
-                ].map((category, idx) => (
-                  <div
-                    key={idx}
-                    className="px-4 py-3 bg-gray-800/50 rounded-xl border border-gray-700/50 text-center"
-                  >
-                    <span className="text-gray-300 text-sm">{category}</span>
+              <div className="flex items-center gap-6 mb-8">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-[#00d4ff]">
+                    12 BioDAOs
                   </div>
-                ))}
+                  <div className="text-white text-sm">Launched & Funded</div>
+                </div>
+
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-400">$24.3M</div>
+                  <div className="text-white text-sm">Raised for Research</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-purple-400">$15M</div>
+                  <div className="text-gray-100 text-sm">
+                    Deployed in Research
+                  </div>
+                </div>
               </div>
+
+              <button className="relative px-10 py-10 transition-all transform hover:scale-105 focus:outline-none">
+                
+                <AnimatedSparkleButton className="absolute inset-0" />
+                <img
+                  src="/art/home page/button.svg"
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-fill"
+                  aria-hidden="true"
+                />
+                {/* Button label */}
+                <span className="relative z-10 text-white font-bold right-6.5 bottom-1">
+                  Learn more about the mechanics
+                </span>
+              </button>
             </div>
-          </div> */}
+            
+
+            {/* <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#00d4ff]/20 to-blue-500/20 rounded-3xl blur-3xl" />
+              <div className="relative bg-gray-900/50 border border-gray-800/50 rounded-3xl p-8 backdrop-blur-sm">
+                <div className="grid grid-cols-2 gap-6">
+                  {[
+                    "Longevity",
+                    "Men's Health",
+                    "Metabolic Health",
+                    "Oncology",
+                    "Chronic Diseases",
+                    "Gut Health",
+                    "Rare Diseases",
+                    "Brain Longevity",
+                  ].map((category, idx) => (
+                    <div
+                      key={idx}
+                      className="px-4 py-3 bg-gray-800/50 rounded-xl border border-gray-700/50 text-center"
+                    >
+                      <span className="text-gray-300 text-sm">{category}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div> */}
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
