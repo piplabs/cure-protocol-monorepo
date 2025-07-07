@@ -1,10 +1,13 @@
 import { Project } from "@/lib/types";
+import ShinyButton from "@/components/ui/ShinyButton";
+import { useWallet } from "@/lib/hooks/useWallet";
 
 interface FundraisingStageProps {
   project: Project;
 }
 
 export default function FundraisingStage({}: FundraisingStageProps) {
+  const { connectWallet } = useWallet();
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -120,11 +123,11 @@ export default function FundraisingStage({}: FundraisingStageProps) {
             <div className="text-gray-400 text-sm">$10/06</div>
           </div>
 
-          <button className="w-full bg-[#00d4ff] hover:bg-[#00b8e6] text-black font-bold py-3 rounded-xl transition-colors mb-6">
+          <ShinyButton onClick={connectWallet} width="100%" height="48px">
             Connect Wallet
-          </button>
-
-          <div className="text-center text-gray-400 text-sm">
+          </ShinyButton>
+          
+          <div className="text-center text-gray-400 text-sm mt-3">
             <a
               href="#"
               className="text-[#00d4ff] hover:text-[#00b8e6] transition-colors"

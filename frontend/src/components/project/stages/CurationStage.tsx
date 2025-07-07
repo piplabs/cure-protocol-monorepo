@@ -5,6 +5,7 @@ import { Project } from "@/lib/types";
 import { projectDetails } from "@/lib/data/projectDetails";
 import { useCuration } from "@/lib/hooks/useCuration";
 import { useWallet } from "@/lib/hooks/useWallet";
+import ShinyButton from "@/components/ui/ShinyButton";
 
 interface CurationStageProps {
   project: Project;
@@ -162,7 +163,7 @@ export default function CurationStage({ project }: CurationStageProps) {
             </div>
 
             <button className="w-full mt-6 px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 rounded-lg text-gray-300 transition-colors">
-              📄 Read Curation Docs
+              Read Curation Docs
             </button>
           </div>
         </div>
@@ -178,12 +179,9 @@ export default function CurationStage({ project }: CurationStageProps) {
                 <p className="text-gray-400 mb-4">
                   Connect your wallet to participate in curation
                 </p>
-                <button
-                  onClick={connectWallet}
-                  className="w-full bg-[#00d4ff] hover:bg-[#00b8e6] text-black font-bold py-3 rounded-xl transition-colors"
-                >
+                <ShinyButton onClick={connectWallet} width="100%" height="48px" disabled = {false}>
                   Connect Wallet
-                </button>
+                </ShinyButton>
               </div>
             ) : (
               <div className="space-y-4">
