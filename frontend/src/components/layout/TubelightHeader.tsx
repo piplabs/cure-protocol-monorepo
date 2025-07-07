@@ -73,7 +73,7 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
           </Link>
 
           {/* Tubelight Navigation */}
-          <div className="flex items-center gap-3 bg-background/5 border border-border backdrop-blur-lg py-1 px-1 rounded-full shadow-lg">
+          <div className="flex items-center gap-3 bg-gray-900/20 border border-gray-700/50 backdrop-blur-lg py-1 px-1 rounded-full shadow-lg">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.name;
@@ -85,8 +85,8 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
                   onClick={() => setActiveTab(item.name)}
                   className={cn(
                     "relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-colors",
-                    "text-foreground/80 hover:text-primary",
-                    isActive && "bg-muted text-primary"
+                    "text-gray-300 hover:text-white",
+                    isActive && "bg-[#00d4ff]/20 text-[#00d4ff]"
                   )}
                 >
                   <span className="hidden md:inline">{item.name}</span>
@@ -96,7 +96,7 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
                   {isActive && (
                     <motion.div
                       layoutId="lamp"
-                      className="absolute inset-0 w-full bg-primary/5 rounded-full -z-10"
+                      className="absolute inset-0 w-full bg-[#00d4ff]/10 rounded-full -z-10"
                       initial={false}
                       transition={{
                         type: "spring",
@@ -104,10 +104,10 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
                         damping: 30,
                       }}
                     >
-                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-full">
-                        <div className="absolute w-12 h-6 bg-primary/20 rounded-full blur-md -top-2 -left-2" />
-                        <div className="absolute w-8 h-6 bg-primary/20 rounded-full blur-md -top-1" />
-                        <div className="absolute w-4 h-4 bg-primary/20 rounded-full blur-sm top-0 left-2" />
+                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-t-full">
+                        <div className="absolute w-12 h-6 bg-[#00d4ff]/20 rounded-full blur-md -top-2 -left-2" />
+                        <div className="absolute w-8 h-6 bg-[#00d4ff]/20 rounded-full blur-md -top-1" />
+                        <div className="absolute w-4 h-4 bg-[#00d4ff]/20 rounded-full blur-sm top-0 left-2" />
                       </div>
                     </motion.div>
                   )}
