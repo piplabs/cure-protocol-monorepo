@@ -35,7 +35,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </span>
         </div>
         <div className="absolute bottom-4 right-4">
-          <span className="px-2 py-1 bg-gray-800/80 backdrop-blur-sm rounded-lg text-xs text-gray-300 border border-gray-700/50">
+          <span className="px-2 py-1 bg-gray-800/80 backdrop-blur-sm rounded-lg text-xs text-gray-100 border border-gray-700/50">
             {project.category}
           </span>
         </div>
@@ -45,7 +45,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {project.name}
       </h3>
 
-      <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+      <p className="text-gray-200 text-sm mb-4 line-clamp-3">
         {project.description}
       </p>
 
