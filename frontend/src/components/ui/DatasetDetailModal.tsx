@@ -7,18 +7,20 @@ interface DatasetDetailModalProps {
   dataset: Dataset;
   onClose: () => void;
   onDownload: (dataset: Dataset) => void;
+  canDownload: boolean;
 }
 
 export default function DatasetDetailModal({
   dataset,
   onClose,
   onDownload,
+  canDownload,
 }: DatasetDetailModalProps) {
   const getAccessIcon = (accessLevel: string, isAccessible: boolean) => {
     if (!isAccessible) {
       return <Lock className="w-4 h-4 text-red-400" />;
     }
-    return <CheckCircle className="w-4 h-4 text-[#00d4ff]" />;
+    return <CheckCircle className="w-4 h-4 text-green-400" />;
   };
 
   const getAccessLabel = (accessLevel: string, isAccessible: boolean) => {
@@ -51,7 +53,7 @@ export default function DatasetDetailModal({
               {getAccessIcon(dataset.accessLevel, dataset.isAccessible)}
               <span
                 className={`text-sm ${
-                  dataset.isAccessible ? "text-[#00d4ff]" : "text-red-400"
+                  dataset.isAccessible ? "text-green-400" : "text-red-400"
                 }`}
               >
                 {getAccessLabel(dataset.accessLevel, dataset.isAccessible)}
@@ -156,10 +158,10 @@ export default function DatasetDetailModal({
             </button>
             <button
               onClick={() => onDownload(dataset)}
-              disabled={!dataset.isAccessible}
+              disabled={!(canDownload && dataset.isAccessible)}
               className={`flex-1 px-4 py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
-                dataset.isAccessible
-                  ? "bg-[#00d4ff] hover:bg-[#00b8e6] text-black"
+                canDownload && dataset.isAccessible
+                  ? "bg-green-500 hover:bg-green-600 text-black"
                   : "bg-gray-600 text-gray-400 cursor-not-allowed"
               }`}
             >

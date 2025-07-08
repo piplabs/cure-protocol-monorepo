@@ -16,18 +16,20 @@ interface DatasetCardProps {
   dataset: Dataset;
   onViewDetails: (dataset: Dataset) => void;
   onDownload: (dataset: Dataset) => void;
+  canDownload: boolean;
 }
 
 export default function DatasetCard({
   dataset,
   onViewDetails,
   onDownload,
+  canDownload,
 }: DatasetCardProps) {
   const getAccessIcon = (accessLevel: string, isAccessible: boolean) => {
     if (!isAccessible) {
       return <Lock className="w-4 h-4 text-red-400" />;
     }
-    return <CheckCircle className="w-4 h-4 text-[#00d4ff]" />;
+    return <CheckCircle className="w-4 h-4 text-green-400" />;
   };
 
   const getAccessLabel = (accessLevel: string, isAccessible: boolean) => {
@@ -49,7 +51,7 @@ export default function DatasetCard({
   };
 
   return (
-    <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm hover:border-[#00d4ff]/30 transition-all">
+    <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm hover:border-green-500/30 transition-all">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-2">
           <Database className="w-5 h-5 text-blue-400" />
@@ -59,7 +61,7 @@ export default function DatasetCard({
           {getAccessIcon(dataset.accessLevel, dataset.isAccessible)}
           <span
             className={`text-xs ${
-              dataset.isAccessible ? "text-[#00d4ff]" : "text-red-400"
+              dataset.isAccessible ? "text-green-400" : "text-red-400"
             }`}
           >
             {getAccessLabel(dataset.accessLevel, dataset.isAccessible)}
@@ -101,10 +103,10 @@ export default function DatasetCard({
         </button>
         <button
           onClick={() => onDownload(dataset)}
-          disabled={!dataset.isAccessible}
+          disabled={!(canDownload && dataset.isAccessible)}
           className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-            dataset.isAccessible
-              ? "bg-[#00d4ff] hover:bg-[#00b8e6] text-black"
+            canDownload && dataset.isAccessible
+              ? "bg-green-500 hover:bg-green-600 text-black"
               : "bg-gray-600 text-gray-400 cursor-not-allowed"
           }`}
         >

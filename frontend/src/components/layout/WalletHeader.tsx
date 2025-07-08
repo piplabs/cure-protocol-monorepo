@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useWalletContext } from "../providers/WalletProvider";
 
 export default function WalletHeader() {
+  const pathname = usePathname();
   const {
     isConnected,
     account,
@@ -29,6 +31,13 @@ export default function WalletHeader() {
     setShowDropdown(false);
   };
 
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(path);
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 bg-gradient-to-r from-[#86C7E8]/30 to-[#106793]/30 backdrop-blur-sm z-50">
       <div className="max-w-7xl mx-auto px-6 py-4">
@@ -42,18 +51,33 @@ export default function WalletHeader() {
             </Link>
 
             <div className="flex items-center gap-6">
-              <Link
+              {/* <Link
                 href="/"
-                className="text-gray-400 hover:text-white transition-colors"
+                className={`transition-colors ${
+                  isActive("/")
+                    ? "text-white font-medium"
+                    : "text-gray-400 hover:text-white"
+                }`}
               >
                 Dashboard
-              </Link>
-              <Link href="/" className="text-white font-medium">
+              </Link> */}
+              <Link
+                href="/"
+                className={`transition-colors ${
+                  isActive("/")
+                    ? "text-white font-medium"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
                 Launchpad
               </Link>
               <Link
                 href="/data"
-                className="text-gray-400 hover:text-white transition-colors"
+                className={`transition-colors ${
+                  isActive("/data")
+                    ? "text-white font-medium"
+                    : "text-gray-400 hover:text-white"
+                }`}
               >
                 Data
               </Link>

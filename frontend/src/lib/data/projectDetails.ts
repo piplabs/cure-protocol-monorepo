@@ -6,8 +6,9 @@ export const projectDetails: Record<string, ProjectDetails> = {
     fullDescription:
       "Advancing chronic disease prevention through wearable technology and autonomic nervous system (ANS) tracking. ReflexDAO empowers individuals to own their health data and fuel ANS research and innovation through a token-powered, decentralized network.",
     curationDetails: {
+      address: "0x19D0E2aD3908B809A7a97068A147805C1aD8B20f",
       bioCommitted: "663.88K",
-      curationLimit: "2.25M",
+      minimumCommit: "2.25M",
       totalSupply: "1B REFLEX",
       curatorAllocation: "50M REFLEX",
       curationFDV: "$0",
@@ -70,6 +71,18 @@ export const projectDetails: Record<string, ProjectDetails> = {
   cerebrumdao: {
     fullDescription:
       "Building the world's largest engaged community focused on enabling scientific breakthroughs that prevent the onset of neurodegeneration and extend our healthy brain years.",
+    curationDetails: {
+      address: "0x728d9B025EA389979b950762FbB198C84f75FA81",
+      bioCommitted: "663.88K",
+      minimumCommit: "2.25M",
+      totalSupply: "1B CERE",
+      curatorAllocation: "50M CERE",
+      curationFDV: "$0",
+      numCurators: 50,
+      vestingPeriod: "6 months + 3 months",
+      tokenSupply: "5%",
+      curatorLockup: "60 days",
+    },
     tokenomics: {
       price: "$2.7376",
       marketCap: "$20,058,143.27",
@@ -101,7 +114,18 @@ export const projectDetails: Record<string, ProjectDetails> = {
   curetopia: {
     fullDescription:
       "Curing the 10,000 rare genetic diseases. We are uniting patient groups and populations to tackle the $1T rare disease market. We're going directly to patients, turning them into research scientists, and making them the center of focus.",
-    // Add staking contract info for Curetopia
+    curationDetails: {
+      address: "0x044b35233c058231Ba861F426651643627ABe04c",
+      bioCommitted: "663.88K",
+      minimumCommit: "2.25M",
+      totalSupply: "1B CURE",
+      curatorAllocation: "50M CURE",
+      curationFDV: "$0",
+      numCurators: 50,
+      vestingPeriod: "6 months + 3 months",
+      tokenSupply: "5%",
+      curatorLockup: "60 days",
+    },
     stakingContract: {
       address: "0x3456789012345678901234567890123456789012", // Replace with actual contract address
       stakingToken: {

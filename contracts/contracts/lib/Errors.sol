@@ -174,6 +174,11 @@ library Errors {
      */
     error AscCurate__IpRoyaltyVaultNotDeployed(address ipId);
 
+    /**
+     * @notice Thrown when the IP royalty vault transfer failed
+     */
+    error AscCurate__IpRoyaltyVaultTransferFailed(address ascVault, address ipId);
+
     ////////////////////////////////////////////////////////////////////////////
     //                           AscCurateFactory Errors                    //
     ////////////////////////////////////////////////////////////////////////////

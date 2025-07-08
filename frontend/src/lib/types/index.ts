@@ -10,11 +10,13 @@ export interface Project {
   image: string;
   tags: string[];
 }
+
 export interface ProjectDetails {
   fullDescription?: string;
   curationDetails?: {
+    address: string;
     bioCommitted: string;
-    curationLimit: string;
+    minimumCommit: string;
     totalSupply: string;
     curatorAllocation: string;
     curationFDV: string;
@@ -47,9 +49,9 @@ export interface ProjectDetails {
     userStaked: string;
     rewards: string;
   };
-  // Add this new property:
+  launchData?: ProjectLaunchData;
   stakingContract?: {
-    address: string;
+    address?: string;
     stakingToken: {
       address: string;
       symbol: string;
@@ -61,6 +63,13 @@ export interface ProjectDetails {
       decimals: number;
     };
   };
+}
+
+export interface ProjectLaunchData {
+  bioToken: string;
+  stakingContract: string;
+  transactionHash: string;
+  isLaunched: boolean;
 }
 
 export interface Stage {
@@ -77,9 +86,11 @@ export interface LoadingStates {
 export interface CurationData {
   totalCommitted: string;
   userCommitted: string;
-  curationLimit: string;
+  minimumCommit: string;
+  claimableBioTokens: string;
   isActive: boolean;
   canClaim: boolean;
+  state: number; // 0 = open, 1 = closed, 2 = cancelled
 }
 
 export interface StakingData {
@@ -121,6 +132,7 @@ export interface Dataset {
     variants?: string;
     [key: string]: string | number | undefined;
   };
+  downloadUrl?: string;
 }
 
 export interface ProjectDatasets {

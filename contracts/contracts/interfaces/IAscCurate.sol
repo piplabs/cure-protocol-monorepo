@@ -258,4 +258,17 @@ interface IAscCurate {
      * @return upgradeableBeacon The address of the upgradeable beacon
      */
     function getUpgradeableBeacon() external view returns (address upgradeableBeacon);
+
+    /**
+     * @notice Returns the minimal IP token amount required for launch
+     * @return minimalIpTokenForLaunch The minimal IP token amount required for launch
+     */
+    function getMinimalIpTokenForLaunch() external view returns (uint256 minimalIpTokenForLaunch);
+
+    /**
+     * @notice Returns the amount of bio tokens claimable by a user
+     * @param user The address of the user
+     * @return bioTokensClaimable The amount of bio tokens claimable by the user
+     */
+    function getBioTokensClaimable(address user) external view returns (uint256 bioTokensClaimable);
 }

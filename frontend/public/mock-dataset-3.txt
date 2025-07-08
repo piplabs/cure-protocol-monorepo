@@ -1,0 +1,15 @@
+# Rare Disease Genomics - Variant Summary
+
+SampleID: RDG-001
+Gene: CFTR
+Variant: c.1521_1523delCTT
+Type: Deletion
+Zygosity: Homozygous
+ClinicalSignificance: Pathogenic
+
+SampleID: RDG-002
+Gene: GBA
+Variant: c.1226A>G
+Type: Missense
+Zygosity: Heterozygous
+ClinicalSignificance: Likely pathogenic 

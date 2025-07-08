@@ -38,6 +38,17 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 -mt-20 pt-20">
       <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
         <ProjectHeader project={project} />
+        {/* Data Marketplace Link */}
+        {["reflexdao", "cerebrumdao", "curetopia"].includes(project.id) && (
+          <div className="mb-6">
+            <a
+              href={`/data?project=${project.id}`}
+              className="inline-block px-6 py-3 rounded-xl font-semibold bg-green-500 text-black hover:bg-green-400 transition-colors shadow-lg"
+            >
+              View Project Datasets
+            </a>
+          </div>
+        )}
         <StageNavigation
           stages={PROJECT_STAGES}
           currentStage={projectStage}

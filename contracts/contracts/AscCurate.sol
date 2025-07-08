@@ -301,12 +301,15 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         address ipRoyaltyVault = ROYALTY_MODULE.ipRoyaltyVaults($.ipId);
         if (ipRoyaltyVault == address(0)) revert Errors.AscCurate__IpRoyaltyVaultNotDeployed($.ipId);
 
-        IIPAccount(payable($.ipId)).execute(
+        bytes memory transferResult = IIPAccount(payable($.ipId)).execute(
             ipRoyaltyVault,
             0,
-            abi.encodeWithSelector(IERC20.transferFrom.selector, $.ipId, stakingContract, ROYALTY_MODULE.maxPercent())
+            abi.encodeWithSignature("transfer(address,uint256)", stakingContract, ROYALTY_MODULE.maxPercent())
         );
 
+        if (abi.decode(transferResult, (bool)) == false)
+            revert Errors.AscCurate__IpRoyaltyVaultTransferFailed(ipRoyaltyVault, $.ipId);
+        
         emit ProjectLaunched({ ipId: $.ipId, bioToken: bioToken, stakingContract: stakingContract });
     }
 
@@ -438,6 +441,26 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
     }
 
     /**
+     * @notice Returns the minimal IP token amount required for launch
+     * @return minimalIpTokenForLaunch The minimal IP token amount required for launch
+     */
+    function getMinimalIpTokenForLaunch() external view returns (uint256) {
+        return _getAscCurateStorage().minimalIpTokenForLaunch;
+    }
+
+    /**
+     * @notice Returns the amount of bio tokens claimable by a user
+     * @param user The address of the user
+     * @return bioTokensClaimable The amount of bio tokens claimable by the user
+     */
+    function getBioTokensClaimable(address user) external view returns (uint256) {
+        AscCurateStorage storage $ = _getAscCurateStorage();
+        if ($.deposits[user] == 0 || $.bioTokenClaimed[user]) return 0;
+
+        return ($.deposits[user] * TOTAL_BIO_TOKEN_SUPPLY) / $.totalDeposits;
+    }
+
+    /**
      * @dev deploy bio token
      * @param ipId The IP ID
      * @param bioTokenTemplate The template of the bio token
@@ -511,3 +534,4 @@ contract AscCurate is IAscCurate, ReentrancyGuardUpgradeable, ERC721Holder {
         }
     }
 }
+
