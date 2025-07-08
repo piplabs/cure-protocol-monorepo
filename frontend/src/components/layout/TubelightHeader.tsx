@@ -29,7 +29,7 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeTab, setActiveTab] = useState("Launchpad");
-  const [isMobile, setIsMobile] = useState(false);
+  const [, setIsMobile] = useState(false);
 
   const navItems: NavItem[] = [
     { name: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -61,7 +61,12 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
   };
 
   return (
-    <header className={cn("fixed top-0 left-0 right-0 bg-gradient-to-r from-[#86C7E8]/30 to-[#106793]/30 backdrop-blur-sm z-50", className)}>
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 bg-gradient-to-r from-[#86C7E8]/30 to-[#106793]/30 backdrop-blur-sm z-50",
+        className
+      )}
+    >
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -132,7 +137,9 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <div className="text-sm text-gray-400">$IP Balance</div>
-                <div className="text-white">{parseFloat(balance).toFixed(4)}</div>
+                <div className="text-white">
+                  {parseFloat(balance).toFixed(4)}
+                </div>
               </div>
 
               <div className="relative">
@@ -177,4 +184,4 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
       </div>
     </header>
   );
-} 
+}

@@ -25,7 +25,6 @@ export default function StakingStage({ project }: StakingStageProps) {
     stakeTokens,
     unstakeTokens,
     claimRewards,
-    collectRoyalties,
   } = useStaking(project.id);
 
   const [stakeAmount, setStakeAmount] = useState("");

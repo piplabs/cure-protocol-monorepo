@@ -71,9 +71,6 @@ export default function CurationStage({ project }: CurationStageProps) {
     }
   };
 
-  // Debug: log projectLaunchData
-  console.log("projectLaunchData", projectLaunchData);
-
   const canCommit =
     isConnected &&
     parseFloat(ipBalance) >= parseFloat(commitAmount || "0") &&
