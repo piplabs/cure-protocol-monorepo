@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
 
+import { console2 } from "forge-std/console2.sol";
 import { Script } from "forge-std/Script.sol";
 import { ICreate3Deployer } from "@storyprotocol/script/utils/ICreate3Deployer.sol";
 import { ILicenseAttachmentWorkflows } from "@storyprotocol/periphery/contracts/workflows/LicenseAttachmentWorkflows.sol";
@@ -9,6 +10,7 @@ import { PILFlavors } from "@storyprotocol/core/lib/PILFlavors.sol";
 import { Licensing } from "@storyprotocol/core/lib/Licensing.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { LicensingModule } from "@storyprotocol/core/modules/licensing/LicensingModule.sol";
+import { MockIPGraph } from "@storyprotocol/test/mocks/MockIPGraph.sol";
 
 contract RegIpAndDeployVault is Script {
     // PROXY 1967 IMPLEMENTATION STORAGE SLOTS
@@ -27,6 +29,7 @@ contract RegIpAndDeployVault is Script {
     address internal ADMIN = vm.envAddress("ADMIN");
 
     function run() public virtual {
+        vm.etch(address(0x0101), address(new MockIPGraph()).code);
         vm.startBroadcast(vm.envUint("PK"));
         _registerIpAndDeployVault();
         vm.stopBroadcast();
@@ -86,5 +89,7 @@ contract RegIpAndDeployVault is Script {
             maxMintingFee: 1 ether,
             maxRevenueShare: 1e7
         });
+
+        console2.log("ipId", ipId);
     }
 }
