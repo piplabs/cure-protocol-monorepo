@@ -106,14 +106,14 @@ export default function HeroSection() {
               </h1>
 
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Cure Protocol enables the community to launch new BioDAOs
+                Cure Protocol enables the community to launch new CureDAOs
                 through a 4-phase process: Curation, Fundraising, AMM Launch, and Staking & Governance.
               </p>
 
               <div className="flex items-center gap-6 mb-8">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-[#00d4ff]">
-                    12 BioDAOs
+                    12 CureDAOs
                   </div>
                   <div className="text-white text-sm">Launched & Funded</div>
                 </div>

@@ -31,7 +31,7 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   
   const [activeTab, setActiveTab] = useState("Home");
-  const [isMobile, setIsMobile] = useState(false);
+  // const [isMobile, setIsMobile] = useState(false);
 
   const navItems: NavItem[] = [
     { name: "Home", url: "/", icon: Home },
@@ -39,15 +39,15 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
     { name: "Data", url: "/data", icon: Database },
   ];
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     setIsMobile(window.innerWidth < 768);
+  //   };
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  //   handleResize();
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -73,14 +73,14 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, url: string) => {
-    e.preventDefault();
-    const targetId = url.substring(1); // remove '#'
-    const targetElement = document.getElementById(targetId);
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  // const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, url: string) => {
+  //   e.preventDefault();
+  //   const targetId = url.substring(1); // remove '#'
+  //   const targetElement = document.getElementById(targetId);
+  //   if (targetElement) {
+  //     targetElement.scrollIntoView({ behavior: 'smooth' });
+  //   }
+  // };
 
   const handleConnect = async () => {
     try {
