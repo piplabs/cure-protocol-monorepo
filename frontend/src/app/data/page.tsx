@@ -111,7 +111,7 @@ export default function DataMarketplacePage() {
   const filteredDatasets = searchDatasets(selectedProject, searchTerm);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 -mt-20 pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 -mt-20 pt-20">
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">

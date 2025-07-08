@@ -137,12 +137,10 @@ function LavaLampShader() {
       
       // Always use square viewport to maintain blob proportions
       const aspect = width / height;
-      console.log("width", width, "height", height);
       orthoCamera.left = -viewSize * aspect;
       orthoCamera.right = viewSize * aspect;
       orthoCamera.top = viewSize;
       orthoCamera.bottom = -viewSize;
-      console.log("yo bro", orthoCamera.left, orthoCamera.right, orthoCamera.top, orthoCamera.bottom);
       
       // Update viewport uniform with actual camera values
       uniforms.viewport.value.set(

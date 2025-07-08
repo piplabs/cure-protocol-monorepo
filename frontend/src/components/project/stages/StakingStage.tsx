@@ -6,6 +6,7 @@ import { DollarSign, Coins, ArrowUpRight, ExternalLink } from "lucide-react";
 import { Project } from "@/lib/types";
 import { useStaking } from "@/lib/hooks/useStaking";
 import { useWallet } from "@/lib/hooks/useWallet";
+import ShinyButton from "@/components/ui/ShinyButton";
 import { getProjectTokenSymbol } from "@/lib/utils/projectTokens";
 
 interface StakingStageProps {
@@ -156,12 +157,9 @@ export default function StakingStage({ project }: StakingStageProps) {
             Connect your wallet to stake {projectTokenSymbol} tokens and earn
             rewards
           </p>
-          <button
-            onClick={connectWallet}
-            className="bg-green-500 hover:bg-green-600 text-black font-bold py-3 px-8 rounded-xl transition-colors"
-          >
+          <ShinyButton onClick={connectWallet} width="100%" height="48px">
             Connect Wallet
-          </button>
+          </ShinyButton>
         </div>
       ) : (
         <>

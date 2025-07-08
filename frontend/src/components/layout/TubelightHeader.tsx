@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { LucideIcon, LayoutDashboard, Rocket, Database } from "lucide-react";
+import { LucideIcon, Home, LayoutDashboard, Database } from "lucide-react";
 import { useWalletContext } from "../providers/WalletProvider";
 import { cn } from "@/lib/utils/cn";
 
@@ -28,12 +29,13 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
   } = useWalletContext();
 
   const [showDropdown, setShowDropdown] = useState(false);
-  const [activeTab, setActiveTab] = useState("Launchpad");
-  const [, setIsMobile] = useState(false);
+  
+  const [activeTab, setActiveTab] = useState("Home");
+  const [isMobile, setIsMobile] = useState(false);
 
   const navItems: NavItem[] = [
-    { name: "Dashboard", url: "/", icon: LayoutDashboard },
-    { name: "Launchpad", url: "/", icon: Rocket },
+    { name: "Home", url: "/", icon: Home },
+    { name: "Projects", url: "/#projects", icon: LayoutDashboard },
     { name: "Data", url: "/data", icon: Database },
   ];
 
@@ -46,6 +48,39 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const projectsSection = document.getElementById("projects");
+
+      if (projectsSection) {
+        const rect = projectsSection.getBoundingClientRect();
+        const screenHeight = window.innerHeight;
+
+        // Check if the projects section is centered in the viewport
+        if (rect.top < screenHeight / 2 && rect.bottom > screenHeight / 2) {
+          setActiveTab("Projects");
+        } else {
+          // If not centered, check if we are at the top of the page for 'Home'
+          if (window.scrollY < 200) {
+            setActiveTab("Home");
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, url: string) => {
+    e.preventDefault();
+    const targetId = url.substring(1); // remove '#'
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleConnect = async () => {
     try {
@@ -71,14 +106,17 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-[#00d4ff] to-blue-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">D</span>
-            </div>
-            <span className="text-white text-xl font-bold">cure protocol</span>
+            <Image
+              src="/art/homepage/c-logo.svg"
+              alt="Cure Protocol Logo"
+              width={32}
+              height={32}
+            />
+            <span className="hidden md:inline text-white text-xl font-bold">cure protocol</span>
           </Link>
 
           {/* Tubelight Navigation */}
-          <div className="flex items-center gap-3 bg-background/5 border border-border backdrop-blur-lg py-1 px-1 rounded-full shadow-lg">
+          <div className="flex items-center gap-3 bg-gray-900/20 border border-gray-700/50 backdrop-blur-lg py-1 px-1 rounded-full shadow-lg">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.name;
@@ -90,8 +128,8 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
                   onClick={() => setActiveTab(item.name)}
                   className={cn(
                     "relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-colors",
-                    "text-foreground/80 hover:text-primary",
-                    isActive && "bg-muted text-primary"
+                    "text-gray-300 hover:text-white",
+                    isActive && "bg-[#00d4ff]/20 text-[#00d4ff]"
                   )}
                 >
                   <span className="hidden md:inline">{item.name}</span>
@@ -101,7 +139,7 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
                   {isActive && (
                     <motion.div
                       layoutId="lamp"
-                      className="absolute inset-0 w-full bg-primary/5 rounded-full -z-10"
+                      className="absolute inset-0 w-full bg-[#00d4ff]/10 rounded-full -z-10"
                       initial={false}
                       transition={{
                         type: "spring",
@@ -109,10 +147,10 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
                         damping: 30,
                       }}
                     >
-                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-full">
-                        <div className="absolute w-12 h-6 bg-primary/20 rounded-full blur-md -top-2 -left-2" />
-                        <div className="absolute w-8 h-6 bg-primary/20 rounded-full blur-md -top-1" />
-                        <div className="absolute w-4 h-4 bg-primary/20 rounded-full blur-sm top-0 left-2" />
+                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-t-full">
+                        <div className="absolute w-12 h-6 bg-[#00d4ff]/20 rounded-full blur-md -top-2 -left-2" />
+                        <div className="absolute w-8 h-6 bg-[#00d4ff]/20 rounded-full blur-md -top-1" />
+                        <div className="absolute w-4 h-4 bg-[#00d4ff]/20 rounded-full blur-sm top-0 left-2" />
                       </div>
                     </motion.div>
                   )}

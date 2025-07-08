@@ -1,6 +1,9 @@
 import { ChevronRight, Brain, ArrowUpRight, Shield } from "lucide-react";
 import { Project } from "@/lib/types";
 import { projectDetails } from "@/lib/data/projectDetails";
+import ShinyButton from "@/components/ui/ShinyButton";
+import { useWallet } from "@/lib/hooks/useWallet";
+
 import { getProjectTokenSymbol } from "@/lib/utils/projectTokens";
 
 interface AMMStageProps {
@@ -9,6 +12,7 @@ interface AMMStageProps {
 
 export default function AMMStage({ project }: AMMStageProps) {
   const tokenomics = projectDetails[project.id]?.tokenomics;
+  const { connectWallet } = useWallet();
 
   return (
     <div className="space-y-8">
@@ -196,9 +200,9 @@ export default function AMMStage({ project }: AMMStageProps) {
                 </div>
               </div>
 
-              <button className="w-full bg-[#00d4ff] hover:bg-[#00b8e6] text-black font-bold py-4 rounded-xl transition-colors">
+              <ShinyButton onClick={connectWallet} width="100%" height="48px">
                 Connect Wallet
-              </button>
+              </ShinyButton>
 
               <div className="text-center text-xs text-gray-500">
                 <span className="flex items-center justify-center gap-1">

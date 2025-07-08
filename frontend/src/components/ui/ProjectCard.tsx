@@ -19,7 +19,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <div
       onClick={handleClick}
-      className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 hover:border-[#00d4ff]/30 transition-all duration-300 cursor-pointer backdrop-blur-sm group overflow-hidden"
+      role="button"
+      tabIndex={0}
+      className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 hover:border-[#00d4ff]/30 transition-all duration-300 backdrop-blur-sm group overflow-hidden"
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick()}
     >
       <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl mb-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#00d4ff]/10 to-blue-500/10" />
@@ -33,7 +36,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </span>
         </div>
         <div className="absolute bottom-4 right-4">
-          <span className="px-2 py-1 bg-gray-800/80 backdrop-blur-sm rounded-lg text-xs text-gray-300 border border-gray-700/50">
+          <span className="px-2 py-1 bg-gray-800/80 backdrop-blur-sm rounded-lg text-xs text-gray-100 border border-gray-700/50">
             {project.category}
           </span>
         </div>
@@ -43,7 +46,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {project.name}
       </h3>
 
-      <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+      <p className="text-gray-200 text-sm mb-4 line-clamp-3">
         {project.description}
       </p>
 

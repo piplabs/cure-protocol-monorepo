@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Cure Protocol",
   description: "Curate & Fund Decentralized Science",
+  icons: {
+    icon: "/art/homepage/c-logo.svg",
+  },
 };
 
 export default function RootLayout({
