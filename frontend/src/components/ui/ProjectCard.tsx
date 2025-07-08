@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Project } from "../../lib/types";
 import { getStatusColor, getStatusLabel } from "../../lib/utils/formatters";
+import { getProjectTokenSymbol } from "../../lib/utils/projectTokens";
 
 interface ProjectCardProps {
   project: Project;
@@ -65,7 +66,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Raised</span>
             <span className="text-white font-medium">
-              {project.raised} CURE
+              {project.raised} {getProjectTokenSymbol(project.id)}
             </span>
           </div>
           <div className="w-full bg-gray-800 rounded-full h-2">
@@ -76,7 +77,9 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </div>
           <div className="flex justify-between text-xs text-gray-500">
             <span>{project.progress}% Complete</span>
-            <span>Target: {project.target} CURE</span>
+            <span>
+              Target: {project.target} {getProjectTokenSymbol(project.id)}
+            </span>
           </div>
         </div>
       )}

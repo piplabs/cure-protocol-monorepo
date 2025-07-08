@@ -7,6 +7,7 @@ import { projectDetails } from "@/lib/data/projectDetails";
 import { useCuration } from "@/lib/hooks/useCuration";
 import { useWallet } from "@/lib/hooks/useWallet";
 import ShinyButton from "@/components/ui/ShinyButton";
+import { getProjectTokenSymbol } from "@/lib/utils/projectTokens";
 
 const ADMIN_ADDRESS = "0x87554276f7282ce433a12b286c9fcfd2fa09ec41";
 
@@ -196,7 +197,7 @@ export default function CurationStage({ project }: CurationStageProps) {
                   onClick={() => setShowClaimModal(true)}
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                 >
-                  Claim CureTokens
+                  Claim {getProjectTokenSymbol(project.id)} Tokens
                 </button>
               </div>
             )}
@@ -226,10 +227,12 @@ export default function CurationStage({ project }: CurationStageProps) {
               Curation Details
             </h3>
             <p className="text-gray-300 mb-6">
-              Signal support for a CureDAO by committing $IP tokens in exchange
-              for CureDAO tokens if the DAO raises successfully. This curation
-              stage filters which projects advance to launch via the CURE
-              launchpad, rewarding participants with vesting CureDAO tokens.
+              Signal support for a {project.name} by committing $IP tokens in
+              exchange for {getProjectTokenSymbol(project.id)} tokens if the DAO
+              raises successfully. This curation stage filters which projects
+              advance to launch via the {getProjectTokenSymbol(project.id)}
+              launchpad, rewarding participants with vesting{" "}
+              {getProjectTokenSymbol(project.id)} tokens.
             </p>
 
             <div className="space-y-4">
@@ -274,7 +277,9 @@ export default function CurationStage({ project }: CurationStageProps) {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">1 $IP = </span>
-                  <span className="text-white">22.22 vREFLEX</span>
+                  <span className="text-white">
+                    22.22 v{getProjectTokenSymbol(project.id)}
+                  </span>
                 </div>
 
                 <div className="space-y-2">
@@ -416,11 +421,12 @@ export default function CurationStage({ project }: CurationStageProps) {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-8 max-w-md w-full mx-4">
             <h3 className="text-2xl font-bold text-white mb-4">
-              Claim CureTokens
+              Claim {getProjectTokenSymbol(project.id)} Tokens
             </h3>
             <p className="text-gray-400 mb-6">
               You have deposited {curationData?.userCommitted} $IP. The project
-              has been launched. You can now claim your CureTokens.
+              has been launched. You can now claim your{" "}
+              {getProjectTokenSymbol(project.id)} tokens.
             </p>
             <div className="flex gap-4">
               <button
