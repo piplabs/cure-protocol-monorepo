@@ -18,7 +18,7 @@ export const mockProjects: Project[] = [
     id: "curetopia",
     name: "Curetopia",
     category: "Rare Diseases",
-    status: "fundraising",
+    status: "staking",
     description:
       "Curing the 10,000 rare genetic diseases. We are uniting patient groups and populations to tackle the $1T rare disease market.",
     raised: "14.21K",
@@ -44,7 +44,7 @@ export const mockProjects: Project[] = [
     id: "sleepdao",
     name: "SleepDAO",
     category: "Metabolic Health",
-    status: "staking",
+    status: "fundraising",
     description: "Improving sleep health through research and innovation",
     raised: "0",
     target: "1.5M",

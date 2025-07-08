@@ -32,12 +32,12 @@ export default function HeroSection() {
           style={{ 
             width: '100%',
             height: '100%',
+
             flexShrink: 0,
-            transform: 'rotate(-10deg)'
+            transform: "rotate(-10deg)",
           }}
         />
       </div>
-      
       {/* Second sparkle decoration */}
       <div className="absolute bottom-10 right-10 opacity-60">
         <img 
@@ -47,11 +47,10 @@ export default function HeroSection() {
             width: '200px',
             height: '195px',
             flexShrink: 0,
-            transform: 'rotate(-62.318deg)'
+            transform: "rotate(-62.318deg)",
           }}
         />
       </div>
-      
       {/* Wave decoration */}
       <div className="absolute bottom-0 right-0 opacity-60">
         <img 
@@ -64,7 +63,6 @@ export default function HeroSection() {
           }}
         />
       </div>
-
       {/* Contained SparklesCore */}
       <div className="absolute inset-0 w-full h-full">
         <div className="w-full h-full relative">

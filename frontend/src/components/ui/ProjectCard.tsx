@@ -16,7 +16,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   };
 
   return (
-    <div 
+    <div
       onClick={handleClick}
       role="button"
       tabIndex={0}
@@ -65,7 +65,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Raised</span>
             <span className="text-white font-medium">
-              {project.raised} BIO
+              {project.raised} CURE
             </span>
           </div>
           <div className="w-full bg-gray-800 rounded-full h-2">
@@ -76,7 +76,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </div>
           <div className="flex justify-between text-xs text-gray-500">
             <span>{project.progress}% Complete</span>
-            <span>Target: {project.target} BIO</span>
+            <span>Target: {project.target} CURE</span>
           </div>
         </div>
       )}

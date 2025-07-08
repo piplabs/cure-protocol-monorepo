@@ -60,6 +60,24 @@ export function useCuration(projectId: string, curateAddress: string) {
     });
     setIpId(ipId);
 
+    // Get admin address and log it
+    try {
+      const adminAddress = await publicClient.readContract({
+        address: curateAddress,
+        abi: CURATE_ABI,
+        functionName: "getAdmin",
+      });
+      console.log(
+        `Admin address for curation contract ${curateAddress}:`,
+        adminAddress
+      );
+    } catch (error) {
+      console.error(
+        `Failed to get admin address for curation contract ${curateAddress}:`,
+        error
+      );
+    }
+
     const totalCommitted = await publicClient.readContract({
       address: curateAddress,
       abi: CURATE_ABI,
@@ -125,6 +143,24 @@ export function useCuration(projectId: string, curateAddress: string) {
     if (!publicClient || !curateAddress) return;
 
     try {
+      // Get admin address and log it
+      try {
+        const adminAddress = await publicClient.readContract({
+          address: curateAddress,
+          abi: CURATE_ABI,
+          functionName: "getAdmin",
+        });
+        console.log(
+          `Admin address for curation contract ${curateAddress}:`,
+          adminAddress
+        );
+      } catch (error) {
+        console.error(
+          `Failed to get admin address for curation contract ${curateAddress}:`,
+          error
+        );
+      }
+
       // Check if project has been launched by calling the getter functions
       const [bioToken, stakingContract] = await Promise.all([
         publicClient.readContract({
@@ -398,6 +434,7 @@ export function useCuration(projectId: string, curateAddress: string) {
     projectLaunchData,
     ipBalance,
     statusMessage,
+    ipId,
 
     // Actions
     commitToCuration,
