@@ -16,7 +16,7 @@ export default function Footer() {
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
               Curate & Fund Decentralized Science. The future of research
-              funding through community-driven BioDAOs.
+              funding through community-driven CureDAOs.
             </p>
             <div className="flex items-center gap-4">
               <a
