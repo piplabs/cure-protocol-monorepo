@@ -23,6 +23,7 @@ export default function StakingStage({ project }: StakingStageProps) {
     contractAddress,
     bioTokenAddress,
     isProjectLaunched,
+    ipId,
     stakeTokens,
     unstakeTokens,
     claimRewards,
@@ -95,6 +96,27 @@ export default function StakingStage({ project }: StakingStageProps) {
       {statusMessage && (
         <div className="bg-blue-900 border-blue-700 text-blue-100 border px-6 py-3 rounded-xl">
           {statusMessage}
+        </div>
+      )}
+
+      {/* IP ID Display */}
+      {ipId && (
+        <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-4 backdrop-blur-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-sm font-medium text-gray-400 mb-1">IP ID</h4>
+              <p className="text-white font-mono text-sm break-all">{ipId}</p>
+            </div>
+            <a
+              href={`https://aeneid.storyscan.io/address/${ipId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition-colors text-sm flex items-center gap-1"
+            >
+              <ExternalLink className="w-3 h-3" />
+              View
+            </a>
+          </div>
         </div>
       )}
 

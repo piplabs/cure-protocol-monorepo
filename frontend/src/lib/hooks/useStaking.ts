@@ -20,6 +20,7 @@ export function useStaking(projectId: string) {
   );
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [lastTransactionHash, setLastTransactionHash] = useState<string>("");
+  const [ipId, setIpId] = useState<string>("");
 
   // Use the staking contract from launch data, fallback to default
   const contractAddress =
@@ -40,6 +41,27 @@ export function useStaking(projectId: string) {
     setLoading((prev) => ({ ...prev, [key]: value }));
   };
 
+  // Load IP ID from staking contract
+  const loadIpId = async () => {
+    if (
+      !publicClient ||
+      !contractAddress ||
+      contractAddress === "0x0000000000000000000000000000000000000000"
+    )
+      return;
+
+    try {
+      const ipIdFromContract = await publicClient.readContract({
+        address: contractAddress,
+        abi: STAKING_ABI,
+        functionName: "getIpId",
+      });
+      setIpId(ipIdFromContract);
+    } catch (error) {
+      console.error("Failed to load IP ID:", error);
+    }
+  };
+
   // Wait for transaction confirmation
   const waitForTransaction = async (hash: string) => {
     if (!publicClient) return;
@@ -54,25 +76,12 @@ export function useStaking(projectId: string) {
   };
 
   useEffect(() => {
-    if (
-      isConnected &&
-      account &&
-      publicClient &&
-      isProjectLaunched &&
-      contractAddress &&
-      contractAddress !== "0x0000000000000000000000000000000000000000"
-    ) {
+    if (isConnected && account && publicClient) {
       loadStakingData();
       loadTokenBalances();
+      loadIpId();
     }
-  }, [
-    isConnected,
-    account,
-    publicClient,
-    contractAddress,
-    isProjectLaunched,
-    bioTokenAddress,
-  ]);
+  }, [isConnected, account, publicClient, projectId]);
 
   const loadTokenBalances = async () => {
     if (!publicClient || !account || !bioTokenAddress) return;
@@ -356,6 +365,7 @@ export function useStaking(projectId: string) {
     contractAddress,
     bioTokenAddress,
     isProjectLaunched,
+    ipId,
 
     // Actions
     stakeTokens,
@@ -364,6 +374,7 @@ export function useStaking(projectId: string) {
     collectRoyalties,
     loadStakingData,
     loadTokenBalances,
+    loadIpId,
     showStatus,
   };
 }
