@@ -117,7 +117,9 @@ export default function CurationStage({ project }: CurationStageProps) {
                   {curationData?.minimumCommit || details.minimumCommit}
                   <span className="text-lg text-gray-400 ml-2">$IP</span>
                 </div>
-                <div className="text-gray-400 text-sm">Curation Limit</div>
+                <div className="text-gray-400 text-sm">
+                  Curation Requirement
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-4 gap-4 p-4 bg-gray-800/30 rounded-xl border border-gray-700/50">
@@ -166,14 +168,14 @@ export default function CurationStage({ project }: CurationStageProps) {
                   </button>
                 </div>
               )}
-            {/* Claim BioTokens Button (opens modal) */}
+            {/* Claim CureTokens Button (opens modal) */}
             {isConnected && canClaimBioTokens && (
               <div className="mt-6">
                 <button
                   onClick={() => setShowClaimModal(true)}
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                 >
-                  Claim BioTokens
+                  Claim CureTokens
                 </button>
               </div>
             )}
@@ -203,10 +205,10 @@ export default function CurationStage({ project }: CurationStageProps) {
               Curation Details
             </h3>
             <p className="text-gray-300 mb-6">
-              Signal support for a BioDAO by committing $IP tokens in exchange
-              for BioDAO tokens if the DAO raises successfully. This curation
-              stage filters which projects advance to launch via the BIO
-              launchpad, rewarding participants with vesting BioDAO tokens.
+              Signal support for a CureDAO by committing $IP tokens in exchange
+              for CureDAO tokens if the DAO raises successfully. This curation
+              stage filters which projects advance to launch via the CURE
+              launchpad, rewarding participants with vesting CureDAO tokens.
             </p>
 
             <div className="space-y-4">
@@ -391,16 +393,16 @@ export default function CurationStage({ project }: CurationStageProps) {
         </div>
       )}
 
-      {/* Claim BioTokens Modal */}
+      {/* Claim CureTokens Modal */}
       {showClaimModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-8 max-w-md w-full mx-4">
             <h3 className="text-2xl font-bold text-white mb-4">
-              Claim BioTokens
+              Claim CureTokens
             </h3>
             <p className="text-gray-400 mb-6">
               You have deposited {curationData?.userCommitted} $IP. The project
-              has been launched. You can now claim your BioTokens.
+              has been launched. You can now claim your CureTokens.
             </p>
             <div className="flex gap-4">
               <button

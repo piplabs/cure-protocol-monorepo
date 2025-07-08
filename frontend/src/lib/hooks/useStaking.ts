@@ -70,7 +70,7 @@ export function useStaking(projectId: string) {
           functionName: "balanceOf",
           args: [account],
         });
-        balances.BIO = formatEther(bioBalance);
+        balances.CURE = formatEther(bioBalance);
 
         // Also get the token symbol
         const symbol = (await publicClient.readContract({

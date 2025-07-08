@@ -3,55 +3,55 @@ import { SparklesCore } from "./sparkles";
 export default function HeroSection() {
   return (
     <div className="relative py-20 px-6 overflow-hidden z-2">
-      <div className="absolute inset-0" />  {/* bg-gradient-to-r from-[#00d4ff]/10 via-blue-500/5 to-purple-500/10 */}
-      
+      <div className="absolute inset-0" />{" "}
+      {/* bg-gradient-to-r from-[#00d4ff]/10 via-blue-500/5 to-purple-500/10 */}
       {/* Sparkle decoration */}
-      <div className="absolute opacity-60" style={{ 
-        top: '60%', 
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '100px',
-        height: '103px'
-      }}>
-        <img 
-          src="/art/home page/sparkle.svg" 
-          alt="" 
-          style={{ 
-            width: '100%',
-            height: '100%',
+      <div
+        className="absolute opacity-60"
+        style={{
+          top: "60%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "100px",
+          height: "103px",
+        }}
+      >
+        <img
+          src="/art/home page/sparkle.svg"
+          alt=""
+          style={{
+            width: "100%",
+            height: "100%",
             flexShrink: 0,
-            transform: 'rotate(-10deg)'
+            transform: "rotate(-10deg)",
           }}
         />
       </div>
-      
       {/* Second sparkle decoration */}
       <div className="absolute bottom-0 right-0 opacity-60">
-        <img 
-          src="/art/home page/sparkle.svg" 
-          alt="" 
-          style={{ 
-            width: '200px',
-            height: '195px',
+        <img
+          src="/art/home page/sparkle.svg"
+          alt=""
+          style={{
+            width: "200px",
+            height: "195px",
             flexShrink: 0,
-            transform: 'rotate(-62.318deg)'
+            transform: "rotate(-62.318deg)",
           }}
         />
       </div>
-      
       {/* Wave decoration */}
       <div className="absolute bottom-0 right-0 opacity-60">
-        <img 
-          src="/art/home page/wave.svg" 
-          alt="" 
-          style={{ 
-            width: '1000px',
-            height: '517px',
-            flexShrink: 0
+        <img
+          src="/art/home page/wave.svg"
+          alt=""
+          style={{
+            width: "1000px",
+            height: "517px",
+            flexShrink: 0,
           }}
         />
       </div>
-
       {/* Contained SparklesCore */}
       <div className="absolute inset-0 w-full h-full">
         <div className="w-full h-full relative">
@@ -69,7 +69,6 @@ export default function HeroSection() {
           <div className="absolute inset-0 w-full h-full [mask-image:linear-gradient(to_top,transparent_0%,white_20%)]"></div>
         </div>
       </div>
-
       <div className="max-w-7xl mx-auto relative">
         <div className="w-full max-w-4xl">
           <div>
@@ -82,15 +81,15 @@ export default function HeroSection() {
             </h1>
 
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              Cure Protocol enables the community to launch new BioDAOs
-              through a 3-phase process: Curation, Fundraising, and Liquidity
+              Cure Protocol enables the community to launch new CureDAOs through
+              a 3-phase process: Curation, Fundraising, and Liquidity
               Provisioning.
             </p>
 
             <div className="flex items-center gap-6 mb-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-[#00d4ff]">
-                  12 BioDAOs
+                  12 CureDAOs
                 </div>
                 <div className="text-white text-sm">Launched & Funded</div>
               </div>
@@ -107,7 +106,8 @@ export default function HeroSection() {
               </div>
             </div>
 
-            <button className="relative px-10 py-10 transition-all transform hover:scale-105 focus:outline-none">\
+            <button className="relative px-10 py-10 transition-all transform hover:scale-105 focus:outline-none">
+              \
               <img
                 src="/art/home page/button.svg"
                 alt=""
