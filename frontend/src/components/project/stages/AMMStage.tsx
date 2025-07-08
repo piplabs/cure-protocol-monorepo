@@ -137,9 +137,9 @@ export default function AMMStage({ project }: AMMStageProps) {
                   />
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">E</span>
+                      <span className="text-white text-sm font-bold">I</span>
                     </div>
-                    <span className="text-white font-medium">ETH</span>
+                    <span className="text-white font-medium">IP</span>
                     <ChevronRight className="w-4 h-4 text-gray-400" />
                   </div>
                 </div>
@@ -189,7 +189,7 @@ export default function AMMStage({ project }: AMMStageProps) {
                     20,034,944.057
                   </div>
                   <div className="text-sm text-gray-400 mt-1">
-                    1 ETH = 20,058,143.27
+                    1 IP = 20,058,143.27
                     <br />
                     {getProjectTokenSymbol(project.id)} (≈ $2,728.31)
                   </div>
