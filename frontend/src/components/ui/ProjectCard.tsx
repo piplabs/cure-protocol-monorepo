@@ -18,7 +18,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <div 
       onClick={handleClick}
-      className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 hover:border-[#00d4ff]/30 transition-all duration-300 cursor-pointer backdrop-blur-sm group overflow-hidden"
+      role="button"
+      tabIndex={0}
+      className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 hover:border-[#00d4ff]/30 transition-all duration-300 backdrop-blur-sm group overflow-hidden"
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick()}
     >
       <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl mb-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#00d4ff]/10 to-blue-500/10" />

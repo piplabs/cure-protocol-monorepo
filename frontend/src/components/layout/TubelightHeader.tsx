@@ -48,6 +48,30 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const projectsSection = document.getElementById("projects");
+
+      if (projectsSection) {
+        const rect = projectsSection.getBoundingClientRect();
+        const screenHeight = window.innerHeight;
+
+        // Check if the projects section is centered in the viewport
+        if (rect.top < screenHeight / 2 && rect.bottom > screenHeight / 2) {
+          setActiveTab("Projects");
+        } else {
+          // If not centered, check if we are at the top of the page for 'Home'
+          if (window.scrollY < 200) {
+            setActiveTab("Home");
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, url: string) => {
     e.preventDefault();
     const targetId = url.substring(1); // remove '#'
