@@ -37,7 +37,7 @@ export default function FundraisingStage({ project }: FundraisingStageProps) {
                     </div>
                     <div>
                       <div className="text-lg font-bold text-white">
-                        94.72K SOL
+                        94.72K IP
                       </div>
                       <div className="text-xs text-gray-400">
                         Auction FDV ($10.95M)
@@ -45,7 +45,7 @@ export default function FundraisingStage({ project }: FundraisingStageProps) {
                     </div>
                     <div>
                       <div className="text-lg font-bold text-white">
-                        0.00095 SOL
+                        0.00095 IP
                       </div>
                       <div className="text-xs text-gray-400">
                         Token Price ($0.15)
@@ -67,11 +67,11 @@ export default function FundraisingStage({ project }: FundraisingStageProps) {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Minimum Raise</span>
-                  <span className="text-white">2.98K SOL ($469.22K)</span>
+                  <span className="text-white">2.98K IP ($469.22K)</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Maximum Raise</span>
-                  <span className="text-white">23.81K SOL ($3.75M)</span>
+                  <span className="text-white">23.81K IP ($3.75M)</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Auction Start Date</span>
@@ -115,7 +115,7 @@ export default function FundraisingStage({ project }: FundraisingStageProps) {
 
           <div className="text-center mb-6">
             <div className="text-2xl font-bold text-white mb-2">
-              1 <span className="text-[#00d4ff]">SOL</span> = 1.06K{" "}
+              1 <span className="text-[#00d4ff]">IP</span> = 1.06K{" "}
               <span className="text-purple-400">
                 {getProjectTokenSymbol(project.id)}
               </span>
@@ -132,7 +132,7 @@ export default function FundraisingStage({ project }: FundraisingStageProps) {
               href="#"
               className="text-[#00d4ff] hover:text-[#00b8e6] transition-colors"
             >
-              View on Solscan
+              View on StoryScan
             </a>
           </div>
         </div>
