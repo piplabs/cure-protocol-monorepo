@@ -19,6 +19,8 @@ export function useStaking(projectId: string) {
     {}
   );
   const [statusMessage, setStatusMessage] = useState<string>("");
+  const [lastTransactionHash, setLastTransactionHash] = useState<string>("");
+  const [ipId, setIpId] = useState<string>("");
 
   // Use the staking contract from launch data, fallback to default
   const contractAddress =
@@ -31,30 +33,55 @@ export function useStaking(projectId: string) {
     setTimeout(() => setStatusMessage(""), 5000);
   };
 
+  const clearTransactionHash = () => {
+    setTimeout(() => setLastTransactionHash(""), 10000); // Clear after 10 seconds
+  };
+
   const setLoadingState = (key: string, value: boolean) => {
     setLoading((prev) => ({ ...prev, [key]: value }));
   };
 
-  useEffect(() => {
+  // Load IP ID from staking contract
+  const loadIpId = async () => {
     if (
-      isConnected &&
-      account &&
-      publicClient &&
-      isProjectLaunched &&
-      contractAddress &&
-      contractAddress !== "0x0000000000000000000000000000000000000000"
-    ) {
+      !publicClient ||
+      !contractAddress ||
+      contractAddress === "0x0000000000000000000000000000000000000000"
+    )
+      return;
+
+    try {
+      const ipIdFromContract = await publicClient.readContract({
+        address: contractAddress,
+        abi: STAKING_ABI,
+        functionName: "getIpId",
+      });
+      setIpId(ipIdFromContract);
+    } catch (error) {
+      console.error("Failed to load IP ID:", error);
+    }
+  };
+
+  // Wait for transaction confirmation
+  const waitForTransaction = async (hash: string) => {
+    if (!publicClient) return;
+
+    try {
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      return receipt;
+    } catch (error) {
+      console.error("Error waiting for transaction:", error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    if (isConnected && account && publicClient) {
       loadStakingData();
       loadTokenBalances();
+      loadIpId();
     }
-  }, [
-    isConnected,
-    account,
-    publicClient,
-    contractAddress,
-    isProjectLaunched,
-    bioTokenAddress,
-  ]);
+  }, [isConnected, account, publicClient, projectId]);
 
   const loadTokenBalances = async () => {
     if (!publicClient || !account || !bioTokenAddress) return;
@@ -62,7 +89,6 @@ export function useStaking(projectId: string) {
     try {
       const balances: { [key: string]: string } = {};
 
-      // Load BIO token balance (the launched token)
       if (bioTokenAddress !== "0x0000000000000000000000000000000000000000") {
         const bioBalance = await publicClient.readContract({
           address: bioTokenAddress,
@@ -156,7 +182,8 @@ export function useStaking(projectId: string) {
       const amountWei = parseEther(amount);
 
       // Approve tokens first
-      await walletClient.writeContract({
+      showStatus("Approving tokens...");
+      const approveHash = await walletClient.writeContract({
         account,
         address: bioTokenAddress,
         abi: ERC20_ABI,
@@ -164,7 +191,9 @@ export function useStaking(projectId: string) {
         args: [contractAddress, amountWei],
       });
 
-      showStatus("Token approval successful, staking tokens...");
+      // Wait for approval confirmation
+      await waitForTransaction(approveHash);
+      showStatus("Token approval confirmed, staking tokens...");
 
       // Stake tokens
       const hash = await walletClient.writeContract({
@@ -176,6 +205,13 @@ export function useStaking(projectId: string) {
       });
 
       console.log("Staking hash:", hash);
+      showStatus("Transaction submitted, waiting for confirmation...");
+
+      // Wait for staking confirmation
+      await waitForTransaction(hash);
+
+      setLastTransactionHash(hash);
+      clearTransactionHash();
       showStatus("Tokens staked successfully! Updating data...");
 
       // Refresh data
@@ -213,6 +249,13 @@ export function useStaking(projectId: string) {
       });
 
       console.log("Unstaking hash:", hash);
+      showStatus("Transaction submitted, waiting for confirmation...");
+
+      // Wait for confirmation
+      await waitForTransaction(hash);
+
+      setLastTransactionHash(hash);
+      clearTransactionHash();
       showStatus("Tokens unstaked successfully! Updating data...");
 
       // Refresh data
@@ -247,6 +290,13 @@ export function useStaking(projectId: string) {
       });
 
       console.log("Claim rewards hash:", hash);
+      showStatus("Transaction submitted, waiting for confirmation...");
+
+      // Wait for confirmation
+      await waitForTransaction(hash);
+
+      setLastTransactionHash(hash);
+      clearTransactionHash();
       showStatus("Rewards claimed successfully! Updating data...");
 
       // Refresh data
@@ -283,6 +333,13 @@ export function useStaking(projectId: string) {
       });
 
       console.log("Collect royalties hash:", hash);
+      showStatus("Transaction submitted, waiting for confirmation...");
+
+      // Wait for confirmation
+      await waitForTransaction(hash);
+
+      setLastTransactionHash(hash);
+      clearTransactionHash();
       showStatus("Royalties collected successfully! Updating data...");
 
       // Refresh data
@@ -304,9 +361,11 @@ export function useStaking(projectId: string) {
     stakingData,
     tokenBalances,
     statusMessage,
+    lastTransactionHash,
     contractAddress,
     bioTokenAddress,
     isProjectLaunched,
+    ipId,
 
     // Actions
     stakeTokens,
@@ -315,6 +374,7 @@ export function useStaking(projectId: string) {
     collectRoyalties,
     loadStakingData,
     loadTokenBalances,
+    loadIpId,
     showStatus,
   };
 }

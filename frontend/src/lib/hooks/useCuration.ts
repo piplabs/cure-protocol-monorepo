@@ -434,6 +434,7 @@ export function useCuration(projectId: string, curateAddress: string) {
     projectLaunchData,
     ipBalance,
     statusMessage,
+    ipId,
 
     // Actions
     commitToCuration,

@@ -8,7 +8,7 @@ import { IRoyaltyModule } from "@storyprotocol/core/interfaces/modules/royalty/I
 import { IAscCurate } from "../../contracts/interfaces/IAscCurate.sol";
 import { IAscStaking } from "../../contracts/interfaces/IAscStaking.sol";
 
-// forge script script/PayRoyaltyAndCollect.s.sol:PayRoyaltyAndCollect 0x3dDB76A5fF5aD8B52D7dE4217C30A46aF2DD42D9 0x21E47965eD8DB12Da76aDB58092A3c6282B95759 1ether --sig "run(address,address,uint256)" --fork-url=$STORY_RPC -vvvv --broadcast --sender=$ADMIN  --priority-gas-price=1 --legacy --skip-simulation
+// forge script script/PayRoyaltyAndCollect.s.sol:PayRoyaltyAndCollect 0xB35b1A096e9dF59C2aA14D0Ede6B597AB00276D1 0x98776d62CE1c2A55f1b335f61589353916426Ae5 1ether --sig "run(address,address,uint256)" --fork-url=$STORY_RPC -vvvv --broadcast --sender=$ADMIN  --priority-gas-price=1 --legacy --skip-simulation
 contract PayRoyaltyAndCollect is Script {
     address internal constant ROYALTY_MODULE = 0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086;
     address payable internal constant WIP_TOKEN = payable(0x1514000000000000000000000000000000000000);

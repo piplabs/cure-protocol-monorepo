@@ -19,9 +19,11 @@ export default function StakingStage({ project }: StakingStageProps) {
     stakingData,
     tokenBalances,
     statusMessage,
+    lastTransactionHash,
     contractAddress,
     bioTokenAddress,
     isProjectLaunched,
+    ipId,
     stakeTokens,
     unstakeTokens,
     claimRewards,
@@ -63,6 +65,12 @@ export default function StakingStage({ project }: StakingStageProps) {
     !loading.unstake &&
     contractAddress !== "0x0000000000000000000000000000000000000000";
 
+  const canClaim =
+    isConnected &&
+    isProjectLaunched &&
+    !loading.claim &&
+    contractAddress !== "0x0000000000000000000000000000000000000000";
+
   // If project is not launched yet
   if (!isProjectLaunched) {
     return (
@@ -88,6 +96,53 @@ export default function StakingStage({ project }: StakingStageProps) {
       {statusMessage && (
         <div className="bg-blue-900 border-blue-700 text-blue-100 border px-6 py-3 rounded-xl">
           {statusMessage}
+        </div>
+      )}
+
+      {/* IP ID Display */}
+      {ipId && (
+        <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-4 backdrop-blur-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-sm font-medium text-gray-400 mb-1">IP ID</h4>
+              <p className="text-white font-mono text-sm break-all">{ipId}</p>
+            </div>
+            <a
+              href={`https://aeneid.storyscan.io/address/${ipId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition-colors text-sm flex items-center gap-1"
+            >
+              <ExternalLink className="w-3 h-3" />
+              View
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* Transaction Hash Display */}
+      {lastTransactionHash && (
+        <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-xl">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-green-300 font-semibold mb-2">
+                Transaction Successful!
+              </h3>
+              <p className="text-green-200 text-sm mb-2">
+                Transaction Hash: {lastTransactionHash.slice(0, 10)}...
+                {lastTransactionHash.slice(-8)}
+              </p>
+            </div>
+            <a
+              href={`https://aeneid.storyscan.io/tx/${lastTransactionHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <ExternalLink className="w-4 h-4" />
+              View on Explorer
+            </a>
+          </div>
         </div>
       )}
 
@@ -238,7 +293,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                   {loading.stake && (
                     <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />
                   )}
-                  {loading.stake ? "Staking..." : `Stake ${cureTokenSymbol}`}
+                  {loading.stake ? "Confirming..." : `Stake ${cureTokenSymbol}`}
                 </button>
               </div>
             </div>
@@ -323,24 +378,20 @@ export default function StakingStage({ project }: StakingStageProps) {
                       {loading.unstake && (
                         <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
                       )}
-                      {loading.unstake ? "Unstaking..." : "Unstake"}
+                      {loading.unstake ? "Confirming..." : "Unstake"}
                     </button>
                   </div>
 
                   <button
                     onClick={claimRewards}
-                    disabled={
-                      loading.claim ||
-                      !stakingData?.pendingRewards ||
-                      parseFloat(stakingData.pendingRewards) === 0
-                    }
+                    disabled={!canClaim}
                     className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-2 rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     {loading.claim && (
                       <div className="animate-spin rounded-full border-2 border-gray-300 border-t-white w-4 h-4" />
                     )}
                     {loading.claim
-                      ? "Claiming..."
+                      ? "Confirming..."
                       : `Claim ${cureTokenSymbol} Rewards`}
                   </button>
 
