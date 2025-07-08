@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { LucideIcon, LayoutDashboard, Rocket, Database } from "lucide-react";
+import { LucideIcon, Home, LayoutDashboard, Database } from "lucide-react";
 import { useWalletContext } from "../providers/WalletProvider";
 import { cn } from "@/lib/utils/cn";
 
@@ -29,12 +29,12 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
   } = useWalletContext();
 
   const [showDropdown, setShowDropdown] = useState(false);
-  const [activeTab, setActiveTab] = useState("Launchpad");
+  const [activeTab, setActiveTab] = useState("Home");
   const [isMobile, setIsMobile] = useState(false);
 
   const navItems: NavItem[] = [
-    { name: "Dashboard", url: "/", icon: LayoutDashboard },
-    { name: "Launchpad", url: "/", icon: Rocket },
+    { name: "Home", url: "/", icon: Home },
+    { name: "Projects", url: "/#projects", icon: LayoutDashboard },
     { name: "Data", url: "/data", icon: Database },
   ];
 
@@ -47,6 +47,15 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, url: string) => {
+    e.preventDefault();
+    const targetId = url.substring(1); // remove '#'
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleConnect = async () => {
     try {
@@ -68,12 +77,12 @@ export default function TubelightHeader({ className }: TubelightHeaderProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/art/home page/c-logo.svg"
+              src="/art/homepage/c-logo.svg"
               alt="Cure Protocol Logo"
               width={32}
               height={32}
             />
-            <span className="text-white text-xl font-bold">cure protocol</span>
+            <span className="hidden md:inline text-white text-xl font-bold">cure protocol</span>
           </Link>
 
           {/* Tubelight Navigation */}

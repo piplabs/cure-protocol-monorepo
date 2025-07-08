@@ -5,20 +5,29 @@ import { TextShimmer } from "./text-shimmer";
 import { motion } from "framer-motion";
 
 export default function HeroSection() {
+
+  const handleScrollToAbout = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault();
+    const aboutSection = document.getElementById('about');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="relative py-20 px-6 overflow-hidden z-2">
+    <div id="home" className="relative py-20 px-6 overflow-hidden z-2">
       <div className="absolute inset-0" />  {/* bg-gradient-to-r from-[#00d4ff]/10 via-blue-500/5 to-purple-500/10 */}
       
       {/* Sparkle decoration */}
       <div className="absolute opacity-60" style={{ 
         top: '60%', 
         left: '50%',
-        transform: 'translate(-50%, -50%)',
+        transform: 'translate(-50%, -80%)',
         width: '100px',
         height: '103px'
       }}>
         <img 
-          src="/art/home page/sparkle.svg" 
+          src="/art/homepage/sparkle.svg" 
           alt="" 
           style={{ 
             width: '100%',
@@ -30,9 +39,9 @@ export default function HeroSection() {
       </div>
       
       {/* Second sparkle decoration */}
-      <div className="absolute bottom-0 right-0 opacity-60">
+      <div className="absolute bottom-10 right-10 opacity-60">
         <img 
-          src="/art/home page/sparkle.svg" 
+          src="/art/homepage/sparkle.svg" 
           alt="" 
           style={{ 
             width: '200px',
@@ -46,7 +55,7 @@ export default function HeroSection() {
       {/* Wave decoration */}
       <div className="absolute bottom-0 right-0 opacity-60">
         <img 
-          src="/art/home page/wave.svg" 
+          src="/art/homepage/wave.svg" 
           alt="" 
           style={{ 
             width: '1000px',
@@ -100,8 +109,7 @@ export default function HeroSection() {
 
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
                 Cure Protocol enables the community to launch new BioDAOs
-                through a 3-phase process: Curation, Fundraising, and Liquidity
-                Provisioning.
+                through a 4-phase process: Curation, Fundraising, AMM Launch, and Staking & Governance.
               </p>
 
               <div className="flex items-center gap-6 mb-8">
@@ -124,20 +132,22 @@ export default function HeroSection() {
                 </div>
               </div>
 
-              <button className="relative px-10 py-10 transition-all transform hover:scale-105 focus:outline-none">
-                
-                <AnimatedSparkleButton className="absolute inset-0" />
-                <img
-                  src="/art/home page/button.svg"
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-fill"
-                  aria-hidden="true"
-                />
-                {/* Button label */}
-                <span className="relative z-10 text-white font-bold right-6.5 bottom-1">
-                  Learn more about the mechanics
-                </span>
-              </button>
+              <a href="#about" onClick={handleScrollToAbout}>
+                <button className="relative px-10 py-10 transition-all transform hover:scale-105 focus:outline-none">
+                  
+                  <AnimatedSparkleButton className="absolute inset-0" />
+                  <img
+                    src="/art/homepage/button.svg"
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-fill"
+                    aria-hidden="true"
+                  />
+                  {/* Button label */}
+                  <span className="relative z-10 text-white font-bold right-6.5 bottom-1">
+                    Learn more about the mechanics
+                  </span>
+                </button>
+              </a>
             </div>
             
 

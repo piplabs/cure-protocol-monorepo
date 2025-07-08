@@ -130,8 +130,17 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+  cursor: url('/art/homepage/cursor.svg') 0 0, auto;
+}
+
 body {
   font-family: "Host Grotesk", sans-serif;
+}
+
+a, button, [role="button"] {
+  cursor: url('/art/homepage/cursorhighlight.svg') 0 0, auto;
 }
 
 /* Make main element inherit background from page container */
