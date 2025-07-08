@@ -6,6 +6,7 @@ import { DollarSign, Coins, ArrowUpRight, ExternalLink } from "lucide-react";
 import { Project } from "@/lib/types";
 import { useStaking } from "@/lib/hooks/useStaking";
 import { useWallet } from "@/lib/hooks/useWallet";
+import { getProjectTokenSymbol } from "@/lib/utils/projectTokens";
 
 interface StakingStageProps {
   project: Project;
@@ -44,14 +45,14 @@ export default function StakingStage({ project }: StakingStageProps) {
     setUnstakeAmount("");
   };
 
-  const cureTokenSymbol = "CURE"; // You might want to fetch this dynamically
-  const cureBalance =
-    tokenBalances.CURE || tokenBalances[cureTokenSymbol] || "0";
+  const projectTokenSymbol = getProjectTokenSymbol(project.id);
+  const projectTokenBalance =
+    tokenBalances[projectTokenSymbol] || tokenBalances.CURE || "0";
 
   const canStake =
     isConnected &&
     isProjectLaunched &&
-    parseFloat(cureBalance) >= parseFloat(stakeAmount || "0") &&
+    parseFloat(projectTokenBalance) >= parseFloat(stakeAmount || "0") &&
     parseFloat(stakeAmount || "0") > 0 &&
     !loading.stake &&
     contractAddress !== "0x0000000000000000000000000000000000000000";
@@ -83,8 +84,8 @@ export default function StakingStage({ project }: StakingStageProps) {
           and launch the project first to enable staking.
         </p>
         <div className="text-sm text-gray-500">
-          The CURE token and staking contracts will be deployed during the
-          launch process.
+          The {projectTokenSymbol} token and staking contracts will be deployed
+          during the launch process.
         </div>
       </div>
     );
@@ -152,7 +153,7 @@ export default function StakingStage({ project }: StakingStageProps) {
             Connect Wallet to Stake
           </h3>
           <p className="text-gray-400 mb-6">
-            Connect your wallet to stake {cureTokenSymbol} tokens and earn
+            Connect your wallet to stake {projectTokenSymbol} tokens and earn
             rewards
           </p>
           <button
@@ -172,13 +173,13 @@ export default function StakingStage({ project }: StakingStageProps) {
                   {project.name} Staking
                 </h2>
                 <p className="text-gray-400">
-                  Stake {cureTokenSymbol} tokens to earn rewards
+                  Stake {projectTokenSymbol} tokens to earn rewards
                 </p>
               </div>
               <div className="text-right">
                 <div className="text-sm text-gray-400">Staking Token</div>
                 <div className="text-xl font-bold text-green-400">
-                  {cureTokenSymbol}
+                  {projectTokenSymbol}
                 </div>
                 <div className="text-xs text-gray-500">
                   Contract: {contractAddress.slice(0, 6)}...
@@ -191,7 +192,9 @@ export default function StakingStage({ project }: StakingStageProps) {
             <div className="mt-4 p-4 bg-gray-800/30 rounded-xl border border-gray-700/50">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-400">CURE Token:</span>
+                  <span className="text-gray-400">
+                    {projectTokenSymbol} Token:
+                  </span>
                   <div className="text-white font-mono break-all">
                     {bioTokenAddress}
                   </div>
@@ -211,7 +214,7 @@ export default function StakingStage({ project }: StakingStageProps) {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-white">Stake Tokens</h3>
                 <div className="text-xs text-gray-400">
-                  Token: {cureTokenSymbol}
+                  Token: {projectTokenSymbol}
                 </div>
               </div>
 
@@ -222,7 +225,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       <DollarSign className="w-4 h-4 text-white" />
                     </div>
                     <span className="text-white font-medium">
-                      {cureTokenSymbol}
+                      {projectTokenSymbol}
                     </span>
                   </div>
                   <div className="text-right">
@@ -236,7 +239,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                     <div className="flex justify-end mt-1">
                       <button
                         type="button"
-                        onClick={() => setStakeAmount(cureBalance)}
+                        onClick={() => setStakeAmount(projectTokenBalance)}
                         className="text-green-400 hover:underline focus:outline-none text-sm"
                         style={{
                           background: "none",
@@ -244,7 +247,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                           padding: 0,
                         }}
                       >
-                        MAX: {parseFloat(cureBalance).toFixed(4)}
+                        MAX: {parseFloat(projectTokenBalance).toFixed(4)}
                       </button>
                     </div>
                   </div>
@@ -261,7 +264,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       <Coins className="w-4 h-4 text-white" />
                     </div>
                     <span className="text-white font-medium">
-                      Staked {cureTokenSymbol}
+                      Staked {projectTokenSymbol}
                     </span>
                   </div>
                   <div className="text-right">
@@ -281,7 +284,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       YOU WILL STAKE
                     </span>
                     <span className="text-white font-bold">
-                      {stakeAmount || "0.000"} {cureTokenSymbol}
+                      {stakeAmount || "0.000"} {projectTokenSymbol}
                     </span>
                   </div>
                 </div>
@@ -293,7 +296,9 @@ export default function StakingStage({ project }: StakingStageProps) {
                   {loading.stake && (
                     <div className="animate-spin rounded-full border-2 border-gray-300 border-t-black w-4 h-4" />
                   )}
-                  {loading.stake ? "Confirming..." : `Stake ${cureTokenSymbol}`}
+                  {loading.stake
+                    ? "Confirming..."
+                    : `Stake ${projectTokenSymbol}`}
                 </button>
               </div>
             </div>
@@ -309,7 +314,9 @@ export default function StakingStage({ project }: StakingStageProps) {
                   <div className="text-2xl font-bold text-white">
                     {stakingData?.totalStaked || "0"}
                   </div>
-                  <div className="text-xs text-gray-400">{cureTokenSymbol}</div>
+                  <div className="text-xs text-gray-400">
+                    {projectTokenSymbol}
+                  </div>
                 </div>
 
                 <div className="text-center">
@@ -328,7 +335,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                     </div>
                     <div className="text-white font-medium">
                       {parseFloat(stakingData?.userStaked || "0").toFixed(4)}{" "}
-                      {cureTokenSymbol}
+                      {projectTokenSymbol}
                     </div>
                   </div>
 
@@ -340,7 +347,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                       {parseFloat(stakingData?.pendingRewards || "0").toFixed(
                         4
                       )}{" "}
-                      {cureTokenSymbol}
+                      {projectTokenSymbol}
                     </div>
                   </div>
 
@@ -392,7 +399,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                     )}
                     {loading.claim
                       ? "Confirming..."
-                      : `Claim ${cureTokenSymbol} Rewards`}
+                      : `Claim ${projectTokenSymbol} Rewards`}
                   </button>
 
                   {/* <button
@@ -412,7 +419,7 @@ export default function StakingStage({ project }: StakingStageProps) {
                   <div className="space-y-1">
                     <div className="flex items-center justify-end gap-2">
                       <span className="text-blue-400 text-sm">
-                        {cureTokenSymbol}
+                        {projectTokenSymbol}
                       </span>
                       <ExternalLink className="w-3 h-3 text-gray-400" />
                     </div>
@@ -435,13 +442,13 @@ export default function StakingStage({ project }: StakingStageProps) {
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white">
-                {cureTokenSymbol} Reward History
+                {projectTokenSymbol} Reward History
               </h3>
             </div>
 
             <div className="text-center mb-6">
               <div className="text-gray-400 text-sm mb-2">
-                Track your {cureTokenSymbol} staking rewards over time.
+                Track your {projectTokenSymbol} staking rewards over time.
               </div>
             </div>
 
@@ -455,7 +462,7 @@ export default function StakingStage({ project }: StakingStageProps) {
             <div className="text-center text-gray-500 py-8">
               <div className="text-lg">No reward history yet</div>
               <div className="text-sm mt-2">
-                Start staking {cureTokenSymbol} to earn rewards!
+                Start staking {projectTokenSymbol} to earn rewards!
               </div>
             </div>
           </div>

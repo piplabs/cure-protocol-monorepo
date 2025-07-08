@@ -1,10 +1,11 @@
 import { Project } from "@/lib/types";
+import { getProjectTokenSymbol } from "@/lib/utils/projectTokens";
 
 interface FundraisingStageProps {
   project: Project;
 }
 
-export default function FundraisingStage({}: FundraisingStageProps) {
+export default function FundraisingStage({ project }: FundraisingStageProps) {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -61,7 +62,7 @@ export default function FundraisingStage({}: FundraisingStageProps) {
                 <div className="flex justify-between">
                   <span className="text-gray-400">Auction Supply</span>
                   <span className="text-white">
-                    15M CURES (15.00005751405272%)
+                    15M {getProjectTokenSymbol(project.id)} (15.00005751405272%)
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -115,7 +116,9 @@ export default function FundraisingStage({}: FundraisingStageProps) {
           <div className="text-center mb-6">
             <div className="text-2xl font-bold text-white mb-2">
               1 <span className="text-[#00d4ff]">SOL</span> = 1.06K{" "}
-              <span className="text-purple-400">CURES</span>
+              <span className="text-purple-400">
+                {getProjectTokenSymbol(project.id)}
+              </span>
             </div>
             <div className="text-gray-400 text-sm">$10/06</div>
           </div>
