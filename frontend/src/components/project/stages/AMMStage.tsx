@@ -1,6 +1,7 @@
 import { ChevronRight, Brain, ArrowUpRight, Shield } from "lucide-react";
 import { Project } from "@/lib/types";
 import { projectDetails } from "@/lib/data/projectDetails";
+import { getProjectTokenSymbol } from "@/lib/utils/projectTokens";
 
 interface AMMStageProps {
   project: Project;
@@ -30,7 +31,8 @@ export default function AMMStage({ project }: AMMStageProps) {
               <div className="h-full relative">
                 <div className="absolute top-4 left-4 text-sm">
                   <div className="text-white">
-                    NEURON/USD • 15 • Uniswap V3 | GeckoTerminal.com
+                    {getProjectTokenSymbol(project.id)}/USD • 15 • Uniswap V3 |
+                    GeckoTerminal.com
                   </div>
                   <div className="text-red-400">
                     O: 0.0001401 H: 0.0001401 L: 0.0001364 C: 0.0001364
@@ -135,9 +137,9 @@ export default function AMMStage({ project }: AMMStageProps) {
                   />
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">E</span>
+                      <span className="text-white text-sm font-bold">I</span>
                     </div>
-                    <span className="text-white font-medium">ETH</span>
+                    <span className="text-white font-medium">IP</span>
                     <ChevronRight className="w-4 h-4 text-gray-400" />
                   </div>
                 </div>
@@ -167,7 +169,9 @@ export default function AMMStage({ project }: AMMStageProps) {
                     <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
                       <Brain className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-white font-medium">NEURON</span>
+                    <span className="text-white font-medium">
+                      {getProjectTokenSymbol(project.id)}
+                    </span>
                     <ChevronRight className="w-4 h-4 text-gray-400" />
                   </div>
                 </div>
@@ -185,9 +189,9 @@ export default function AMMStage({ project }: AMMStageProps) {
                     20,034,944.057
                   </div>
                   <div className="text-sm text-gray-400 mt-1">
-                    1 ETH = 20,058,143.27
+                    1 IP = 20,058,143.27
                     <br />
-                    NEURON (≈ $2,728.31)
+                    {getProjectTokenSymbol(project.id)} (≈ $2,728.31)
                   </div>
                 </div>
               </div>

@@ -88,7 +88,7 @@ export const projectDetails: Record<string, ProjectDetails> = {
       marketCap: "$20,058,143.27",
       volume24h: "$514,734",
       holders: 1205,
-      totalSupply: "20,058,944.057 NEURON",
+      totalSupply: "20,058,944.057 CERE",
     },
     staking: {
       apr: "4.50%",
@@ -100,13 +100,13 @@ export const projectDetails: Record<string, ProjectDetails> = {
     stakingContract: {
       address: "0x2345678901234567890123456789012345678901", // Replace with actual contract address
       stakingToken: {
-        address: "0x2222222222222222222222222222222222222222", // Replace with actual NEURON token address
-        symbol: "NEURON",
+        address: "0x2222222222222222222222222222222222222222", // Replace with actual CERE token address
+        symbol: "CERE",
         decimals: 18,
       },
       rewardToken: {
         address: "0x2222222222222222222222222222222222222222", // Could be same as staking token
-        symbol: "NEURON",
+        symbol: "CERE",
         decimals: 18,
       },
     },
