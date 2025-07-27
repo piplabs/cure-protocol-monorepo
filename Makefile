@@ -1,64 +1,97 @@
 -include .env
 
-.PHONY: all test clean coverage typechain format abi
+.PHONY: all test clean coverage format abi lint frontend contracts install build deploy
 
 all: clean install build
 
-# function: generate abi for given contract name (key)
-# requires contract name to match the file name
+# function: generate abi for given contract name
+# requires contract name to match the file name in contracts/
 define generate_abi
-    $(eval $@_CONTRACT_NAME = $(1))
-		$(eval $@_CONTRACT_PATH = $(2))
-		forge inspect --json --optimize --optimizer-runs 20000 contracts/${$@_CONTRACT_PATH}/${$@_CONTRACT_NAME}.sol:${$@_CONTRACT_NAME} abi > abi/${$@_CONTRACT_NAME}.json
+	$(eval $@_CONTRACT_NAME = $(1))
+	jq '.abi' out/${$@_CONTRACT_NAME}.sol/${$@_CONTRACT_NAME}.json > abi/${$@_CONTRACT_NAME}.json
 endef
 
-# Clean the repo
-forge-clean :; forge clean
-clean :; npx hardhat clean
+# Clean the entire repo
+clean:
+	@echo "🧹 Cleaning repository..."
+	forge clean
+	rm -rf out
+	rm -rf coverage
+	rm -rf node_modules
+	rm -rf frontend/node_modules
+	rm -rf frontend/.next
+	rm -rf frontend/out
 
-# Remove modules
-forge-remove :; rm -rf .gitmodules && rm -rf .git/modules/* && rm -rf lib && touch .gitmodules && git add . && git commit -m "modules"
+# Install all dependencies
+install:
+	@echo "📦 Installing dependencies..."
+	cd contracts && yarn install
+	cd frontend && npm install
+	forge install
 
-install :
-	yarn install 
+# Build all contracts
+build:
+	@echo "🔨 Building contracts..."
+	cd contracts && forge build
+	cd frontend && npm run build
 
-# Update Dependencies
-forge-update :; forge update
+# Run all tests
+test:
+	@echo "🧪 Running tests..."
+	cd contracts && forge test --no-match-path "test/integration/**"
+	cd contracts && forge test --match-path "test/integration/**" --fork-url https://aeneid.storyrpc.io/
 
-forge-build :; forge build
-build :; npx hardhat compile
 
-test :; forge test --ffi
-
-snapshot :; forge snapshot
-
-slither :; slither ./contracts
-
-# glob doesn't work for nested folders, so we do it manually
+# Format Solidity code
 format:
-	npx prettier --write contracts
+	@echo "🎨 Formatting code..."
+	cd contracts && forge fmt
+	cd frontend && npm run lint:fix
 
-# generate forge coverage on pinned mainnet fork
-# process lcov file, ignore test, script, and contracts/mocks folders
-# generate html report from lcov.info (ignore "line ... has branchcov but no linecov data" error)
-coverage:
-	mkdir -p coverage
-	forge coverage --report lcov --no-match-path "test/foundry/invariants/*"
-	lcov --remove lcov.info -o coverage/lcov.info 'test/*' 'script/*' --rc lcov_branch_coverage=1
-	genhtml coverage/lcov.info -o coverage --rc lcov_branch_coverage=1
 
+# Generate ABIs for core contracts
 abi:
+	@echo "📄 Generating ABIs..."
 	rm -rf abi
 	mkdir -p abi
-	@$(call generate_abi,"IAscCurate","./contracts/interfaces")
-	@$(call generate_abi,"IAscCurateFactory","./contracts/interfaces")
-	@$(call generate_abi,"IAscFundRaising","./contracts/interfaces")
-	@$(call generate_abi,"IAscStaking","./contracts/interfaces")
+	@$(call generate_abi,"AscCurate")
+	@$(call generate_abi,"AscCurateFactory")
+	@$(call generate_abi,"AscStaking")
+	@$(call generate_abi,"IAscCurate")
+	@$(call generate_abi,"IAscCurateFactory")
+	@$(call generate_abi,"IAscFundRaising")
+	@$(call generate_abi,"IAscStaking")
 
+# Lint Solidity code
+lint:
+	@echo "🔍 Linting code..."
+	cd contracts && npx solhint contracts/**/*.sol
+	cd frontend && npm run lint
 
-typechain :; npx hardhat typechain
+# Start local anvil node
+anvil:
+	@echo "🚀 Starting local anvil node..."
+	anvil -m 'test test test test test test test test test test test junk'
 
-# solhint should be installed globally
-lint :; npx solhint contracts/**/*.sol
+# Start frontend development server
+dev:
+	@echo "🌐 Starting frontend development server..."
+	cd frontend && npm run dev
 
-anvil :; anvil -m 'test test test test test test test test test test test junk'
+# Deploy contracts (requires .env with PK and ADMIN)
+deploy:
+	@echo "🚀 Deploying contracts..."
+	cd contracts && forge script script/LaunchCurateWithIpRegistration.s.sol --rpc-url https://aeneid.storyrpc.io/ --broadcast --verify
+
+# Setup development environment
+setup: clean install build abi
+	@echo "✅ Development environment setup complete!"
+
+# Quick development workflow
+dev-workflow: clean install build dev
+	@echo "🚀 Development workflow started!"
+
+# Production build
+prod: clean install build
+	@echo "🏭 Production build complete!"
+
