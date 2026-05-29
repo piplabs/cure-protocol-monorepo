@@ -34,5 +34,8 @@
   },
   "dependencies": {
     "elliptic": "^6.6.1"
+  },
+  "resolutions": {
+    "minimatch": "5.1.8"
   }
 }
